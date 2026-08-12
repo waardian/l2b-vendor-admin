@@ -1,0 +1,316 @@
+import type {
+  LoginResponse,
+  VendorListItem,
+  VendorDetail,
+  OperatorListItem,
+  OperatorDetail,
+  ReviewResult,
+  MachineryCatalogResponse,
+  MachinerySubcategory,
+  Campaign,
+  CampaignSimulation,
+  CampaignVocabulary,
+  CampaignVersion,
+  CampaignWrite,
+  FeeRule,
+  FeeRuleSimulation,
+  FeeRuleWrite,
+  RuleFieldCatalogue,
+} from "./types";
+
+import { ApiError, apiFetch } from "./http";
+
+export { ApiError };
+
+const TOKEN_KEY = "l2b_admin_access_token";
+
+export function getToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(TOKEN_KEY);
+}
+
+export function setToken(token: string): void {
+  window.localStorage.setItem(TOKEN_KEY, token);
+}
+
+export function clearToken(): void {
+  window.localStorage.removeItem(TOKEN_KEY);
+}
+
+function request<T>(
+  path: string,
+  options: { method?: string; body?: unknown; auth?: boolean } = {}
+): Promise<T> {
+  const { method = "GET", body, auth = true } = options;
+  return apiFetch<T>(path, { method, body, token: auth ? getToken() : null });
+}
+
+// ---------------------------------------------------------------------------
+// Auth
+// ---------------------------------------------------------------------------
+
+export const authApi = {
+  sendOtp: (phone: string) =>
+    request<{ success: boolean; message: string }>("/auth/send-otp", {
+      method: "POST",
+      body: { phone },
+      auth: false,
+    }),
+  verifyOtp: (phone: string, otpCode: string) =>
+    request<LoginResponse>("/auth/verify-otp", {
+      method: "POST",
+      body: { phone, otp_code: otpCode, fcm_token: "admin-web" },
+      auth: false,
+    }),
+};
+
+// ---------------------------------------------------------------------------
+// Vendors (/rentals/admin/vendors)
+// ---------------------------------------------------------------------------
+
+export const vendorApi = {
+  list: (params: { category?: string; status?: string } = {}) => {
+    const qs = new URLSearchParams();
+    if (params.category) qs.set("category", params.category);
+    if (params.status) qs.set("status", params.status);
+    qs.set("limit", "200");
+    return request<VendorListItem[]>(`/rentals/admin/vendors?${qs.toString()}`);
+  },
+  detail: (userId: string) =>
+    request<VendorDetail>(`/rentals/admin/vendors/${userId}`),
+
+  approveMachineDoc: (userId: string, machineId: string, doc: "rc" | "insurance" | "tpi") =>
+    request<ReviewResult>(
+      `/rentals/admin/vendors/${userId}/machines/${machineId}/${doc}/approve`,
+      { method: "POST" }
+    ),
+  rejectMachineDoc: (
+    userId: string,
+    machineId: string,
+    doc: "rc" | "insurance" | "tpi",
+    reason: string
+  ) =>
+    request<ReviewResult>(
+      `/rentals/admin/vendors/${userId}/machines/${machineId}/${doc}/reject`,
+      { method: "POST", body: { rejection_reason: reason } }
+    ),
+
+  approveSkill: (userId: string, skillId: string) =>
+    request<ReviewResult>(`/rentals/admin/vendors/${userId}/skills/${skillId}/approve`, {
+      method: "POST",
+    }),
+  rejectSkill: (userId: string, skillId: string, reason: string) =>
+    request<ReviewResult>(`/rentals/admin/vendors/${userId}/skills/${skillId}/reject`, {
+      method: "POST",
+      body: { rejection_reason: reason },
+    }),
+
+  approveKyc: (userId: string) =>
+    request<ReviewResult>(`/rentals/admin/vendors/${userId}/kyc/approve`, { method: "POST" }),
+  rejectKyc: (userId: string, reason: string) =>
+    request<ReviewResult>(`/rentals/admin/vendors/${userId}/kyc/reject`, {
+      method: "POST",
+      body: { rejection_reason: reason },
+    }),
+
+  approveCompanyKyc: (userId: string) =>
+    request<ReviewResult>(`/rentals/admin/vendors/${userId}/company-kyc/approve`, {
+      method: "POST",
+    }),
+  rejectCompanyKyc: (userId: string, reason: string) =>
+    request<ReviewResult>(`/rentals/admin/vendors/${userId}/company-kyc/reject`, {
+      method: "POST",
+      body: { rejection_reason: reason },
+    }),
+
+  approveFinal: (userId: string) =>
+    request<ReviewResult>(`/rentals/admin/vendors/${userId}/approve`, { method: "POST" }),
+  rejectFinal: (userId: string, reason: string) =>
+    request<ReviewResult>(`/rentals/admin/vendors/${userId}/reject`, {
+      method: "POST",
+      body: { rejection_reason: reason },
+    }),
+};
+
+// ---------------------------------------------------------------------------
+// Operators (/rentals/admin/operators)
+// ---------------------------------------------------------------------------
+
+export const operatorApi = {
+  list: (params: { status?: string } = {}) => {
+    const qs = new URLSearchParams();
+    if (params.status) qs.set("status", params.status);
+    qs.set("limit", "200");
+    return request<OperatorListItem[]>(`/rentals/admin/operators?${qs.toString()}`);
+  },
+  detail: (userId: string) =>
+    request<OperatorDetail>(`/rentals/admin/operators/${userId}`),
+
+  approveSkill: (userId: string, skillId: string) =>
+    request<ReviewResult>(`/rentals/admin/operators/${userId}/skills/${skillId}/approve`, {
+      method: "POST",
+    }),
+  rejectSkill: (userId: string, skillId: string, reason: string) =>
+    request<ReviewResult>(`/rentals/admin/operators/${userId}/skills/${skillId}/reject`, {
+      method: "POST",
+      body: { rejection_reason: reason },
+    }),
+
+  approveKyc: (userId: string) =>
+    request<ReviewResult>(`/rentals/admin/operators/${userId}/kyc/approve`, { method: "POST" }),
+  rejectKyc: (userId: string, reason: string) =>
+    request<ReviewResult>(`/rentals/admin/operators/${userId}/kyc/reject`, {
+      method: "POST",
+      body: { rejection_reason: reason },
+    }),
+
+  approveTpi: (userId: string) =>
+    request<ReviewResult>(`/rentals/admin/operators/${userId}/tpi/approve`, { method: "POST" }),
+  rejectTpi: (userId: string, reason: string) =>
+    request<ReviewResult>(`/rentals/admin/operators/${userId}/tpi/reject`, {
+      method: "POST",
+      body: { rejection_reason: reason },
+    }),
+
+  approveFinal: (userId: string) =>
+    request<ReviewResult>(`/rentals/admin/operators/${userId}/approve`, { method: "POST" }),
+  rejectFinal: (userId: string, reason: string) =>
+    request<ReviewResult>(`/rentals/admin/operators/${userId}/reject`, {
+      method: "POST",
+      body: { rejection_reason: reason },
+    }),
+};
+
+// ---------------------------------------------------------------------------
+// Legacy /admin/* (kept alongside /rentals/admin/*, same underlying service)
+// ---------------------------------------------------------------------------
+
+export interface LegacyPendingVendor {
+  user_id: string;
+  name: string | null;
+  phone: string;
+  email: string | null;
+  role: string | null;
+  onboarding_status: string;
+}
+
+export const legacyAdminApi = {
+  listPending: () =>
+    request<LegacyPendingVendor[]>("/admin/vendors/pending?limit=200&offset=0"),
+  reviewMachineDocument: (
+    userId: string,
+    machineId: string,
+    docType: "rc" | "insurance" | "tpi",
+    status: "verified" | "rejected",
+    rejectionReason?: string
+  ) =>
+    request<ReviewResult>(`/admin/vendors/${userId}/machines/${machineId}/review`, {
+      method: "POST",
+      body: { doc_type: docType, status, rejection_reason: rejectionReason ?? null },
+    }),
+  approve: (userId: string) =>
+    request<ReviewResult>(`/admin/vendors/${userId}/approve`, { method: "POST" }),
+  reject: (userId: string, reason: string) =>
+    request<ReviewResult>(`/admin/vendors/${userId}/reject`, {
+      method: "POST",
+      body: { reason },
+    }),
+};
+
+// ---------------------------------------------------------------------------
+// Machinery catalog (public — used to resolve machine/skill IDs to labels)
+// ---------------------------------------------------------------------------
+
+export const machineryApi = {
+  getCatalog: async (): Promise<MachinerySubcategory[]> => {
+    const res = await request<MachineryCatalogResponse>("/machinery/catalog", {
+      auth: false,
+    });
+    return res.data.subcategories;
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Finance admin: deduction rules and incentive campaigns
+// ---------------------------------------------------------------------------
+
+const FINANCE = "/admin/finance";
+
+export const feeRuleApi = {
+  catalogue: (context = "fee_rule") =>
+    request<RuleFieldCatalogue>(`${FINANCE}/rule-fields?context=${context}`),
+  list: (status?: string) =>
+    request<FeeRule[]>(`${FINANCE}/fee-rules${status ? `?status=${status}` : ""}`),
+  get: (ruleId: string) => request<FeeRule>(`${FINANCE}/fee-rules/${ruleId}`),
+  createDraft: (rule: FeeRuleWrite) =>
+    request<FeeRule>(`${FINANCE}/fee-rules`, { method: "POST", body: rule }),
+  updateDraft: (ruleId: string, rule: FeeRuleWrite) =>
+    request<FeeRule>(`${FINANCE}/fee-rules/${ruleId}`, { method: "PUT", body: rule }),
+  activate: (ruleId: string) =>
+    request<FeeRule>(`${FINANCE}/fee-rules/${ruleId}/activate`, { method: "POST" }),
+  remove: (ruleId: string) =>
+    request<void>(`${FINANCE}/fee-rules/${ruleId}`, { method: "DELETE" }),
+  pause: (ruleId: string) =>
+    request<FeeRule>(`${FINANCE}/fee-rules/${ruleId}/pause`, { method: "POST" }),
+  archive: (ruleId: string) =>
+    request<FeeRule>(`${FINANCE}/fee-rules/${ruleId}/archive`, { method: "POST" }),
+  simulate: (rule: FeeRuleWrite, sampleSize = 100, replaceExistingCode = true) =>
+    request<FeeRuleSimulation>(`${FINANCE}/fee-rules/simulate`, {
+      method: "POST",
+      body: { rule, sample_size: sampleSize, replace_existing_code: replaceExistingCode },
+    }),
+};
+
+export const campaignApi = {
+  vocabulary: () => request<CampaignVocabulary>(`${FINANCE}/campaign-vocabulary`),
+  list: (status?: string) =>
+    request<Campaign[]>(`${FINANCE}/campaigns${status ? `?status=${status}` : ""}`),
+  createDraft: (campaign: CampaignWrite) =>
+    request<Campaign>(`${FINANCE}/campaigns`, { method: "POST", body: campaign }),
+  getVersion: (campaignId: string, versionId: string) =>
+    request<CampaignVersion>(
+      `${FINANCE}/campaigns/${campaignId}/versions/${versionId}`
+    ),
+  updateVersion: (campaignId: string, versionId: string, campaign: CampaignWrite) =>
+    request<Campaign>(`${FINANCE}/campaigns/${campaignId}/versions/${versionId}`, {
+      method: "PUT",
+      body: campaign,
+    }),
+  remove: (campaignId: string) =>
+    request<void>(`${FINANCE}/campaigns/${campaignId}`, { method: "DELETE" }),
+  activate: (campaignId: string, versionId?: string) =>
+    request<Campaign>(
+      `${FINANCE}/campaigns/${campaignId}/activate` +
+        (versionId ? `?version_id=${versionId}` : ""),
+      { method: "POST" }
+    ),
+  pause: (campaignId: string) =>
+    request<Campaign>(`${FINANCE}/campaigns/${campaignId}/pause`, { method: "POST" }),
+  resume: (campaignId: string) =>
+    request<Campaign>(`${FINANCE}/campaigns/${campaignId}/resume`, { method: "POST" }),
+  setStatus: (campaignId: string, status: string) =>
+    request<Campaign>(`${FINANCE}/campaigns/${campaignId}/status?status=${status}`, {
+      method: "POST",
+    }),
+  simulate: (campaign: CampaignWrite, sampleSize = 100) =>
+    request<CampaignSimulation>(`${FINANCE}/campaigns/simulate`, {
+      method: "POST",
+      body: { campaign, sample_size: sampleSize },
+    }),
+};
+
+// Individual documents inside a KYC block. Rejecting one of these marks a single *field*
+// as wrong: the partner re-uploads only that document and only that document is
+// re-verified. Shared by vendors and operators — the document row knows its own owner.
+export const kycDocumentApi = {
+  approve: (userId: string, documentId: string) =>
+    request<ReviewResult>(
+      `/rentals/admin/documents/${documentId}/approve?user_id=${encodeURIComponent(userId)}`,
+      { method: "POST" }
+    ),
+  reject: (userId: string, documentId: string, reason: string) =>
+    request<ReviewResult>(
+      `/rentals/admin/documents/${documentId}/reject?user_id=${encodeURIComponent(userId)}`,
+      { method: "POST", body: { rejection_reason: reason } }
+    ),
+};
