@@ -341,12 +341,18 @@ export default function VendorDetailPage() {
         <Section title={`Registered Fleet Machines (${machines.length})`}>
           <div className="space-y-6">
             {machines.map((m) => {
+              const subcategoryId = m.subcategory_id ?? m.sub_category_id ?? 0;
               const resolved = resolveMachinery(
                 catalog,
-                m.subcategory_id,
+                subcategoryId,
                 m.capacity_id,
                 m.variant_id
               );
+
+              const subcategoryName = m.subcategory_name ?? resolved.subcategoryName ?? m.sku_name ?? (subcategoryId ? `Subcategory #${subcategoryId}` : "Machine");
+              const categoryName = m.category_name ?? resolved.categoryName;
+              const capacityLabel = m.capacity_label ?? m.capacity ?? resolved.capacityLabel ?? (m.capacity_id ? String(m.capacity_id) : null);
+              const variantLabel = resolved.variantLabel ?? (m.variant_id ? String(m.variant_id) : null);
 
               // Gather all documents belonging to this machine
               const machineDocs = m.documents && m.documents.length > 0
@@ -368,15 +374,17 @@ export default function VendorDetailPage() {
                   <div className="flex items-center justify-between border-b border-slate-200/60 pb-3">
                     <div>
                       <p className="text-sm font-bold text-slate-900">
-                        {resolved.subcategoryName ?? `Subcategory #${m.subcategory_id}`}
-                        {resolved.categoryName && (
+                        {subcategoryName}
+                        {categoryName && (
                           <span className="ml-2 font-semibold text-slate-500">
-                            ({resolved.categoryName})
+                            ({categoryName})
                           </span>
                         )}
                       </p>
                       <p className="text-xs font-medium text-slate-500">
-                        Capacity: <span className="font-bold text-slate-700">{resolved.capacityLabel ?? m.capacity_id}</span> · Variant: <span className="font-bold text-slate-700">{resolved.variantLabel ?? m.variant_id}</span> · Reg Serial: <span className="font-mono font-bold text-slate-800">{m.registration_serial_no}</span>
+                        {capacityLabel && <>Capacity: <span className="font-bold text-slate-700">{capacityLabel}</span> · </>}
+                        {variantLabel && <>Variant: <span className="font-bold text-slate-700">{variantLabel}</span> · </>}
+                        Reg Serial: <span className="font-mono font-bold text-slate-800">{m.registration_serial_no}</span>
                       </p>
                     </div>
                     <StatusBadge status={m.status} />

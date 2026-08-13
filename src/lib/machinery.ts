@@ -15,9 +15,17 @@ export function resolveMachinery(
   capacityId?: number | null,
   variantId?: number | null
 ): ResolvedMachinery {
+  if (!Array.isArray(catalog)) {
+    return {
+      categoryName: null,
+      subcategoryName: null,
+      capacityLabel: null,
+      variantLabel: null,
+    };
+  }
   const subcategory = catalog.find((s) => s.id === subcategoryId);
-  const capacity = subcategory?.capacities.find((c) => c.id === capacityId);
-  const variant = capacity?.variants.find((v) => v.id === variantId);
+  const capacity = subcategory?.capacities?.find((c) => c.id === capacityId);
+  const variant = capacity?.variants?.find((v) => v.id === variantId);
   return {
     categoryName: subcategory?.category_name ?? null,
     subcategoryName: subcategory?.name ?? null,

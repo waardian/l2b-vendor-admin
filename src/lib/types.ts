@@ -91,9 +91,11 @@ export interface CompanyDetail {
 
 export interface MachineDetail {
   id: string;
-  subcategory_id: number;
-  capacity_id: number;
-  variant_id: number;
+  rental_sku_id?: number;
+  subcategory_id?: number;
+  sub_category_id?: number;
+  capacity_id?: number;
+  variant_id?: number;
   registration_serial_no: string;
   status: string;
   rc_status: string;
@@ -103,14 +105,23 @@ export interface MachineDetail {
   insurance_rejection_reason: string | null;
   tpi_rejection_reason: string | null;
   documents: DocumentSummary[];
+  subcategory_name?: string | null;
+  category_name?: string | null;
+  sku_name?: string | null;
+  capacity?: string | null;
+  capacity_label?: string | null;
 }
 
 export interface SkillDetail {
   id: string;
-  subcategory_id: number;
-  capacity_id: number;
+  subcategory_id?: number;
+  rental_sub_category_id?: number;
+  capacity_id?: number;
   status: string;
   rejection_reason: string | null;
+  subcategory_name?: string | null;
+  category_name?: string | null;
+  capacity_label?: string | null;
 }
 
 export interface KycDetail {

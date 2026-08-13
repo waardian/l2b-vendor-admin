@@ -297,12 +297,17 @@ export default function OperatorDetailPage() {
         <Section title={`Machine Skills & Licenses (${skills.length})`}>
           <div className="space-y-4">
             {skills.map((s) => {
+              const subcategoryId = s.subcategory_id ?? s.rental_sub_category_id ?? 0;
               const resolved = resolveMachinery(
                 catalog,
-                s.subcategory_id,
+                subcategoryId,
                 s.capacity_id,
                 undefined
               );
+
+              const subcategoryName = s.subcategory_name ?? resolved.subcategoryName ?? (subcategoryId ? `Subcategory #${subcategoryId}` : "Skill");
+              const categoryName = s.category_name ?? resolved.categoryName;
+              const capacityLabel = s.capacity_label ?? resolved.capacityLabel ?? (s.capacity_id ? String(s.capacity_id) : null);
 
               const skillDocs = docsFor("operator_skill", s.id).concat(docsFor("skill", s.id));
 
@@ -311,16 +316,18 @@ export default function OperatorDetailPage() {
                   <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
                     <div>
                       <p className="text-sm font-bold text-slate-900">
-                        {resolved.subcategoryName ?? `Subcategory #${s.subcategory_id}`}
-                        {resolved.categoryName && (
+                        {subcategoryName}
+                        {categoryName && (
                           <span className="ml-2 font-semibold text-slate-500">
-                            ({resolved.categoryName})
+                            ({categoryName})
                           </span>
                         )}
                       </p>
-                      <p className="text-xs font-medium text-slate-500">
-                        Capacity: <span className="font-bold text-slate-700">{resolved.capacityLabel ?? s.capacity_id}</span>
-                      </p>
+                      {capacityLabel && (
+                        <p className="text-xs font-medium text-slate-500">
+                          Capacity: <span className="font-bold text-slate-700">{capacityLabel}</span>
+                        </p>
+                      )}
                     </div>
                     <StatusBadge status={s.status} />
                   </div>
