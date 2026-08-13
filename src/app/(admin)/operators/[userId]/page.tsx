@@ -160,6 +160,12 @@ export default function OperatorDetailPage() {
         </div>
       )}
 
+      {error && (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-800 shadow-2xs">
+          ⚠️ {error}
+        </div>
+      )}
+
       {/* Main Profile Header Info Card */}
       <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
@@ -225,7 +231,35 @@ export default function OperatorDetailPage() {
 
       {/* Operator KYC Document Review */}
       {kyc && (
-        <Section title="Operator KYC Verification Review">
+        <Section
+          title="Operator KYC Verification Review"
+          action={
+            <div className="flex items-center gap-2">
+              <StatusBadge status={kyc.overall_status} />
+              {kyc.overall_status !== "verified" && (
+                <button
+                  onClick={() => operatorApi.approveKyc(userId).then(afterReview)}
+                  disabled={actionInFlight}
+                  className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-bold text-white transition-all hover:bg-emerald-700 disabled:opacity-50"
+                >
+                  Approve KYC Block
+                </button>
+              )}
+            </div>
+          }
+        >
+          <div className="mb-4 rounded-xl border border-slate-100 bg-slate-50/60 p-4">
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:grid-cols-4">
+              <DetailField label="Aadhaar Number" value={kyc.aadhaar_number} />
+              <DetailField label="PAN Number" value={kyc.pan_number} />
+              <DetailField label="DL Number" value={kyc.dl_number} />
+              <DetailField label="IFSC Code" value={kyc.ifsc_code} />
+              <DetailField label="Bank Name" value={kyc.bank_name} />
+              <DetailField label="Bank Branch" value={kyc.bank_branch_name} />
+              <DetailField label="Linked Mobile" value={kyc.bank_linked_mobile} />
+              <DetailField label="UPI ID" value={kyc.upi_id} />
+            </dl>
+          </div>
           <KycDocumentReview
             userId={userId}
             documents={docsFor("operator_kyc", kyc.id)}

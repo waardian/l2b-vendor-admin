@@ -9,7 +9,7 @@ import DocumentImage from "./DocumentImage";
  * falls back to a title-cased version of the raw type, so a new document type added on
  * the backend still reads sensibly without a web release. */
 const DOCUMENT_LABELS: Record<string, string> = {
-  aadhaar_front: "Aadhaar — front",
+  aadhaar_front: "Aadhaar Card",
   pan_card: "PAN card",
   company_pan: "Company PAN",
   cancelled_cheque: "Cancelled cheque",
@@ -53,7 +53,9 @@ export default function KycDocumentReview({
   onBusyChange,
   afterReview,
 }: Props) {
-  if (documents.length === 0) {
+  const visibleDocs = documents.filter((doc) => doc.document_type !== "aadhaar_back");
+
+  if (visibleDocs.length === 0) {
     return <p className="text-sm text-gray-400">No documents uploaded for this block.</p>;
   }
 
@@ -63,7 +65,7 @@ export default function KycDocumentReview({
         Review each document on its own. The partner is shown your reason against that
         exact field and only has to re-upload the one you reject.
       </p>
-      {documents.map((doc) => (
+      {visibleDocs.map((doc) => (
         <div key={doc.id}>
           <ApproveRejectRow
             label={documentLabel(doc.document_type)}

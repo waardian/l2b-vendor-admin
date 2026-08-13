@@ -171,6 +171,12 @@ export default function VendorDetailPage() {
         </div>
       )}
 
+      {error && (
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-800 shadow-2xs">
+          ⚠️ {error}
+        </div>
+      )}
+
       {/* Main Profile Header Info Card */}
       <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
@@ -251,7 +257,34 @@ export default function VendorDetailPage() {
 
       {/* Vendor KYC Document Review */}
       {kyc && (
-        <Section title="Vendor KYC Verification Review">
+        <Section
+          title="Vendor KYC Verification Review"
+          action={
+            <div className="flex items-center gap-2">
+              <StatusBadge status={kyc.overall_status} />
+              {kyc.overall_status !== "verified" && (
+                <button
+                  onClick={() => vendorApi.approveKyc(userId).then(afterReview)}
+                  disabled={actionInFlight}
+                  className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-bold text-white transition-all hover:bg-emerald-700 disabled:opacity-50"
+                >
+                  Approve KYC Block
+                </button>
+              )}
+            </div>
+          }
+        >
+          <div className="mb-4 rounded-xl border border-slate-100 bg-slate-50/60 p-4">
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:grid-cols-4">
+              <DetailField label="Aadhaar Number" value={kyc.aadhaar_number} />
+              <DetailField label="PAN Number" value={kyc.pan_number} />
+              <DetailField label="IFSC Code" value={kyc.ifsc_code} />
+              <DetailField label="Bank Name" value={kyc.bank_name} />
+              <DetailField label="Bank Branch" value={kyc.bank_branch_name} />
+              <DetailField label="Linked Mobile" value={kyc.bank_linked_mobile} />
+              <DetailField label="UPI ID" value={kyc.upi_id} />
+            </dl>
+          </div>
           <KycDocumentReview
             userId={userId}
             documents={docsFor("vendor_kyc", kyc.id)}
@@ -264,7 +297,35 @@ export default function VendorDetailPage() {
 
       {/* Company KYC Document Review */}
       {company_kyc && (
-        <Section title="Company KYC Verification Review">
+        <Section
+          title="Company KYC Verification Review"
+          action={
+            <div className="flex items-center gap-2">
+              <StatusBadge status={company_kyc.overall_status} />
+              {company_kyc.overall_status !== "verified" && (
+                <button
+                  onClick={() => vendorApi.approveCompanyKyc(userId).then(afterReview)}
+                  disabled={actionInFlight}
+                  className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-bold text-white transition-all hover:bg-emerald-700 disabled:opacity-50"
+                >
+                  Approve Company KYC Block
+                </button>
+              )}
+            </div>
+          }
+        >
+          <div className="mb-4 rounded-xl border border-slate-100 bg-slate-50/60 p-4">
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs sm:grid-cols-4">
+              <DetailField label="Company PAN" value={company_kyc.company_pan_number} />
+              <DetailField label="GST Number" value={company_kyc.company_gst_number} />
+              <DetailField label="Aadhaar Number" value={company_kyc.aadhaar_number} />
+              <DetailField label="IFSC Code" value={company_kyc.ifsc_code} />
+              <DetailField label="Bank Name" value={company_kyc.bank_name} />
+              <DetailField label="Bank Branch" value={company_kyc.bank_branch_name} />
+              <DetailField label="Linked Mobile" value={company_kyc.bank_linked_mobile} />
+              <DetailField label="UPI ID" value={company_kyc.upi_id} />
+            </dl>
+          </div>
           <KycDocumentReview
             userId={userId}
             documents={docsFor("company_kyc", company_kyc.id)}
