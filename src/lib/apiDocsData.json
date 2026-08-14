@@ -68,7 +68,7 @@
           "example": {
             "phone": "+919876543210",
             "otp_code": "1234",
-            "fcm_token": "fcm_e1a2b3c4d5e6f7a8b9c0_device_token"
+            "fcm_token": "fcm_d7a8b9c0_e1f2a3b4c5d6e7f8_token"
           }
         },
         "responses": [
@@ -249,7 +249,12 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "Role category set successfully",
+              "role": "rental_vendor",
+              "profile_category": "individual"
+            }
           },
           {
             "statusCode": "422",
@@ -292,7 +297,17 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "onboarding_status": "draft",
+              "completed_steps": [
+                "role_category",
+                "basic_info",
+                "skills"
+              ],
+              "kyc_status": "pending_review",
+              "machines_count": 2,
+              "skills_count": 3
+            }
           }
         ]
       },
@@ -312,7 +327,11 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "status": "approved",
+              "role": "rental_vendor",
+              "is_complete": true
+            }
           }
         ]
       },
@@ -330,11 +349,11 @@
           "contentType": "application/json",
           "example": {
             "vendor_category": "2026-08-14T10:00:00Z",
-            "is_company": true,
-            "company_type": "string",
+            "is_company": "ABCDE1234F",
+            "company_type": "ABCDE1234F",
             "machine_count": 10,
             "has_skills": true,
-            "name": "JCB 3DX Backhoe Loader",
+            "name": "Ramesh Kumar",
             "email": "partner@link2build.com"
           }
         },
@@ -343,7 +362,13 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "Business profile saved successfully",
+              "company_name": "Patel Earthmovers & Infra Pvt Ltd",
+              "gstin": "36AAACP1234A1Z5",
+              "pan": "ABCDE1234F"
+            }
           },
           {
             "statusCode": "422",
@@ -394,7 +419,10 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "has_skills": true
+            }
           },
           {
             "statusCode": "422",
@@ -437,7 +465,16 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "skills": [
+                {
+                  "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
+                  "name": "Backhoe Loader Operation",
+                  "status": "verified"
+                }
+              ]
+            }
           }
         ]
       },
@@ -458,8 +495,8 @@
               {
                 "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                 "rental_sub_category_id": 1,
-                "capacity_label": "capacity_label",
-                "dl_image_base64": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg"
+                "capacity_label": "1.0 cu.m Bucket",
+                "dl_image_base64": "string"
               }
             ]
           }
@@ -469,7 +506,16 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "skills": [
+                {
+                  "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
+                  "name": "Backhoe Loader Operation",
+                  "status": "verified"
+                }
+              ]
+            }
           },
           {
             "statusCode": "422",
@@ -514,9 +560,9 @@
                 "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                 "rental_sku_id": 1,
                 "registration_serial_no": "2026-08-14T10:00:00Z",
-                "rc_image_base64": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg",
-                "insurance_image_base64": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg",
-                "tpi_image_base64": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg"
+                "rc_image_base64": "string",
+                "insurance_image_base64": "string",
+                "tpi_image_base64": "string"
               }
             ]
           }
@@ -526,7 +572,17 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "Fleet machines registered successfully",
+              "data": [
+                {
+                  "id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
+                  "registration_number": "KA01AB1234",
+                  "status": "verified"
+                }
+              ]
+            }
           },
           {
             "statusCode": "422",
@@ -566,19 +622,19 @@
         "requestBody": {
           "contentType": "application/json",
           "example": {
-            "company_pan_number": "company_pan_number",
-            "company_gst_number": "company_gst_number",
-            "aadhaar_number": "string",
-            "bank_name": "JCB 3DX Backhoe Loader",
-            "bank_branch_name": "JCB 3DX Backhoe Loader",
-            "ifsc_code": "L2B2026",
-            "bank_linked_mobile": "bank_linked_mobile",
-            "upi_id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
+            "company_pan_number": "ABCDE1234F",
+            "company_gst_number": "36AAACP1234A1Z5",
+            "aadhaar_number": "987654321098",
+            "bank_name": "HDFC Bank",
+            "bank_branch_name": "Hitech City Branch, Hyderabad",
+            "ifsc_code": "HDFC0000001",
+            "bank_linked_mobile": "+919876543210",
+            "upi_id": "link2build@hdfcbank",
             "cancelled_cheque_base64": "string",
-            "gst_cert_base64": "string",
-            "company_pan_base64": "string",
-            "aadhaar_front_base64": "string",
-            "aadhaar_back_base64": "string"
+            "gst_cert_base64": "36AAACP1234A1Z5",
+            "company_pan_base64": "ABCDE1234F",
+            "aadhaar_front_base64": "987654321098",
+            "aadhaar_back_base64": "987654321098"
           }
         },
         "responses": [
@@ -586,7 +642,13 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "Corporate KYC submitted and verified via Digio",
+              "status": "verified",
+              "gstin_status": "verified",
+              "pan_status": "verified"
+            }
           },
           {
             "statusCode": "422",
@@ -627,9 +689,9 @@
           "contentType": "application/json",
           "example": {
             "operator_category": "2026-08-14T10:00:00Z",
-            "is_associated_with_company": true,
-            "associated_company_code": "2026-08-14T10:00:00Z",
-            "name": "JCB 3DX Backhoe Loader",
+            "is_associated_with_company": "ABCDE1234F",
+            "associated_company_code": "ABCDE1234F",
+            "name": "Ramesh Kumar",
             "email": "partner@link2build.com",
             "tpi_certificate_base64": "2026-08-14T10:00:00Z"
           }
@@ -639,7 +701,13 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "Operator profile saved",
+              "name": "Ramesh Kumar",
+              "experience_years": 5,
+              "city": "Hyderabad"
+            }
           },
           {
             "statusCode": "422",
@@ -684,11 +752,11 @@
                 "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                 "rental_sub_category_id": 1,
                 "machinery_subcategory_id": 1,
-                "capacity_label": "string",
-                "machinery_capacity_id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
-                "experience": "experience",
-                "dl_front_image_base64": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg",
-                "dl_back_image_base64": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg"
+                "capacity_label": "1.0 cu.m Bucket",
+                "machinery_capacity_id": "1.0 cu.m Bucket",
+                "experience": "5+ Years in Heavy Machinery Operations",
+                "dl_front_image_base64": "string",
+                "dl_back_image_base64": "string"
               }
             ]
           }
@@ -738,18 +806,18 @@
         "requestBody": {
           "contentType": "application/json",
           "example": {
-            "aadhaar_number": "aadhaar_number",
-            "pan_number": "pan_number",
-            "dl_number": "string",
-            "bank_name": "JCB 3DX Backhoe Loader",
-            "bank_branch_name": "JCB 3DX Backhoe Loader",
-            "ifsc_code": "L2B2026",
-            "bank_linked_mobile": "bank_linked_mobile",
-            "upi_id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
+            "aadhaar_number": "987654321098",
+            "pan_number": "ABCDE1234F",
+            "dl_number": "TS0920220012345",
+            "bank_name": "HDFC Bank",
+            "bank_branch_name": "Hitech City Branch, Hyderabad",
+            "ifsc_code": "HDFC0000001",
+            "bank_linked_mobile": "+919876543210",
+            "upi_id": "link2build@hdfcbank",
             "cancelled_cheque_base64": "string",
-            "aadhaar_front_base64": "string",
-            "aadhaar_back_base64": "string",
-            "pan_card_base64": "string",
+            "aadhaar_front_base64": "987654321098",
+            "aadhaar_back_base64": "987654321098",
+            "pan_card_base64": "ABCDE1234F",
             "dl_front_base64": "string",
             "dl_back_base64": "string"
           }
@@ -759,7 +827,12 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "Commercial license verified via Digio",
+              "status": "verified",
+              "dl_number": "TS0920220012345"
+            }
           },
           {
             "statusCode": "422",
@@ -802,7 +875,11 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "Application submitted for administrative approval",
+              "onboarding_status": "pending_approval"
+            }
           }
         ]
       }
@@ -835,7 +912,12 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "document_id": "doc_1234abcd-5678-ef90-1234-567890abcdef",
+              "url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_document.pdf",
+              "document_type": "rc_copy"
+            }
           },
           {
             "statusCode": "422",
@@ -891,7 +973,16 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "document_id": "doc_1234abcd-5678-ef90-1234-567890abcdef",
+              "status": "verified",
+              "extracted_data": {
+                "registration_number": "KA01AB1234",
+                "owner_name": "Suresh Patel",
+                "chassis_number": "MA3ER61S001234567"
+              }
+            }
           },
           {
             "statusCode": "422",
@@ -942,7 +1033,11 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "document_id": "doc_1234abcd-5678-ef90-1234-567890abcdef",
+              "status": "verified",
+              "verified_at": "2026-08-14T10:00:00Z"
+            }
           },
           {
             "statusCode": "422",
@@ -985,7 +1080,10 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "status": "received",
+              "event": "digio_verification_completed"
+            }
           }
         ]
       },
@@ -1020,7 +1118,12 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "status": "verified",
+              "registration_number": "KA01AB1234",
+              "owner_name": "Suresh Patel"
+            }
           },
           {
             "statusCode": "422",
@@ -1071,7 +1174,17 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "IFSC verified successfully",
+              "data": {
+                "bank_name": "HDFC Bank",
+                "branch": "Hitech City Branch, Hyderabad",
+                "ifsc": "HDFC0000001",
+                "city": "Hyderabad",
+                "state": "Telangana"
+              }
+            }
           },
           {
             "statusCode": "422",
@@ -1165,7 +1278,10 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "status": "received",
+              "event": "digio_verification_completed"
+            }
           }
         ]
       }
@@ -1206,22 +1322,22 @@
                   {
                     "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                     "machine_name": "JCB 3DX Backhoe Loader",
-                    "machine_type": "machine_type",
-                    "capacity": "capacity",
+                    "machine_type": "Backhoe Loader",
+                    "capacity": "1.0 cu.m Bucket",
                     "registration_number": "KA01AB1234",
                     "is_active": true,
                     "created_at": "2026-08-14T08:30:00Z",
-                    "image_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg",
+                    "image_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_proof.jpg",
                     "verification_status": "2026-08-14T10:00:00Z",
                     "is_under_review": true,
                     "operators": [
                       {
-                        "id": null,
-                        "name": null,
-                        "assignee_type": null,
-                        "is_self": null,
-                        "priority_rank": null,
-                        "priority_label": null
+                        "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
+                        "name": "Ramesh Kumar",
+                        "assignee_type": "assignee_type",
+                        "is_self": true,
+                        "priority_rank": 1,
+                        "priority_label": "priority_label"
                       }
                     ]
                   }
@@ -1286,22 +1402,22 @@
                   {
                     "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                     "machine_name": "JCB 3DX Backhoe Loader",
-                    "machine_type": "machine_type",
-                    "capacity": "capacity",
+                    "machine_type": "Backhoe Loader",
+                    "capacity": "1.0 cu.m Bucket",
                     "registration_number": "KA01AB1234",
                     "is_active": true,
                     "created_at": "2026-08-14T08:30:00Z",
-                    "image_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg",
+                    "image_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_proof.jpg",
                     "verification_status": "2026-08-14T10:00:00Z",
                     "is_under_review": true,
                     "operators": [
                       {
-                        "id": null,
-                        "name": null,
-                        "assignee_type": null,
-                        "is_self": null,
-                        "priority_rank": null,
-                        "priority_label": null
+                        "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
+                        "name": "Ramesh Kumar",
+                        "assignee_type": "assignee_type",
+                        "is_self": true,
+                        "priority_rank": 1,
+                        "priority_label": "priority_label"
                       }
                     ]
                   }
@@ -1351,9 +1467,9 @@
               {
                 "rental_sku_id": 1,
                 "registration_serial_no": "2026-08-14T10:00:00Z",
-                "rc_image_base64": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg",
-                "insurance_image_base64": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg",
-                "tpi_image_base64": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg"
+                "rc_image_base64": "string",
+                "insurance_image_base64": "string",
+                "tpi_image_base64": "string"
               }
             ]
           }
@@ -1371,22 +1487,22 @@
                   {
                     "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                     "machine_name": "JCB 3DX Backhoe Loader",
-                    "machine_type": "machine_type",
-                    "capacity": "capacity",
+                    "machine_type": "Backhoe Loader",
+                    "capacity": "1.0 cu.m Bucket",
                     "registration_number": "KA01AB1234",
                     "is_active": true,
                     "created_at": "2026-08-14T08:30:00Z",
-                    "image_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg",
+                    "image_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_proof.jpg",
                     "verification_status": "2026-08-14T10:00:00Z",
                     "is_under_review": true,
                     "operators": [
                       {
-                        "id": null,
-                        "name": null,
-                        "assignee_type": null,
-                        "is_self": null,
-                        "priority_rank": null,
-                        "priority_label": null
+                        "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
+                        "name": "Ramesh Kumar",
+                        "assignee_type": "assignee_type",
+                        "is_self": true,
+                        "priority_rank": 1,
+                        "priority_label": "priority_label"
                       }
                     ]
                   }
@@ -1449,18 +1565,18 @@
               "data": {
                 "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                 "machine_name": "JCB 3DX Backhoe Loader",
-                "machine_type": "machine_type",
-                "capacity": "capacity",
+                "machine_type": "Backhoe Loader",
+                "capacity": "1.0 cu.m Bucket",
                 "registration_number": "KA01AB1234",
                 "is_active": true,
                 "created_at": "2026-08-14T08:30:00Z",
-                "image_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg",
+                "image_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_proof.jpg",
                 "verification_status": "2026-08-14T10:00:00Z",
                 "is_under_review": true,
                 "operators": [
                   {
                     "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
-                    "name": "JCB 3DX Backhoe Loader",
+                    "name": "Ramesh Kumar",
                     "assignee_type": "assignee_type",
                     "is_self": true,
                     "priority_rank": 1,
@@ -1525,18 +1641,18 @@
               "data": {
                 "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                 "machine_name": "JCB 3DX Backhoe Loader",
-                "machine_type": "machine_type",
-                "capacity": "capacity",
+                "machine_type": "Backhoe Loader",
+                "capacity": "1.0 cu.m Bucket",
                 "registration_number": "KA01AB1234",
                 "is_active": true,
                 "created_at": "2026-08-14T08:30:00Z",
-                "image_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg",
+                "image_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_proof.jpg",
                 "verification_status": "2026-08-14T10:00:00Z",
                 "is_under_review": true,
                 "operators": [
                   {
                     "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
-                    "name": "JCB 3DX Backhoe Loader",
+                    "name": "Ramesh Kumar",
                     "assignee_type": "assignee_type",
                     "is_self": true,
                     "priority_rank": 1,
@@ -1646,7 +1762,11 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "Profile photo updated successfully",
+              "photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/avatar_profile.jpg"
+            }
           },
           {
             "statusCode": "422",
@@ -1694,7 +1814,11 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "Language updated successfully",
+              "language": "en"
+            }
           },
           {
             "statusCode": "422",
@@ -1749,28 +1873,28 @@
                 "members": [
                   {
                     "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
-                    "name": "JCB 3DX Backhoe Loader",
+                    "name": "Ramesh Kumar",
                     "phone": "+919876543210",
-                    "photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg",
-                    "status": "confirmed",
-                    "status_reason": "2026-08-14T10:00:00Z",
+                    "photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_proof.jpg",
+                    "status": "active",
+                    "status_reason": "active",
                     "machines": [
                       {
-                        "assignment_id": null,
-                        "machine_id": null,
-                        "machine_type": null,
-                        "capacity": null,
-                        "registration_number": null,
-                        "priority": null,
-                        "priority_rank": null
+                        "assignment_id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
+                        "machine_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
+                        "machine_type": "Backhoe Loader",
+                        "capacity": "1.0 cu.m Bucket",
+                        "registration_number": "KA01AB1234",
+                        "priority": "primary",
+                        "priority_rank": 1
                       }
                     ],
                     "skills": [
                       {
-                        "id": null,
-                        "machine_type": null,
-                        "capacity": null,
-                        "experience": null
+                        "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
+                        "machine_type": "Backhoe Loader",
+                        "capacity": "1.0 cu.m Bucket",
+                        "experience": "5+ Years in Heavy Machinery Operations"
                       }
                     ]
                   }
@@ -1809,40 +1933,40 @@
               "message": "Operation completed successfully",
               "data": {
                 "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
-                "name": "JCB 3DX Backhoe Loader",
+                "name": "Ramesh Kumar",
                 "phone": "+919876543210",
-                "photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg",
+                "photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_proof.jpg",
                 "status": "confirmed",
                 "status_reason": "2026-08-14T10:00:00Z",
                 "machines": [
                   {
                     "assignment_id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                     "machine_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
-                    "machine_type": "machine_type",
-                    "capacity": "capacity",
+                    "machine_type": "Backhoe Loader",
+                    "capacity": "1.0 cu.m Bucket",
                     "registration_number": "KA01AB1234",
-                    "priority": "priority",
+                    "priority": "primary",
                     "priority_rank": 1
                   }
                 ],
                 "skills": [
                   {
                     "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
-                    "machine_type": "machine_type",
-                    "capacity": "capacity",
-                    "experience": "experience"
+                    "machine_type": "Backhoe Loader",
+                    "capacity": "1.0 cu.m Bucket",
+                    "experience": "5+ Years in Heavy Machinery Operations"
                   }
                 ],
                 "kyc": {
-                  "aadhaar_number_masked": "string",
-                  "pan_number_masked": "string",
-                  "dl_number_masked": "string"
+                  "aadhaar_number_masked": "987654321098",
+                  "pan_number_masked": "ABCDE1234F",
+                  "dl_number_masked": "TS0920220012345"
                 },
                 "bank": {
-                  "bank_name": "JCB 3DX Backhoe Loader",
-                  "bank_branch_name": "JCB 3DX Backhoe Loader",
-                  "bank_linked_mobile_masked": "string",
-                  "upi_id": "a71f201e-e438-4c18-9e00-bf3860b240dc"
+                  "bank_name": "HDFC Bank",
+                  "bank_branch_name": "Hitech City Branch, Hyderabad",
+                  "bank_linked_mobile_masked": "+919876543210",
+                  "upi_id": "link2build@hdfcbank"
                 }
               }
             }
@@ -1961,28 +2085,28 @@
               "message": "Operation completed successfully",
               "data": {
                 "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
-                "name": "JCB 3DX Backhoe Loader",
+                "name": "Ramesh Kumar",
                 "phone": "+919876543210",
-                "photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg",
+                "photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_proof.jpg",
                 "status": "confirmed",
                 "status_reason": "2026-08-14T10:00:00Z",
                 "machines": [
                   {
                     "assignment_id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                     "machine_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
-                    "machine_type": "machine_type",
-                    "capacity": "capacity",
+                    "machine_type": "Backhoe Loader",
+                    "capacity": "1.0 cu.m Bucket",
                     "registration_number": "KA01AB1234",
-                    "priority": "priority",
+                    "priority": "primary",
                     "priority_rank": 1
                   }
                 ],
                 "skills": [
                   {
                     "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
-                    "machine_type": "machine_type",
-                    "capacity": "capacity",
-                    "experience": "experience"
+                    "machine_type": "Backhoe Loader",
+                    "capacity": "1.0 cu.m Bucket",
+                    "experience": "5+ Years in Heavy Machinery Operations"
                   }
                 ]
               }
@@ -2049,28 +2173,28 @@
               "message": "Operation completed successfully",
               "data": {
                 "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
-                "name": "JCB 3DX Backhoe Loader",
+                "name": "Ramesh Kumar",
                 "phone": "+919876543210",
-                "photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg",
+                "photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_proof.jpg",
                 "status": "confirmed",
                 "status_reason": "2026-08-14T10:00:00Z",
                 "machines": [
                   {
                     "assignment_id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                     "machine_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
-                    "machine_type": "machine_type",
-                    "capacity": "capacity",
+                    "machine_type": "Backhoe Loader",
+                    "capacity": "1.0 cu.m Bucket",
                     "registration_number": "KA01AB1234",
-                    "priority": "priority",
+                    "priority": "primary",
                     "priority_rank": 1
                   }
                 ],
                 "skills": [
                   {
                     "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
-                    "machine_type": "machine_type",
-                    "capacity": "capacity",
-                    "experience": "experience"
+                    "machine_type": "Backhoe Loader",
+                    "capacity": "1.0 cu.m Bucket",
+                    "experience": "5+ Years in Heavy Machinery Operations"
                   }
                 ]
               }
@@ -2132,8 +2256,8 @@
             "contentType": "application/json",
             "example": {
               "period": "period",
-              "period_start": "2026-08-14T10:00:00Z",
-              "period_end": "2026-08-14T10:00:00Z",
+              "period_start": "2026-08-14T08:30:00Z",
+              "period_end": "2026-08-14T08:30:00Z",
               "completed": {
                 "value": 99.5,
                 "previous": 99.5,
@@ -2152,7 +2276,7 @@
                 "change_pct": 99.5,
                 "direction": "direction"
               },
-              "wallet_balance": 99.5,
+              "wallet_balance": 15000.0,
               "wallet_lifetime_credited": 99.5
             }
           },
@@ -2221,7 +2345,7 @@
             "contentType": "application/json",
             "example": {
               "success": true,
-              "year": 1,
+              "year": 2023,
               "month": 1,
               "selected_day": 1,
               "day_markers": {
@@ -2288,18 +2412,18 @@
             "example": {
               "success": true,
               "data": {
-                "is_company": true,
+                "is_company": "ABCDE1234F",
                 "document_type": "string",
                 "document_number": "string",
-                "aadhaar_number": "string",
-                "gst_number": "string",
-                "bank_name": "JCB 3DX Backhoe Loader",
-                "ifsc_code": "L2B2026",
-                "branch_address": "string",
-                "mobile_linked_to_bank": "string",
-                "upi_id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
+                "aadhaar_number": "987654321098",
+                "gst_number": "36AAACP1234A1Z5",
+                "bank_name": "HDFC Bank",
+                "ifsc_code": "HDFC0000001",
+                "branch_address": "Hitech City Branch, Hyderabad",
+                "mobile_linked_to_bank": "+919876543210",
+                "upi_id": "link2build@hdfcbank",
                 "overall_status": "2026-08-14T10:00:00Z",
-                "rejection_reason": "string"
+                "rejection_reason": "Uploaded document is blurred and registration number is unreadable"
               }
             }
           }
@@ -2363,7 +2487,7 @@
                   "scheduled_end": "2026-08-14T17:00:00Z",
                   "total_amount": 15000.0,
                   "created_at": "2026-08-14T08:30:00Z",
-                  "site_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                  "site_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                   "site_lat": 17.385044,
                   "site_lng": 78.486671,
                   "dump_lat": 17.385044,
@@ -2376,8 +2500,8 @@
                   "work_type": "Earthmoving & Excavation",
                   "type_of_soil": "Clay / Red Soil",
                   "type_of_load": "Clay / Red Soil",
-                  "pickup_address": "Site 42, Hitech City, Hyderabad, Telangana",
-                  "delivery_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                  "pickup_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
+                  "delivery_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                   "sku_id": 1,
                   "site_images_uploaded": true,
                   "site_images": [
@@ -2392,7 +2516,7 @@
                   "assigned_operator_type": "operator",
                   "task_paused_at": "2026-08-14T10:00:00Z",
                   "odometer_photo_urls": [
-                    "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg"
+                    "string"
                   ],
                   "accepted_at": "2026-08-14T10:00:00Z",
                   "equipment_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
@@ -2404,8 +2528,8 @@
                     "extended_by_hours": 8,
                     "extension_cost": 99.5,
                     "initial_end": "initial_end",
-                    "extend_till": "extend_till",
-                    "requested_at": "2026-08-14T10:00:00Z",
+                    "extend_till": "2026-08-14T17:00:00Z",
+                    "requested_at": "2026-08-14T08:30:00Z",
                     "response_deadline": "string"
                   }
                 }
@@ -2484,12 +2608,12 @@
                 "equipment_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
                 "site_lat": 17.385044,
                 "site_lng": 78.486671,
-                "pickup_address": "Site 42, Hitech City, Hyderabad, Telangana",
-                "delivery_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                "pickup_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
+                "delivery_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "work_type": "Earthmoving & Excavation",
                 "type_of_load": "Clay / Red Soil",
                 "type_of_soil": "Clay / Red Soil",
-                "dump_location": "Site 42, Hitech City, Hyderabad, Telangana",
+                "dump_location": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "dump_fee": 500.0,
                 "odometer_start": 1450.5,
                 "odometer_end": 1450.5,
@@ -2499,10 +2623,10 @@
                 "discount": 500.0,
                 "coupon_code": "L2BPROMO500",
                 "coupon_discount": 500.0,
-                "cancellation_reason": "Customer cancelled before machine dispatch",
-                "sender_name": "Ramesh Kumar",
+                "cancellation_reason": "Customer requested schedule adjustment",
+                "sender_name": "Suresh Patel",
                 "sender_contact": "+919876543210",
-                "receiver_name": "Ramesh Kumar",
+                "receiver_name": "Suresh Patel",
                 "receiver_contact": "+919876543210",
                 "site_images_uploaded": true,
                 "site_images": [
@@ -2524,8 +2648,8 @@
                   "extended_by_hours": 8,
                   "extension_cost": 99.5,
                   "initial_end": "initial_end",
-                  "extend_till": "extend_till",
-                  "requested_at": "2026-08-14T10:00:00Z",
+                  "extend_till": "2026-08-14T17:00:00Z",
+                  "requested_at": "2026-08-14T08:30:00Z",
                   "response_deadline": "string"
                 },
                 "dump_lat": 17.385044,
@@ -2613,12 +2737,12 @@
                 "equipment_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
                 "site_lat": 17.385044,
                 "site_lng": 78.486671,
-                "pickup_address": "Site 42, Hitech City, Hyderabad, Telangana",
-                "delivery_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                "pickup_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
+                "delivery_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "work_type": "Earthmoving & Excavation",
                 "type_of_load": "Clay / Red Soil",
                 "type_of_soil": "Clay / Red Soil",
-                "dump_location": "Site 42, Hitech City, Hyderabad, Telangana",
+                "dump_location": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "dump_fee": 500.0,
                 "odometer_start": 1450.5,
                 "odometer_end": 1450.5,
@@ -2628,10 +2752,10 @@
                 "discount": 500.0,
                 "coupon_code": "L2BPROMO500",
                 "coupon_discount": 500.0,
-                "cancellation_reason": "Customer cancelled before machine dispatch",
-                "sender_name": "Ramesh Kumar",
+                "cancellation_reason": "Customer requested schedule adjustment",
+                "sender_name": "Suresh Patel",
                 "sender_contact": "+919876543210",
-                "receiver_name": "Ramesh Kumar",
+                "receiver_name": "Suresh Patel",
                 "receiver_contact": "+919876543210",
                 "site_images_uploaded": true,
                 "site_images": [
@@ -2653,8 +2777,8 @@
                   "extended_by_hours": 8,
                   "extension_cost": 99.5,
                   "initial_end": "initial_end",
-                  "extend_till": "extend_till",
-                  "requested_at": "2026-08-14T10:00:00Z",
+                  "extend_till": "2026-08-14T17:00:00Z",
+                  "requested_at": "2026-08-14T08:30:00Z",
                   "response_deadline": "string"
                 },
                 "dump_lat": 17.385044,
@@ -2747,12 +2871,12 @@
                 "equipment_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
                 "site_lat": 17.385044,
                 "site_lng": 78.486671,
-                "pickup_address": "Site 42, Hitech City, Hyderabad, Telangana",
-                "delivery_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                "pickup_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
+                "delivery_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "work_type": "Earthmoving & Excavation",
                 "type_of_load": "Clay / Red Soil",
                 "type_of_soil": "Clay / Red Soil",
-                "dump_location": "Site 42, Hitech City, Hyderabad, Telangana",
+                "dump_location": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "dump_fee": 500.0,
                 "odometer_start": 1450.5,
                 "odometer_end": 1450.5,
@@ -2762,10 +2886,10 @@
                 "discount": 500.0,
                 "coupon_code": "L2BPROMO500",
                 "coupon_discount": 500.0,
-                "cancellation_reason": "Customer cancelled before machine dispatch",
-                "sender_name": "Ramesh Kumar",
+                "cancellation_reason": "Customer requested schedule adjustment",
+                "sender_name": "Suresh Patel",
                 "sender_contact": "+919876543210",
-                "receiver_name": "Ramesh Kumar",
+                "receiver_name": "Suresh Patel",
                 "receiver_contact": "+919876543210",
                 "site_images_uploaded": true,
                 "site_images": [
@@ -2787,8 +2911,8 @@
                   "extended_by_hours": 8,
                   "extension_cost": 99.5,
                   "initial_end": "initial_end",
-                  "extend_till": "extend_till",
-                  "requested_at": "2026-08-14T10:00:00Z",
+                  "extend_till": "2026-08-14T17:00:00Z",
+                  "requested_at": "2026-08-14T08:30:00Z",
                   "response_deadline": "string"
                 },
                 "dump_lat": 17.385044,
@@ -2881,12 +3005,12 @@
                 "equipment_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
                 "site_lat": 17.385044,
                 "site_lng": 78.486671,
-                "pickup_address": "Site 42, Hitech City, Hyderabad, Telangana",
-                "delivery_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                "pickup_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
+                "delivery_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "work_type": "Earthmoving & Excavation",
                 "type_of_load": "Clay / Red Soil",
                 "type_of_soil": "Clay / Red Soil",
-                "dump_location": "Site 42, Hitech City, Hyderabad, Telangana",
+                "dump_location": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "dump_fee": 500.0,
                 "odometer_start": 1450.5,
                 "odometer_end": 1450.5,
@@ -2896,10 +3020,10 @@
                 "discount": 500.0,
                 "coupon_code": "L2BPROMO500",
                 "coupon_discount": 500.0,
-                "cancellation_reason": "Customer cancelled before machine dispatch",
-                "sender_name": "Ramesh Kumar",
+                "cancellation_reason": "Customer requested schedule adjustment",
+                "sender_name": "Suresh Patel",
                 "sender_contact": "+919876543210",
-                "receiver_name": "Ramesh Kumar",
+                "receiver_name": "Suresh Patel",
                 "receiver_contact": "+919876543210",
                 "site_images_uploaded": true,
                 "site_images": [
@@ -2921,8 +3045,8 @@
                   "extended_by_hours": 8,
                   "extension_cost": 99.5,
                   "initial_end": "initial_end",
-                  "extend_till": "extend_till",
-                  "requested_at": "2026-08-14T10:00:00Z",
+                  "extend_till": "2026-08-14T17:00:00Z",
+                  "requested_at": "2026-08-14T08:30:00Z",
                   "response_deadline": "string"
                 },
                 "dump_lat": 17.385044,
@@ -3001,7 +3125,7 @@
                   {
                     "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                     "name": "JCB 3DX Backhoe Loader",
-                    "capacity": "capacity",
+                    "capacity": "1.0 cu.m Bucket",
                     "registration_number": "KA01AB1234",
                     "primary_operator_id": "2026-08-14T10:00:00Z",
                     "primary_operator_name": "Ramesh Kumar",
@@ -3013,7 +3137,7 @@
                 "operators": [
                   {
                     "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
-                    "name": "JCB 3DX Backhoe Loader",
+                    "name": "Ramesh Kumar",
                     "is_eligible": true,
                     "assignee_type": "assignee_type",
                     "is_self": true,
@@ -3021,7 +3145,7 @@
                     "is_active": true,
                     "conflicting_booking_number": "string",
                     "completed_orders": 1,
-                    "photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg"
+                    "photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_proof.jpg"
                   }
                 ],
                 "all_operators_busy": true,
@@ -3103,12 +3227,12 @@
                 "equipment_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
                 "site_lat": 17.385044,
                 "site_lng": 78.486671,
-                "pickup_address": "Site 42, Hitech City, Hyderabad, Telangana",
-                "delivery_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                "pickup_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
+                "delivery_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "work_type": "Earthmoving & Excavation",
                 "type_of_load": "Clay / Red Soil",
                 "type_of_soil": "Clay / Red Soil",
-                "dump_location": "Site 42, Hitech City, Hyderabad, Telangana",
+                "dump_location": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "dump_fee": 500.0,
                 "odometer_start": 1450.5,
                 "odometer_end": 1450.5,
@@ -3118,10 +3242,10 @@
                 "discount": 500.0,
                 "coupon_code": "L2BPROMO500",
                 "coupon_discount": 500.0,
-                "cancellation_reason": "Customer cancelled before machine dispatch",
-                "sender_name": "Ramesh Kumar",
+                "cancellation_reason": "Customer requested schedule adjustment",
+                "sender_name": "Suresh Patel",
                 "sender_contact": "+919876543210",
-                "receiver_name": "Ramesh Kumar",
+                "receiver_name": "Suresh Patel",
                 "receiver_contact": "+919876543210",
                 "site_images_uploaded": true,
                 "site_images": [
@@ -3143,8 +3267,8 @@
                   "extended_by_hours": 8,
                   "extension_cost": 99.5,
                   "initial_end": "initial_end",
-                  "extend_till": "extend_till",
-                  "requested_at": "2026-08-14T10:00:00Z",
+                  "extend_till": "2026-08-14T17:00:00Z",
+                  "requested_at": "2026-08-14T08:30:00Z",
                   "response_deadline": "string"
                 },
                 "dump_lat": 17.385044,
@@ -3233,12 +3357,6 @@
             }
           },
           {
-            "statusCode": "204",
-            "description": "No route to draw \u2014 booking isn't tipper-classified or lacks coordinates",
-            "contentType": "application/json",
-            "example": null
-          },
-          {
             "statusCode": "422",
             "description": "Validation Error",
             "contentType": "application/json",
@@ -3294,8 +3412,8 @@
                 "booking_number": "BK-2026-0814-99",
                 "sku_name": "JCB 3DX Backhoe Loader",
                 "machine_registration_number": "KA01AB1234",
-                "operator_name": "2026-08-14T10:00:00Z",
-                "site_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                "operator_name": "Ramesh Kumar",
+                "site_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "payment_mode": "payment_mode",
                 "actual_start": "2026-08-14T09:00:00Z",
                 "actual_end": "2026-08-14T17:00:00Z",
@@ -3437,12 +3555,12 @@
                 "equipment_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
                 "site_lat": 17.385044,
                 "site_lng": 78.486671,
-                "pickup_address": "Site 42, Hitech City, Hyderabad, Telangana",
-                "delivery_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                "pickup_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
+                "delivery_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "work_type": "Earthmoving & Excavation",
                 "type_of_load": "Clay / Red Soil",
                 "type_of_soil": "Clay / Red Soil",
-                "dump_location": "Site 42, Hitech City, Hyderabad, Telangana",
+                "dump_location": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "dump_fee": 500.0,
                 "odometer_start": 1450.5,
                 "odometer_end": 1450.5,
@@ -3452,10 +3570,10 @@
                 "discount": 500.0,
                 "coupon_code": "L2BPROMO500",
                 "coupon_discount": 500.0,
-                "cancellation_reason": "Customer cancelled before machine dispatch",
-                "sender_name": "Ramesh Kumar",
+                "cancellation_reason": "Customer requested schedule adjustment",
+                "sender_name": "Suresh Patel",
                 "sender_contact": "+919876543210",
-                "receiver_name": "Ramesh Kumar",
+                "receiver_name": "Suresh Patel",
                 "receiver_contact": "+919876543210",
                 "site_images_uploaded": true,
                 "site_images": [
@@ -3477,8 +3595,8 @@
                   "extended_by_hours": 8,
                   "extension_cost": 99.5,
                   "initial_end": "initial_end",
-                  "extend_till": "extend_till",
-                  "requested_at": "2026-08-14T10:00:00Z",
+                  "extend_till": "2026-08-14T17:00:00Z",
+                  "requested_at": "2026-08-14T08:30:00Z",
                   "response_deadline": "string"
                 },
                 "dump_lat": 17.385044,
@@ -3571,12 +3689,12 @@
                 "equipment_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
                 "site_lat": 17.385044,
                 "site_lng": 78.486671,
-                "pickup_address": "Site 42, Hitech City, Hyderabad, Telangana",
-                "delivery_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                "pickup_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
+                "delivery_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "work_type": "Earthmoving & Excavation",
                 "type_of_load": "Clay / Red Soil",
                 "type_of_soil": "Clay / Red Soil",
-                "dump_location": "Site 42, Hitech City, Hyderabad, Telangana",
+                "dump_location": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "dump_fee": 500.0,
                 "odometer_start": 1450.5,
                 "odometer_end": 1450.5,
@@ -3586,10 +3704,10 @@
                 "discount": 500.0,
                 "coupon_code": "L2BPROMO500",
                 "coupon_discount": 500.0,
-                "cancellation_reason": "Customer cancelled before machine dispatch",
-                "sender_name": "Ramesh Kumar",
+                "cancellation_reason": "Customer requested schedule adjustment",
+                "sender_name": "Suresh Patel",
                 "sender_contact": "+919876543210",
-                "receiver_name": "Ramesh Kumar",
+                "receiver_name": "Suresh Patel",
                 "receiver_contact": "+919876543210",
                 "site_images_uploaded": true,
                 "site_images": [
@@ -3611,8 +3729,8 @@
                   "extended_by_hours": 8,
                   "extension_cost": 99.5,
                   "initial_end": "initial_end",
-                  "extend_till": "extend_till",
-                  "requested_at": "2026-08-14T10:00:00Z",
+                  "extend_till": "2026-08-14T17:00:00Z",
+                  "requested_at": "2026-08-14T08:30:00Z",
                   "response_deadline": "string"
                 },
                 "dump_lat": 17.385044,
@@ -3690,8 +3808,8 @@
             "contentType": "application/json",
             "example": {
               "period": "period",
-              "period_start": "2026-08-14T10:00:00Z",
-              "period_end": "2026-08-14T10:00:00Z",
+              "period_start": "2026-08-14T08:30:00Z",
+              "period_end": "2026-08-14T08:30:00Z",
               "completed": {
                 "value": 99.5,
                 "previous": 99.5,
@@ -3710,7 +3828,7 @@
                 "change_pct": 99.5,
                 "direction": "direction"
               },
-              "wallet_balance": 99.5,
+              "wallet_balance": 15000.0,
               "wallet_lifetime_credited": 99.5,
               "worked_hours": {
                 "value": 99.5,
@@ -3786,7 +3904,7 @@
             "contentType": "application/json",
             "example": {
               "success": true,
-              "year": 1,
+              "year": 2023,
               "month": 1,
               "selected_day": 1,
               "day_markers": {
@@ -3856,9 +3974,9 @@
                 {
                   "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                   "registration_number": "KA01AB1234",
-                  "machine_type": "machine_type",
+                  "machine_type": "Backhoe Loader",
                   "machine_name": "JCB 3DX Backhoe Loader",
-                  "capacity": "capacity",
+                  "capacity": "1.0 cu.m Bucket",
                   "priority_rank": 1,
                   "is_active": true
                 }
@@ -3919,7 +4037,7 @@
                   "scheduled_end": "2026-08-14T17:00:00Z",
                   "total_amount": 15000.0,
                   "created_at": "2026-08-14T08:30:00Z",
-                  "site_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                  "site_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                   "site_lat": 17.385044,
                   "site_lng": 78.486671,
                   "dump_lat": 17.385044,
@@ -3932,8 +4050,8 @@
                   "work_type": "Earthmoving & Excavation",
                   "type_of_soil": "Clay / Red Soil",
                   "type_of_load": "Clay / Red Soil",
-                  "pickup_address": "Site 42, Hitech City, Hyderabad, Telangana",
-                  "delivery_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                  "pickup_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
+                  "delivery_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                   "sku_id": 1,
                   "site_images_uploaded": true,
                   "site_images": [
@@ -3948,7 +4066,7 @@
                   "assigned_operator_type": "operator",
                   "task_paused_at": "2026-08-14T10:00:00Z",
                   "odometer_photo_urls": [
-                    "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg"
+                    "string"
                   ],
                   "accepted_at": "2026-08-14T10:00:00Z",
                   "equipment_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
@@ -3960,8 +4078,8 @@
                     "extended_by_hours": 8,
                     "extension_cost": 99.5,
                     "initial_end": "initial_end",
-                    "extend_till": "extend_till",
-                    "requested_at": "2026-08-14T10:00:00Z",
+                    "extend_till": "2026-08-14T17:00:00Z",
+                    "requested_at": "2026-08-14T08:30:00Z",
                     "response_deadline": "string"
                   }
                 }
@@ -4021,7 +4139,7 @@
           "contentType": "application/json",
           "example": {
             "otp": "1234",
-            "odometer_photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/odometer_proof.jpg",
+            "odometer_photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_proof.jpg",
             "manual_reading": 1450.5,
             "reason": "Machine undergoing maintenance at workshop",
             "reason_note": "Heavy rain and waterlogging on site",
@@ -4096,7 +4214,7 @@
           "contentType": "application/json",
           "example": {
             "otp": "1234",
-            "odometer_photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/odometer_proof.jpg",
+            "odometer_photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_proof.jpg",
             "manual_reading": 1450.5,
             "reason": "Machine undergoing maintenance at workshop",
             "reason_note": "Heavy rain and waterlogging on site",
@@ -4171,7 +4289,7 @@
           "contentType": "application/json",
           "example": {
             "otp": "1234",
-            "odometer_photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/odometer_proof.jpg",
+            "odometer_photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_proof.jpg",
             "manual_reading": 1450.5,
             "reason": "Machine undergoing maintenance at workshop",
             "reason_note": "Heavy rain and waterlogging on site",
@@ -4246,7 +4364,7 @@
           "contentType": "application/json",
           "example": {
             "otp": "1234",
-            "odometer_photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/odometer_proof.jpg",
+            "odometer_photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_proof.jpg",
             "manual_reading": 1450.5,
             "reason": "Machine undergoing maintenance at workshop",
             "reason_note": "Heavy rain and waterlogging on site",
@@ -4384,7 +4502,7 @@
                   "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                   "action_type": "action_type",
                   "recorded_at": "2026-08-14T08:30:00Z",
-                  "odometer_photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/odometer_proof.jpg",
+                  "odometer_photo_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample_proof.jpg",
                   "manual_reading": 1450.5,
                   "reason": "Machine undergoing maintenance at workshop",
                   "reason_note": "Heavy rain and waterlogging on site"
@@ -4466,7 +4584,7 @@
                   "scheduled_end": "2026-08-14T17:00:00Z",
                   "total_amount": 15000.0,
                   "created_at": "2026-08-14T08:30:00Z",
-                  "site_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                  "site_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                   "site_lat": 17.385044,
                   "site_lng": 78.486671,
                   "dump_lat": 17.385044,
@@ -4479,8 +4597,8 @@
                   "work_type": "Earthmoving & Excavation",
                   "type_of_soil": "Clay / Red Soil",
                   "type_of_load": "Clay / Red Soil",
-                  "pickup_address": "Site 42, Hitech City, Hyderabad, Telangana",
-                  "delivery_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                  "pickup_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
+                  "delivery_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                   "sku_id": 1,
                   "site_images_uploaded": true,
                   "site_images": [
@@ -4495,7 +4613,7 @@
                   "assigned_operator_type": "operator",
                   "task_paused_at": "2026-08-14T10:00:00Z",
                   "odometer_photo_urls": [
-                    "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg"
+                    "string"
                   ],
                   "accepted_at": "2026-08-14T10:00:00Z",
                   "equipment_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
@@ -4507,8 +4625,8 @@
                     "extended_by_hours": 8,
                     "extension_cost": 99.5,
                     "initial_end": "initial_end",
-                    "extend_till": "extend_till",
-                    "requested_at": "2026-08-14T10:00:00Z",
+                    "extend_till": "2026-08-14T17:00:00Z",
+                    "requested_at": "2026-08-14T08:30:00Z",
                     "response_deadline": "string"
                   }
                 }
@@ -4587,12 +4705,12 @@
                 "equipment_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
                 "site_lat": 17.385044,
                 "site_lng": 78.486671,
-                "pickup_address": "Site 42, Hitech City, Hyderabad, Telangana",
-                "delivery_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                "pickup_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
+                "delivery_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "work_type": "Earthmoving & Excavation",
                 "type_of_load": "Clay / Red Soil",
                 "type_of_soil": "Clay / Red Soil",
-                "dump_location": "Site 42, Hitech City, Hyderabad, Telangana",
+                "dump_location": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "dump_fee": 500.0,
                 "odometer_start": 1450.5,
                 "odometer_end": 1450.5,
@@ -4602,10 +4720,10 @@
                 "discount": 500.0,
                 "coupon_code": "L2BPROMO500",
                 "coupon_discount": 500.0,
-                "cancellation_reason": "Customer cancelled before machine dispatch",
-                "sender_name": "Ramesh Kumar",
+                "cancellation_reason": "Customer requested schedule adjustment",
+                "sender_name": "Suresh Patel",
                 "sender_contact": "+919876543210",
-                "receiver_name": "Ramesh Kumar",
+                "receiver_name": "Suresh Patel",
                 "receiver_contact": "+919876543210",
                 "site_images_uploaded": true,
                 "site_images": [
@@ -4627,8 +4745,8 @@
                   "extended_by_hours": 8,
                   "extension_cost": 99.5,
                   "initial_end": "initial_end",
-                  "extend_till": "extend_till",
-                  "requested_at": "2026-08-14T10:00:00Z",
+                  "extend_till": "2026-08-14T17:00:00Z",
+                  "requested_at": "2026-08-14T08:30:00Z",
                   "response_deadline": "string"
                 },
                 "dump_lat": 17.385044,
@@ -4721,12 +4839,12 @@
                 "equipment_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
                 "site_lat": 17.385044,
                 "site_lng": 78.486671,
-                "pickup_address": "Site 42, Hitech City, Hyderabad, Telangana",
-                "delivery_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                "pickup_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
+                "delivery_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "work_type": "Earthmoving & Excavation",
                 "type_of_load": "Clay / Red Soil",
                 "type_of_soil": "Clay / Red Soil",
-                "dump_location": "Site 42, Hitech City, Hyderabad, Telangana",
+                "dump_location": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "dump_fee": 500.0,
                 "odometer_start": 1450.5,
                 "odometer_end": 1450.5,
@@ -4736,10 +4854,10 @@
                 "discount": 500.0,
                 "coupon_code": "L2BPROMO500",
                 "coupon_discount": 500.0,
-                "cancellation_reason": "Customer cancelled before machine dispatch",
-                "sender_name": "Ramesh Kumar",
+                "cancellation_reason": "Customer requested schedule adjustment",
+                "sender_name": "Suresh Patel",
                 "sender_contact": "+919876543210",
-                "receiver_name": "Ramesh Kumar",
+                "receiver_name": "Suresh Patel",
                 "receiver_contact": "+919876543210",
                 "site_images_uploaded": true,
                 "site_images": [
@@ -4761,8 +4879,8 @@
                   "extended_by_hours": 8,
                   "extension_cost": 99.5,
                   "initial_end": "initial_end",
-                  "extend_till": "extend_till",
-                  "requested_at": "2026-08-14T10:00:00Z",
+                  "extend_till": "2026-08-14T17:00:00Z",
+                  "requested_at": "2026-08-14T08:30:00Z",
                   "response_deadline": "string"
                 },
                 "dump_lat": 17.385044,
@@ -4860,7 +4978,7 @@
                   "scheduled_end": "2026-08-14T17:00:00Z",
                   "total_amount": 15000.0,
                   "created_at": "2026-08-14T08:30:00Z",
-                  "site_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                  "site_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                   "site_lat": 17.385044,
                   "site_lng": 78.486671,
                   "dump_lat": 17.385044,
@@ -4873,8 +4991,8 @@
                   "work_type": "Earthmoving & Excavation",
                   "type_of_soil": "Clay / Red Soil",
                   "type_of_load": "Clay / Red Soil",
-                  "pickup_address": "Site 42, Hitech City, Hyderabad, Telangana",
-                  "delivery_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                  "pickup_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
+                  "delivery_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                   "sku_id": 1,
                   "site_images_uploaded": true,
                   "site_images": [
@@ -4889,7 +5007,7 @@
                   "assigned_operator_type": "operator",
                   "task_paused_at": "2026-08-14T10:00:00Z",
                   "odometer_photo_urls": [
-                    "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg"
+                    "string"
                   ],
                   "accepted_at": "2026-08-14T10:00:00Z",
                   "equipment_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
@@ -4901,8 +5019,8 @@
                     "extended_by_hours": 8,
                     "extension_cost": 99.5,
                     "initial_end": "initial_end",
-                    "extend_till": "extend_till",
-                    "requested_at": "2026-08-14T10:00:00Z",
+                    "extend_till": "2026-08-14T17:00:00Z",
+                    "requested_at": "2026-08-14T08:30:00Z",
                     "response_deadline": "string"
                   }
                 }
@@ -4981,12 +5099,12 @@
                 "equipment_id": "mch_4f89b21a-7c93-4a1e-8e56-112233445566",
                 "site_lat": 17.385044,
                 "site_lng": 78.486671,
-                "pickup_address": "Site 42, Hitech City, Hyderabad, Telangana",
-                "delivery_address": "Site 42, Hitech City, Hyderabad, Telangana",
+                "pickup_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
+                "delivery_address": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "work_type": "Earthmoving & Excavation",
                 "type_of_load": "Clay / Red Soil",
                 "type_of_soil": "Clay / Red Soil",
-                "dump_location": "Site 42, Hitech City, Hyderabad, Telangana",
+                "dump_location": "Plot 42, Hitech City Phase 2, Madhapur, Hyderabad, Telangana 500081",
                 "dump_fee": 500.0,
                 "odometer_start": 1450.5,
                 "odometer_end": 1450.5,
@@ -4996,10 +5114,10 @@
                 "discount": 500.0,
                 "coupon_code": "L2BPROMO500",
                 "coupon_discount": 500.0,
-                "cancellation_reason": "Customer cancelled before machine dispatch",
-                "sender_name": "Ramesh Kumar",
+                "cancellation_reason": "Customer requested schedule adjustment",
+                "sender_name": "Suresh Patel",
                 "sender_contact": "+919876543210",
-                "receiver_name": "Ramesh Kumar",
+                "receiver_name": "Suresh Patel",
                 "receiver_contact": "+919876543210",
                 "site_images_uploaded": true,
                 "site_images": [
@@ -5021,8 +5139,8 @@
                   "extended_by_hours": 8,
                   "extension_cost": 99.5,
                   "initial_end": "initial_end",
-                  "extend_till": "extend_till",
-                  "requested_at": "2026-08-14T10:00:00Z",
+                  "extend_till": "2026-08-14T17:00:00Z",
+                  "requested_at": "2026-08-14T08:30:00Z",
                   "response_deadline": "string"
                 },
                 "dump_lat": 17.385044,
@@ -5154,12 +5272,12 @@
                 "change_pct": 99.5,
                 "direction": "direction"
               },
-              "period_start": "2026-08-14T10:00:00Z",
-              "period_end": "2026-08-14T10:00:00Z",
+              "period_start": "2026-08-14T08:30:00Z",
+              "period_end": "2026-08-14T08:30:00Z",
               "campaign": {
                 "campaign_id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                 "campaign_code": "L2B2026",
-                "campaign_name": "JCB 3DX Backhoe Loader",
+                "campaign_name": "campaign_name",
                 "title": "title",
                 "subtitle": "subtitle",
                 "metric": "metric",
@@ -5176,7 +5294,7 @@
                 {
                   "campaign_id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                   "campaign_code": "L2B2026",
-                  "campaign_name": "JCB 3DX Backhoe Loader",
+                  "campaign_name": "campaign_name",
                   "title": "title",
                   "subtitle": "subtitle",
                   "metric": "metric",
@@ -5428,7 +5546,7 @@
           "example": {
             "amount": 15000.0,
             "idempotency_key": "a71f201e-e438-4c18-9e00-bf3860b240dc",
-            "return_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg"
+            "return_url": "string"
           }
         },
         "responses": [
@@ -5445,7 +5563,7 @@
               "gateway_order_id": "2026-08-14T10:00:00Z",
               "credited_amount": 99.5,
               "failure_reason": "string",
-              "payment_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg"
+              "payment_url": "string"
             }
           },
           {
@@ -5735,7 +5853,7 @@
             "example": [
               {
                 "campaign_code": "L2B2026",
-                "campaign_name": "JCB 3DX Backhoe Loader",
+                "campaign_name": "campaign_name",
                 "metric": "metric",
                 "period_key": "string",
                 "metric_value": 99.5,
@@ -5770,7 +5888,7 @@
             "contentType": "application/json",
             "example": {
               "role": "rental_vendor",
-              "support_phone": "support_phone",
+              "support_phone": "+919876543210",
               "working_hours_label": "working_hours_label",
               "is_live_chat_available": true,
               "concerns": [
@@ -5903,7 +6021,7 @@
             "description": "Successful Response",
             "contentType": "application/json",
             "example": {
-              "jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c3JfMTIzIn0...",
+              "jwt": "jwt",
               "external_id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
               "expires_in_seconds": 1,
               "is_live_chat_available": true
@@ -6227,12 +6345,6 @@
           }
         },
         "responses": [
-          {
-            "statusCode": "204",
-            "description": "Successful Response",
-            "contentType": "application/json",
-            "example": null
-          },
           {
             "statusCode": "422",
             "description": "Validation Error",
@@ -6607,7 +6719,7 @@
         "requestBody": {
           "contentType": "application/json",
           "example": {
-            "fcm_token": "fcm_e1a2b3c4d5e6f7a8b9c0_device_token"
+            "fcm_token": "fcm_d7a8b9c0_e1f2a3b4c5d6e7f8_token"
           }
         },
         "responses": [
@@ -6672,14 +6784,14 @@
                 "subcategories": [
                   {
                     "id": 1,
-                    "name": "JCB 3DX Backhoe Loader",
+                    "name": "Ramesh Kumar",
                     "category_name": "2026-08-14T10:00:00Z",
                     "skus": [
                       {
-                        "id": null,
-                        "name": null,
-                        "slug": null,
-                        "capacity": null
+                        "id": 1,
+                        "name": "Ramesh Kumar",
+                        "slug": "slug",
+                        "capacity": "1.0 cu.m Bucket"
                       }
                     ]
                   }
@@ -6712,32 +6824,32 @@
                 "subcategories": [
                   {
                     "id": 1,
-                    "name": "JCB 3DX Backhoe Loader",
+                    "name": "Ramesh Kumar",
                     "category_name": "2026-08-14T10:00:00Z",
                     "skus": [
                       {
-                        "id": null,
-                        "name": null,
-                        "slug": null,
-                        "capacity": null
+                        "id": 1,
+                        "name": "Ramesh Kumar",
+                        "slug": "slug",
+                        "capacity": "1.0 cu.m Bucket"
                       }
                     ],
                     "read_before_booking": [
                       {
-                        "id": null,
-                        "point_text": null
+                        "id": 1,
+                        "point_text": "point_text"
                       }
                     ],
                     "applicable_soil_types": [
                       {
-                        "id": null,
-                        "name": null
+                        "id": 1,
+                        "name": "Ramesh Kumar"
                       }
                     ],
                     "applicable_job_categories": [
                       {
-                        "id": null,
-                        "name": null
+                        "id": 1,
+                        "name": "Ramesh Kumar"
                       }
                     ]
                   }
@@ -6745,13 +6857,13 @@
                 "all_soil_types": [
                   {
                     "id": 1,
-                    "name": "JCB 3DX Backhoe Loader"
+                    "name": "Ramesh Kumar"
                   }
                 ],
                 "all_job_categories": [
                   {
                     "id": 1,
-                    "name": "JCB 3DX Backhoe Loader"
+                    "name": "Ramesh Kumar"
                   }
                 ]
               }
@@ -6923,8 +7035,7 @@
                       "key": "key",
                       "title": "title",
                       "bullets": [
-                        "item_1",
-                        "item_2"
+                        "string"
                       ]
                     }
                   ]
@@ -6995,7 +7106,7 @@
               "share_message": "share_message",
               "reward_amount": "reward_amount",
               "currency": "currency",
-              "terms_url": "https://s3.ap-south-1.amazonaws.com/l2b-assets/sample.jpg",
+              "terms_url": "string",
               "steps": [
                 {
                   "step_number": 1,
@@ -7283,7 +7394,7 @@
         "requestBody": {
           "contentType": "application/json",
           "example": {
-            "name": "JCB 3DX Backhoe Loader",
+            "name": "Ramesh Kumar",
             "phone": "+919876543210",
             "email": "partner@link2build.com",
             "preferred_language": "preferred_language"
@@ -7410,7 +7521,7 @@
               "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c3JfMTIzIn0.jwt_refresh_signature",
               "profile": {
                 "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
-                "name": "JCB 3DX Backhoe Loader",
+                "name": "Ramesh Kumar",
                 "phone": "+919876543210",
                 "email": "partner@link2build.com",
                 "role": "rental_vendor"
@@ -7462,7 +7573,7 @@
               "success": true,
               "data": {
                 "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
-                "name": "JCB 3DX Backhoe Loader",
+                "name": "Ramesh Kumar",
                 "phone": "+919876543210",
                 "email": "partner@link2build.com",
                 "role": "rental_vendor"
@@ -7492,11 +7603,11 @@
               "data": [
                 {
                   "id": 1,
-                  "name": "JCB 3DX Backhoe Loader",
-                  "capacity": "capacity",
+                  "name": "Ramesh Kumar",
+                  "capacity": "1.0 cu.m Bucket",
                   "base_price": 99.5,
                   "price_unit": "string",
-                  "pricing_unit": "string",
+                  "pricing_unit": "U45200TG2020PTC123456",
                   "min_booking_hours": 8,
                   "can_extend": true,
                   "sub_category": "2026-08-14T10:00:00Z",
@@ -7600,7 +7711,7 @@
           "example": {
             "doc_type": "doc_type",
             "status": "confirmed",
-            "rejection_reason": "string"
+            "rejection_reason": "Uploaded document is blurred and registration number is unreadable"
           }
         },
         "responses": [
@@ -7659,7 +7770,11 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "Review decision recorded successfully",
+              "status": "approved"
+            }
           },
           {
             "statusCode": "422",
@@ -7715,7 +7830,11 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "Review decision recorded successfully",
+              "status": "rejected"
+            }
           },
           {
             "statusCode": "422",
@@ -7896,7 +8015,11 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "Review decision recorded successfully",
+              "status": "approved"
+            }
           },
           {
             "statusCode": "422",
@@ -7951,7 +8074,7 @@
         "requestBody": {
           "contentType": "application/json",
           "example": {
-            "rejection_reason": "rejection_reason"
+            "rejection_reason": "Uploaded document is blurred and registration number is unreadable"
           }
         },
         "responses": [
@@ -7959,7 +8082,11 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "Review decision recorded successfully",
+              "status": "rejected"
+            }
           },
           {
             "statusCode": "422",
@@ -8017,7 +8144,11 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "Review decision recorded successfully",
+              "status": "approved"
+            }
           },
           {
             "statusCode": "422",
@@ -8072,7 +8203,7 @@
         "requestBody": {
           "contentType": "application/json",
           "example": {
-            "rejection_reason": "rejection_reason"
+            "rejection_reason": "Uploaded document is blurred and registration number is unreadable"
           }
         },
         "responses": [
@@ -8080,7 +8211,11 @@
             "statusCode": "200",
             "description": "Successful Response",
             "contentType": "application/json",
-            "example": "value"
+            "example": {
+              "success": true,
+              "message": "Review decision recorded successfully",
+              "status": "rejected"
+            }
           },
           {
             "statusCode": "422",
@@ -8431,12 +8566,12 @@
                 "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                 "code": "L2B2026",
                 "version": 1,
-                "name": "JCB 3DX Backhoe Loader",
+                "name": "Ramesh Kumar",
                 "kind": "kind",
                 "component_code": "L2B2026",
                 "rule_group": "string",
                 "selection_strategy": "2026-08-14T10:00:00Z",
-                "priority": 1,
+                "priority": "primary",
                 "calc_method": "calc_method",
                 "base_expr": "base_expr",
                 "rate_value": "2026-08-14T10:00:00Z",
@@ -8511,12 +8646,12 @@
           "contentType": "application/json",
           "example": {
             "code": "L2B2026",
-            "name": "JCB 3DX Backhoe Loader",
+            "name": "Ramesh Kumar",
             "kind": "kind",
             "component_code": "L2B2026",
             "calc_method": "calc_method",
             "base_expr": "base_expr",
-            "priority": 1,
+            "priority": "primary",
             "rule_group": "string",
             "selection_strategy": "2026-08-14T10:00:00Z",
             "rate_value": 99.5,
@@ -8559,12 +8694,12 @@
               "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
               "code": "L2B2026",
               "version": 1,
-              "name": "JCB 3DX Backhoe Loader",
+              "name": "Ramesh Kumar",
               "kind": "kind",
               "component_code": "L2B2026",
               "rule_group": "string",
               "selection_strategy": "2026-08-14T10:00:00Z",
-              "priority": 1,
+              "priority": "primary",
               "calc_method": "calc_method",
               "base_expr": "base_expr",
               "rate_value": "2026-08-14T10:00:00Z",
@@ -8652,12 +8787,12 @@
               "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
               "code": "L2B2026",
               "version": 1,
-              "name": "JCB 3DX Backhoe Loader",
+              "name": "Ramesh Kumar",
               "kind": "kind",
               "component_code": "L2B2026",
               "rule_group": "string",
               "selection_strategy": "2026-08-14T10:00:00Z",
-              "priority": 1,
+              "priority": "primary",
               "calc_method": "calc_method",
               "base_expr": "base_expr",
               "rate_value": "2026-08-14T10:00:00Z",
@@ -8739,12 +8874,12 @@
           "contentType": "application/json",
           "example": {
             "code": "L2B2026",
-            "name": "JCB 3DX Backhoe Loader",
+            "name": "Ramesh Kumar",
             "kind": "kind",
             "component_code": "L2B2026",
             "calc_method": "calc_method",
             "base_expr": "base_expr",
-            "priority": 1,
+            "priority": "primary",
             "rule_group": "string",
             "selection_strategy": "2026-08-14T10:00:00Z",
             "rate_value": 99.5,
@@ -8787,12 +8922,12 @@
               "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
               "code": "L2B2026",
               "version": 1,
-              "name": "JCB 3DX Backhoe Loader",
+              "name": "Ramesh Kumar",
               "kind": "kind",
               "component_code": "L2B2026",
               "rule_group": "string",
               "selection_strategy": "2026-08-14T10:00:00Z",
-              "priority": 1,
+              "priority": "primary",
               "calc_method": "calc_method",
               "base_expr": "base_expr",
               "rate_value": "2026-08-14T10:00:00Z",
@@ -8872,12 +9007,6 @@
         ],
         "requestBody": null,
         "responses": [
-          {
-            "statusCode": "204",
-            "description": "Successful Response",
-            "contentType": "application/json",
-            "example": null
-          },
           {
             "statusCode": "422",
             "description": "Validation Error",
