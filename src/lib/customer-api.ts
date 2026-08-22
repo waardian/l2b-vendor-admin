@@ -95,4 +95,73 @@ export const customerApi = {
       method: "POST",
       body: { reason },
     }).then((r) => r.data),
+
+  listAddresses: () =>
+    request<{ data: import("./customer-types").UserAddress[] }>("/addresses").then((r) => r.data),
+
+  createAddress: (payload: import("./customer-types").UserAddressInput) =>
+    request<{ data: import("./customer-types").UserAddress }>("/addresses", {
+      method: "POST",
+      body: payload,
+    }).then((r) => r.data),
+
+  updateAddress: (addressId: string, payload: import("./customer-types").UserAddressInput) =>
+    request<{ data: import("./customer-types").UserAddress }>(`/addresses/${addressId}`, {
+      method: "PUT",
+      body: payload,
+    }).then((r) => r.data),
+
+  deleteAddress: (addressId: string) =>
+    request<{ success: boolean }>(`/addresses/${addressId}`, {
+      method: "DELETE",
+    }),
+
+  setDefaultAddress: (addressId: string) =>
+    request<{ data: import("./customer-types").UserAddress }>(`/addresses/${addressId}/default`, {
+      method: "PATCH",
+    }).then((r) => r.data),
+
+  listMaterialOrders: () =>
+    request<{ data: import("./customer-types").MaterialOrder[] }>("/material-orders").then((r) => r.data),
+
+  // Priced by the server, never in the browser: the checkout used to work its
+  // own tax out and showed a total that was never charged.
+  quoteMaterialOrder: (payload: {
+    delivery_mode?: string;
+    items: import("./customer-types").MaterialOrderItemInput[];
+  }) =>
+    request<{ data: import("./customer-types").MaterialOrderQuote }>(
+      "/material-orders/quote",
+      { method: "POST", body: payload }
+    ).then((r) => r.data),
+
+  placeMaterialOrder: (payload: import("./customer-types").PlaceMaterialOrderPayload) =>
+    request<{ data: import("./customer-types").MaterialOrder }>("/material-orders", {
+      method: "POST",
+      body: payload,
+    }).then((r) => r.data),
+
+  getMaterialOrder: (orderId: string) =>
+    request<{ data: import("./customer-types").MaterialOrder }>(`/material-orders/${orderId}`).then((r) => r.data),
+
+  cancelMaterialOrder: (orderId: string, reason?: string) =>
+    request<{ data: import("./customer-types").MaterialOrder }>(`/material-orders/${orderId}/cancel`, {
+      method: "POST",
+      body: { reason },
+    }).then((r) => r.data),
+
+  listMaterialCategories: () =>
+    request<{ data: import("./customer-types").MaterialCategory[] }>("/material-catalog/categories").then((r) => r.data),
+
+  listMaterialProducts: (categoryId?: string) =>
+    request<{ data: import("./customer-types").MaterialProduct[] }>(
+      `/material-catalog/products${categoryId ? `?category_id=${categoryId}` : ""}`
+    ).then((r) => r.data),
+
+  getDeliveryModes: () =>
+    request<{ data: { modes: import("./customer-types").DeliveryMode[] } }>("/delivery-modes").then(
+      (r) => r.data.modes
+    ),
 };
+
+

@@ -33,6 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const getPageTitle = () => {
     if (pathname?.startsWith("/vendors")) return "Vendor Management";
     if (pathname?.startsWith("/operators")) return "Operator Management";
+    if (pathname?.startsWith("/warehouses")) return "Warehouse Locations";
     if (pathname?.startsWith("/fee-rules")) return "Deduction Rules Engine";
     if (pathname?.startsWith("/campaigns")) return "Incentive Campaigns";
     if (pathname?.startsWith("/legacy")) return "Legacy Endpoint Console";

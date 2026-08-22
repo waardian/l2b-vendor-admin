@@ -15,6 +15,26 @@ export interface LoginResponse {
   refresh_token?: string | null;
 }
 
+export interface VendorWarehouse {
+  id: string;
+  vendor_id: string;
+  latitude: number;
+  longitude: number;
+  label: string | null;
+  address: string | null;
+  /** device | map_pin | admin — who placed the pin, and how. */
+  source: string;
+  updated_by_user_id: string | null;
+  updated_at: string | null;
+}
+
+export interface VendorWarehouseWrite {
+  latitude: number;
+  longitude: number;
+  address?: string | null;
+  label?: string | null;
+}
+
 export interface VendorListItem {
   user_id: string;
   name: string | null;
@@ -29,6 +49,8 @@ export interface VendorListItem {
   has_skills: boolean;
   onboarding_step: string;
   vendor_code: string | null;
+  /** Null until the vendor or an admin has placed one. */
+  warehouse?: VendorWarehouse | null;
 }
 
 export interface OperatorListItem {
@@ -185,6 +207,7 @@ export interface VendorDetail {
   skills: SkillDetail[];
   kyc: KycDetail | null;
   company_kyc: KycDetail | null;
+  warehouse?: VendorWarehouse | null;
   documents: DocumentSummary[];
   /** Absent on older records and on users who never went through Digio KYC. */
   digio_verifications?: DigioVerification[];
@@ -307,6 +330,7 @@ export interface FeeRule {
   round_to: string;
   transfer_to_payee_role: string | null;
   discountable: boolean;
+  is_tax_deduction: boolean;
   payee_types: string[];
   source_types: string[];
   payment_modes: string[];
@@ -333,6 +357,7 @@ export interface FeeRuleWrite {
   round_mode?: string;
   round_to?: string;
   discountable?: boolean;
+  is_tax_deduction?: boolean;
   payee_types?: string[];
   source_types?: string[];
   payment_modes?: string[];
@@ -369,6 +394,9 @@ export interface CampaignVocabulary {
   period_anchors: string[];
   payout_modes: string[];
   operators: string[];
+  payee_types: string[];
+  source_types: string[];
+  payment_modes: string[];
   audience_fields: RuleField[];
   metric_filter_fields: RuleField[];
 }
@@ -395,6 +423,9 @@ export interface CampaignWrite {
   tiers: CampaignTierWrite[];
   audience?: ConditionNode;
   metric_filter?: ConditionNode;
+  payee_types?: string[];
+  source_types?: string[];
+  payment_modes?: string[];
   period_length?: number | null;
   ends_at?: string | null;
   payout_mode?: string;
@@ -465,6 +496,9 @@ export interface CampaignVersion {
   metric: string;
   metric_filter: ConditionNode;
   audience: ConditionNode;
+  payee_types: string[];
+  source_types: string[];
+  payment_modes: string[];
   period_type: string;
   period_length: number | null;
   period_anchor: string;
@@ -484,3 +518,124 @@ export interface CampaignVersion {
   ends_at: string | null;
   tiers: CampaignTier[];
 }
+
+// ---------------------------------------------------------------------------
+// Delivery charges
+// ---------------------------------------------------------------------------
+
+export interface DeliveryVehicleType {
+  code: string;
+  name: string;
+  capacity_label: string | null;
+  max_payload_kg: number | null;
+  icon_key: string | null;
+  /** The machine photograph the apps fall back to when there is no bundled art. */
+  image_url: string | null;
+  length_label: string | null;
+  height_label: string | null;
+  /** Where the vehicle sits in the apps' picker. The list arrives in this order. */
+  display_order: number;
+  is_active: boolean;
+  /** False when nothing prices it yet: the picker lists it, but disabled. */
+  has_rate_card: boolean;
+}
+
+/** What the console can change about a vehicle. `code` is set once, on create. */
+export interface DeliveryVehicleTypeWrite {
+  name: string;
+  capacity_label?: string | null;
+  max_payload_kg?: number | null;
+  icon_key?: string | null;
+  length_label?: string | null;
+  height_label?: string | null;
+  display_order?: number | null;
+  is_active: boolean;
+}
+
+export interface DistanceSlab {
+  from_km: number;
+  to_km: number | null;
+  rate_per_km: number;
+}
+
+export interface DeliveryCharge {
+  code: string;
+  label: string;
+  calc_method: string;
+  component_order: number;
+  rate_value: number | null;
+  slabs: DistanceSlab[];
+  free_units: number;
+  min_amount: number | null;
+  max_amount: number | null;
+  conditions: ConditionNode;
+  is_active: boolean;
+}
+
+export interface RentalSkuOption {
+  id: number;
+  name: string;
+  capacity?: string | null;
+  sub_category_name?: string | null;
+}
+
+export interface DeliveryRateCard {
+  id: string;
+  code: string;
+  name: string;
+  version: number;
+  vehicle_type_code: string | null;
+  rental_sku_id: number | null;
+  rental_sku_name?: string | null;
+  min_total: number | null;
+  max_total: number | null;
+  round_mode: string;
+  round_to: number;
+  currency: string;
+  priority: number;
+  conditions: ConditionNode;
+  status: string;
+  effective_from: string | null;
+  effective_to: string | null;
+  charges: DeliveryCharge[];
+}
+
+export type DeliveryRateCardWrite = Omit<
+  DeliveryRateCard,
+  "id" | "version" | "status" | "effective_from" | "effective_to"
+> & {
+  id?: string;
+  version?: number | null;
+  status?: string | null;
+  effective_from?: string | null;
+  effective_to?: string | null;
+};
+
+export interface DeliveryQuotedCharge {
+  code: string;
+  label: string;
+  calc_method: string;
+  amount: number;
+  units: number | null;
+  rate_value: number | null;
+}
+
+export interface DeliveryQuotePreview {
+  vehicle_type_code: string;
+  distance_km: number;
+  subtotal: number;
+  total: number;
+  currency: string;
+  min_total_applied: boolean;
+  components: DeliveryQuotedCharge[];
+}
+
+export interface DeliveryPreviewRequest {
+  vehicle_type_code: string;
+  rental_sku_id?: number | null;
+  distance_km: number;
+  order_value: number;
+  weight_kg: number;
+  state_code?: string | null;
+}
+

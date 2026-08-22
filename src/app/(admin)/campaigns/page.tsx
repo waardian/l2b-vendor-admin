@@ -19,6 +19,7 @@ import ConditionBuilder, {
 import {
   Advanced,
   Banner,
+  ChipGroup,
   Choice,
   Field,
   FormSection,
@@ -27,6 +28,7 @@ import {
   StatusPill,
   TextInput,
 } from "@/components/FormKit";
+import { PAYEE_TYPES, PAYMENT_MODES, SOURCE_TYPES } from "@/lib/scope";
 
 function blankTier(): CampaignTierWrite {
   return {
@@ -50,6 +52,9 @@ function blankCampaign(): CampaignWrite {
     period_type: "monthly",
     starts_at: new Date().toISOString().slice(0, 16),
     tiers: [blankTier()],
+    payee_types: [],
+    source_types: [],
+    payment_modes: [],
     payout_mode: "with_settlement",
     priority: 100,
     stackable: false,
@@ -64,9 +69,13 @@ export default function CampaignsPage() {
   const [draft, setDraft] = useState<CampaignWrite>(blankCampaign());
   const [audience, setAudience] = useState<ConditionRow[]>([]);
   const [metricFilter, setMetricFilter] = useState<ConditionRow[]>([]);
-  const [editing, setEditing] = useState<{ campaignId: string; versionId: string } | null>(
-    null
-  );
+  // `live` decides what Save does: a draft version is rewritten in place, but a
+  // live one is never touched — saving forks a new version to activate instead.
+  const [editing, setEditing] = useState<{
+    campaignId: string;
+    versionId: string;
+    live: boolean;
+  } | null>(null);
   const [simulation, setSimulation] = useState<CampaignSimulation | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -144,6 +153,9 @@ export default function CampaignsPage() {
         metric: version.metric,
         period_type: version.period_type,
         period_length: version.period_length,
+        payee_types: version.payee_types,
+        source_types: version.source_types,
+        payment_modes: version.payment_modes,
         starts_at: version.starts_at.slice(0, 16),
         ends_at: version.ends_at,
         payout_mode: version.payout_mode,
@@ -170,7 +182,11 @@ export default function CampaignsPage() {
       });
       setAudience(toRows(version.audience));
       setMetricFilter(toRows(version.metric_filter));
-      setEditing({ campaignId: campaign.id, versionId: version.id });
+      setEditing({
+        campaignId: campaign.id,
+        versionId: version.id,
+        live: campaign.active_version_id === version.id,
+      });
       setSimulation(null);
       window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
     } catch (e) {
@@ -283,9 +299,12 @@ export default function CampaignsPage() {
                       </button>
                     )}
 
-                    {campaign.status !== "active" &&
-                      campaign.status !== "paused" &&
-                      campaign.latest_version_id && (
+                    {/* A version newer than the live one is waiting: offer to
+                        promote it, which retires the version it replaces. */}
+                    {campaign.latest_version_id &&
+                      (campaign.latest_version_id !== campaign.active_version_id ||
+                        (campaign.status !== "active" &&
+                          campaign.status !== "paused")) && (
                         <button
                           disabled={busy}
                           onClick={() =>
@@ -296,7 +315,10 @@ export default function CampaignsPage() {
                           }
                           className="text-xs font-bold text-emerald-700 hover:underline"
                         >
-                          Make Live
+                          {campaign.active_version_id &&
+                          campaign.latest_version_id !== campaign.active_version_id
+                            ? `Make v${campaign.latest_version} Live`
+                            : "Make Live"}
                         </button>
                       )}
 
@@ -325,12 +347,18 @@ export default function CampaignsPage() {
         <div className="flex items-start justify-between border-b border-slate-100 pb-4">
           <div>
             <h2 className="text-base font-extrabold text-slate-900">
-              {editing ? "Edit Campaign Draft" : "Design New Incentive Campaign"}
+              {editing?.live
+                ? "Edit Live Campaign"
+                : editing
+                  ? "Edit Campaign Draft"
+                  : "Design New Incentive Campaign"}
             </h2>
             <p className="text-xs font-medium text-slate-500">
-              {editing
-                ? "Modifying live versions creates a new draft version for preview before activation."
-                : "Configure target metrics, tier rewards, and audience eligibility rules."}
+              {editing?.live
+                ? "The live version stays untouched. Saving drafts the next version; making that live pauses the current one automatically."
+                : editing
+                  ? "This version is a draft, so saving overwrites it in place."
+                  : "Configure target metrics, tier rewards, and audience eligibility rules."}
             </p>
           </div>
           <button
@@ -370,8 +398,47 @@ export default function CampaignsPage() {
 
         <FormSection
           step={2}
-          title="Measurement & Eligibility"
-          blurb="Select target metric, reset period, and audience conditions"
+          title="Target Scope & Conditions"
+          blurb="Select which partner categories and orders this campaign is offered to"
+        >
+          <ChipGroup
+            label="Target Payee Categories"
+            options={vocab?.payee_types ?? PAYEE_TYPES}
+            selected={draft.payee_types ?? []}
+            onChange={(v) => setDraft({ ...draft, payee_types: v })}
+            allLabel="All Payees"
+          />
+          <ChipGroup
+            label="Target Order Sources"
+            options={vocab?.source_types ?? SOURCE_TYPES}
+            selected={draft.source_types ?? []}
+            onChange={(v) => setDraft({ ...draft, source_types: v })}
+            allLabel="All Order Types"
+          />
+          <ChipGroup
+            label="Payment Modes"
+            options={vocab?.payment_modes ?? PAYMENT_MODES}
+            selected={draft.payment_modes ?? []}
+            onChange={(v) => setDraft({ ...draft, payment_modes: v })}
+            allLabel="All Modes"
+          />
+          <div>
+            <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-700">
+              Audience Eligibility Rules
+            </span>
+            <ConditionBuilder
+              fields={vocab?.audience_fields ?? []}
+              rows={audience}
+              onChange={setAudience}
+              emptyLabel="Applies to all active partners."
+            />
+          </div>
+        </FormSection>
+
+        <FormSection
+          step={3}
+          title="Measurement & Period"
+          blurb="Select the target metric, its reset cycle, and which jobs count towards it"
         >
           <Row>
             <Field label="Measure Metric">
@@ -399,34 +466,21 @@ export default function CampaignsPage() {
             )}
           </Row>
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            <div>
-              <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Audience Eligibility Rules
-              </span>
-              <ConditionBuilder
-                fields={vocab?.audience_fields ?? []}
-                rows={audience}
-                onChange={setAudience}
-                emptyLabel="Applies to all active partners."
-              />
-            </div>
-            <div>
-              <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Job Qualification Criteria
-              </span>
-              <ConditionBuilder
-                fields={vocab?.metric_filter_fields ?? []}
-                rows={metricFilter}
-                onChange={setMetricFilter}
-                emptyLabel="All completed bookings count."
-              />
-            </div>
+          <div>
+            <span className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-700">
+              Job Qualification Criteria
+            </span>
+            <ConditionBuilder
+              fields={vocab?.metric_filter_fields ?? []}
+              rows={metricFilter}
+              onChange={setMetricFilter}
+              emptyLabel="All completed bookings count."
+            />
           </div>
         </FormSection>
 
         <FormSection
-          step={3}
+          step={4}
           title="Reward Tiers"
           blurb="Configure milestone thresholds and payout rewards"
         >
@@ -503,7 +557,7 @@ export default function CampaignsPage() {
         </FormSection>
 
         <FormSection
-          step={4}
+          step={5}
           title="Review & Simulation"
           blurb="Simulate cost impact against recent historical settlement data"
         >
@@ -540,19 +594,30 @@ export default function CampaignsPage() {
               onClick={() =>
                 run(
                   () =>
-                    editing
+                    editing && !editing.live
                       ? campaignApi.updateVersion(
                           editing.campaignId,
                           editing.versionId,
                           payload()
                         )
-                      : campaignApi.createDraft(payload()),
-                  editing ? "Campaign updated successfully" : "Draft campaign saved"
+                      : // Editing the live version forks a new one — posting the
+                        // same code drafts the next version rather than
+                        // rewriting what partners are already enrolled in.
+                        campaignApi.createDraft(payload()),
+                  editing?.live
+                    ? "New version drafted — make it live to replace the current one"
+                    : editing
+                      ? "Campaign updated successfully"
+                      : "Draft campaign saved"
                 )
               }
               className="rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-5 py-2.5 text-xs font-bold text-slate-950 shadow-sm hover:from-amber-400 hover:to-amber-500 disabled:opacity-50 transition-all"
             >
-              {editing ? "Save Version Changes" : "Save as Draft Campaign"}
+              {editing?.live
+                ? "Save as New Version"
+                : editing
+                  ? "Save Version Changes"
+                  : "Save as Draft Campaign"}
             </button>
           </div>
 

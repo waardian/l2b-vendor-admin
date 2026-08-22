@@ -87,11 +87,15 @@ export function Choice({
   options,
   onChange,
   placeholder,
+  labels,
 }: {
   value: string;
   options: string[];
   onChange: (value: string) => void;
   placeholder?: string;
+  /** Display text per option, positionally. Falls back to `humanise(option)`,
+   *  which is right for vocabularies but not for names that are already prose. */
+  labels?: string[];
 }) {
   return (
     <select
@@ -100,9 +104,9 @@ export function Choice({
       className={CONTROL}
     >
       {placeholder && <option value="">{placeholder}</option>}
-      {options.map((option) => (
+      {options.map((option, index) => (
         <option key={option} value={option}>
-          {humanise(option)}
+          {labels?.[index] ?? humanise(option)}
         </option>
       ))}
     </select>
@@ -159,6 +163,46 @@ export function ChipGroup({
         })}
       </div>
     </div>
+  );
+}
+
+/** A yes/no setting with room to say what turning it on means. */
+export function Toggle({
+  label,
+  hint,
+  checked,
+  onChange,
+}: {
+  label: string;
+  hint?: string;
+  checked: boolean;
+  onChange: (next: boolean) => void;
+}) {
+  return (
+    <label
+      className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-all ${
+        checked
+          ? "border-amber-300 bg-amber-500/10"
+          : "border-slate-300 bg-white hover:bg-slate-50"
+      }`}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-amber-600 focus:ring-2 focus:ring-amber-500/30"
+      />
+      <span>
+        <span
+          className={`block text-xs font-bold ${
+            checked ? "text-amber-900" : "text-slate-800"
+          }`}
+        >
+          {label}
+        </span>
+        {hint && <span className="mt-0.5 block text-xs text-slate-500">{hint}</span>}
+      </span>
+    </label>
   );
 }
 

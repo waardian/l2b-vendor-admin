@@ -20,7 +20,9 @@ import {
   Row,
   StatusPill,
   TextInput,
+  Toggle,
 } from "@/components/FormKit";
+import { PAYEE_TYPES, PAYMENT_MODES, SOURCE_TYPES } from "@/lib/scope";
 
 const KINDS = ["deduction", "tax", "bata", "adjustment"];
 const CALC_METHODS = ["percent", "flat", "per_unit", "slab"];
@@ -28,16 +30,6 @@ const PERCENT_BASES = ["gross", "net_after_deductions", "component:COMMISSION"];
 const UNIT_BASES = ["unit:hours_booked", "unit:actual_km", "unit:days"];
 const STRATEGIES = ["first_match", "all_match"];
 const ROUND_MODES = ["half_up", "half_even", "floor", "ceiling"];
-const PAYEE_TYPES = [
-  "rental_vendor_company",
-  "rental_vendor_individual",
-  "material_vendor",
-  "operator_company",
-  "operator_independent",
-];
-const SOURCE_TYPES = ["rental_booking", "material_order"];
-const PAYMENT_MODES = ["online", "cod"];
-
 function blank(): FeeRuleWrite {
   return {
     code: "",
@@ -55,6 +47,7 @@ function blank(): FeeRuleWrite {
     round_mode: "half_up",
     round_to: "0.01",
     discountable: false,
+    is_tax_deduction: false,
     payee_types: [],
     source_types: [],
     payment_modes: [],
@@ -144,6 +137,7 @@ export default function FeeRulesPage() {
       round_mode: rule.round_mode,
       round_to: rule.round_to,
       discountable: rule.discountable,
+      is_tax_deduction: rule.is_tax_deduction,
       payee_types: rule.payee_types,
       source_types: rule.source_types,
       payment_modes: rule.payment_modes,
@@ -214,6 +208,11 @@ export default function FeeRulesPage() {
                       : rule.calc_method === "flat"
                         ? `₹${rule.rate_value} flat`
                         : `${humanise(rule.calc_method)} on ${humanise(rule.base_expr)}`}
+                    {(rule.is_tax_deduction || rule.kind === "tax") && (
+                      <span className="ml-2 rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 font-sans text-[10px] font-bold uppercase tracking-wide text-sky-800">
+                        Tax
+                      </span>
+                    )}
                   </td>
                   <td className="text-center">
                     <StatusPill status={rule.status} />
@@ -312,6 +311,17 @@ export default function FeeRulesPage() {
               />
             </Field>
           </Row>
+
+          <Toggle
+            label="Report this charge as a tax deduction"
+            hint={
+              draft.kind === "tax"
+                ? "A charge of kind Tax is always reported as tax, flagged or not."
+                : "The payee takes home the same amount either way — the flag moves the line into tax withheld (TDS / GST) instead of platform deductions."
+            }
+            checked={Boolean(draft.is_tax_deduction)}
+            onChange={(v) => setDraft({ ...draft, is_tax_deduction: v })}
+          />
         </FormSection>
 
         <FormSection step={2} title="Calculation Formula" blurb="Specify rate calculation method and bounds">

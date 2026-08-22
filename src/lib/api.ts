@@ -16,6 +16,16 @@ import type {
   FeeRuleSimulation,
   FeeRuleWrite,
   RuleFieldCatalogue,
+  VendorWarehouse,
+  VendorWarehouseWrite,
+  DeliveryCharge,
+  DeliveryPreviewRequest,
+  DeliveryQuotePreview,
+  DeliveryRateCard,
+  DeliveryRateCardWrite,
+  DeliveryVehicleType,
+  DeliveryVehicleTypeWrite,
+  RentalSkuOption,
 } from "./types";
 
 import { ApiError, apiFetch } from "./http";
@@ -130,6 +140,18 @@ export const vendorApi = {
       method: "POST",
       body: { rejection_reason: reason },
     }),
+
+  // The anchor a material vendor's order feed is measured from. PUT, not POST:
+  // a vendor has one warehouse, so sending the same pin twice must leave one row.
+  getWarehouse: (userId: string) =>
+    request<{ success: boolean; data: VendorWarehouse | null }>(
+      `/rentals/admin/vendors/${userId}/warehouse`
+    ).then((res) => res.data),
+  setWarehouse: (userId: string, warehouse: VendorWarehouseWrite) =>
+    request<{ success: boolean; data: VendorWarehouse }>(
+      `/rentals/admin/vendors/${userId}/warehouse`,
+      { method: "PUT", body: warehouse }
+    ).then((res) => res.data),
 };
 
 // ---------------------------------------------------------------------------
@@ -223,9 +245,7 @@ export const legacyAdminApi = {
 
 export const machineryApi = {
   getCatalog: async (): Promise<MachinerySubcategory[]> => {
-    const res = await request<MachineryCatalogResponse>("/machinery/catalog", {
-      auth: false,
-    });
+    const res = await request<MachineryCatalogResponse>("/machinery/catalog");
     return res.data.subcategories;
   },
 };
@@ -258,6 +278,68 @@ export const feeRuleApi = {
     request<FeeRuleSimulation>(`${FINANCE}/fee-rules/simulate`, {
       method: "POST",
       body: { rule, sample_size: sampleSize, replace_existing_code: replaceExistingCode },
+    }),
+};
+
+export const deliveryApi = {
+  // The catalogue both vendor apps draw the picker from, in `display_order`.
+  vehicleTypes: (includeInactive = false) =>
+    request<DeliveryVehicleType[]>(
+      `${FINANCE}/delivery/vehicle-types?include_inactive=${includeInactive}`
+    ),
+  // The illustrations the apps ship. A vehicle can only use one of these — the
+  // art is bundled so the picker still renders on a site with no signal.
+  vehicleIcons: () => request<string[]>(`${FINANCE}/delivery/vehicle-icons`),
+  createVehicle: (vehicle: DeliveryVehicleTypeWrite & { code: string }) =>
+    request<DeliveryVehicleType>(`${FINANCE}/delivery/vehicle-types`, {
+      method: "POST",
+      body: vehicle,
+    }),
+  updateVehicle: (code: string, vehicle: DeliveryVehicleTypeWrite) =>
+    request<DeliveryVehicleType>(`${FINANCE}/delivery/vehicle-types/${code}`, {
+      method: "PUT",
+      body: vehicle,
+    }),
+  // Sent wholesale: the server renumbers 1..N, so no two vehicles can end up
+  // claiming the same position halfway through a reorder.
+  resequenceVehicles: (codes: string[]) =>
+    request<DeliveryVehicleType[]>(`${FINANCE}/delivery/vehicle-types/sequence`, {
+      method: "PUT",
+      body: { codes },
+    }),
+  rentalSkus: () =>
+    request<RentalSkuOption[]>(`${FINANCE}/delivery/rental-skus`),
+  list: (vehicleTypeCode?: string, rentalSkuId?: number | null, status?: string) => {
+    const query = new URLSearchParams();
+    if (vehicleTypeCode) query.set("vehicle_type_code", vehicleTypeCode);
+    if (rentalSkuId !== undefined && rentalSkuId !== null) query.set("rental_sku_id", String(rentalSkuId));
+    if (status) query.set("status", status);
+    const suffix = query.toString() ? `?${query}` : "";
+    return request<DeliveryRateCard[]>(`${FINANCE}/delivery/rate-cards${suffix}`);
+  },
+  get: (rateCardId: string) =>
+    request<DeliveryRateCard>(`${FINANCE}/delivery/rate-cards/${rateCardId}`),
+  // Always creates a draft, at the next version of its code. Posting the same
+  // code again is how a price change is made.
+  createDraft: (card: DeliveryRateCardWrite) =>
+    request<DeliveryRateCard>(`${FINANCE}/delivery/rate-cards`, { method: "POST", body: card }),
+  updateDraft: (rateCardId: string, card: DeliveryRateCardWrite) =>
+    request<DeliveryRateCard>(`${FINANCE}/delivery/rate-cards/${rateCardId}`, { method: "PUT", body: card }),
+  replaceCharges: (rateCardId: string, charges: DeliveryCharge[]) =>
+    request<DeliveryRateCard>(`${FINANCE}/delivery/rate-cards/${rateCardId}/charges`, {
+      method: "PUT",
+      body: charges,
+    }),
+  setStatus: (rateCardId: string, status: string) =>
+    request<DeliveryRateCard>(`${FINANCE}/delivery/rate-cards/${rateCardId}/status`, {
+      method: "POST",
+      body: { status },
+    }),
+  // Runs the same engine the apps hit, against the live cards.
+  preview: (body: DeliveryPreviewRequest) =>
+    request<DeliveryQuotePreview>(`${FINANCE}/delivery/rate-cards/preview`, {
+      method: "POST",
+      body,
     }),
 };
 

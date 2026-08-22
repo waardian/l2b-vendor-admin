@@ -44,7 +44,8 @@ const LABELS: Record<string, string> = {
 
   // Order and payment
   rental_booking: "Equipment rental",
-  material_order: "Material order",
+  material_sub_order: "Material order",
+  material_order: "Material order (whole basket — not settled against)",
   online: "Paid online",
   cod: "Cash on delivery",
 
@@ -132,6 +133,8 @@ export function describeFeeRule(rule: {
   calc_method: string;
   base_expr: string;
   rate_value?: string | null;
+  kind?: string;
+  is_tax_deduction?: boolean;
   payee_types?: string[];
   source_types?: string[];
   payment_modes?: string[];
@@ -155,7 +158,14 @@ export function describeFeeRule(rule: {
     ? ` paid by ${rule.payment_modes.map(humanise).join(" or ").toLowerCase()}`
     : "";
 
-  return `Take ${amount} from ${who} on ${what}${how}.`;
+  // Both buckets come off the same gross, so the only thing the flag changes
+  // is which column the line lands in — say so rather than implying more.
+  const reported =
+    rule.is_tax_deduction || rule.kind === "tax"
+      ? " Reported as tax withheld."
+      : "";
+
+  return `Take ${amount} from ${who} on ${what}${how}.${reported}`;
 }
 
 /** One sentence describing what a reward tier will actually do. */
