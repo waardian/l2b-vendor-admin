@@ -25,7 +25,6 @@ export default function DocumentImage({ doc }: { doc: DocumentSummary }) {
             </div>
           ) : (
             <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={doc.file_url}
                 alt={doc.document_type}
@@ -65,7 +64,6 @@ export default function DocumentImage({ doc }: { doc: DocumentSummary }) {
         </div>
       </div>
 
-      {/* Lightbox / Modal for Full Image View */}
       {openModal && (
         <div
           onClick={() => setOpenModal(false)}
@@ -98,7 +96,6 @@ export default function DocumentImage({ doc }: { doc: DocumentSummary }) {
               </div>
             </div>
             <div className="flex max-h-[75vh] items-center justify-center overflow-auto rounded-2xl bg-slate-950 p-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={doc.file_url}
                 alt={doc.document_type}

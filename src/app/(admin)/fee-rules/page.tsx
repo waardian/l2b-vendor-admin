@@ -156,7 +156,6 @@ export default function FeeRulesPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      {/* Page Header */}
       <header className="flex items-center justify-between border-b border-slate-200/80 pb-4">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Deduction Rules Engine</h1>
@@ -169,7 +168,6 @@ export default function FeeRulesPage() {
       {error && <Banner tone="error">{error}</Banner>}
       {notice && <Banner tone="success">{notice}</Banner>}
 
-      {/* Rules Table Card */}
       <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs">
         <div className="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
           <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
@@ -267,7 +265,6 @@ export default function FeeRulesPage() {
         </table>
       </section>
 
-      {/* Rule Form Section */}
       <section className="space-y-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <div className="flex items-start justify-between border-b border-slate-100 pb-4">
           <div>

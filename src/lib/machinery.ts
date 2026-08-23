@@ -7,8 +7,6 @@ export interface ResolvedMachinery {
   variantLabel: string | null;
 }
 
-/** Same lookup shape as the iOS Rental Machine Listing screen: subcategory ->
- * capacity -> variant, each resolved by id against the fetched catalog. */
 export function resolveMachinery(
   catalog: MachinerySubcategory[],
   subcategoryId: number,
@@ -34,7 +32,6 @@ export function resolveMachinery(
   };
 }
 
-/** "pan_card" -> "Pan Card", "aadhaar_front" -> "Aadhaar Front" */
 export function formatDocumentType(documentType: string): string {
   return documentType
     .split("_")

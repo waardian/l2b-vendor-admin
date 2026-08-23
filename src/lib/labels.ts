@@ -1,23 +1,15 @@
-// Plain-English names for the enum values the API speaks in.
-//
-// Anything missing falls back to a title-cased version of the raw value, so a
-// reward type or period added on the backend still shows up readably without a
-// web release — which is the whole point of the vocabulary endpoint.
 
 const LABELS: Record<string, string> = {
-  // Fee rule — what kind of line it produces
   deduction: "Deduction — reduces the payout",
   tax: "Tax",
   bata: "Bata / allowance",
   adjustment: "Manual adjustment",
 
-  // Fee rule — how the amount is worked out
   percent: "A percentage",
   flat: "A fixed amount",
   slab: "Tiered by amount",
   per_unit: "An amount per unit",
 
-  // Fee rule — what the percentage is taken from
   gross: "the order total",
   net_after_deductions: "what is left after earlier deductions",
   "component:COMMISSION": "the commission amount",
@@ -25,36 +17,30 @@ const LABELS: Record<string, string> = {
   "unit:actual_km": "kilometres travelled",
   "unit:days": "days on site",
 
-  // Fee rule — clash handling
   first_match: "Only the top-priority rule applies",
   all_match: "Every matching rule stacks",
 
-  // Rounding
   half_up: "Normal (₹0.50 rounds up)",
   half_even: "Banker's rounding",
   floor: "Always round down",
   ceiling: "Always round up",
 
-  // Who gets paid
   rental_vendor_company: "Rental vendor (company)",
   rental_vendor_individual: "Rental vendor (individual)",
   material_vendor: "Material vendor",
   operator_company: "Operator on a company's team",
   operator_independent: "Independent operator",
 
-  // Order and payment
   rental_booking: "Equipment rental",
   material_sub_order: "Material order",
   material_order: "Material order (whole basket — not settled against)",
   online: "Paid online",
   cod: "Cash on delivery",
 
-  // Campaign — what is counted
   completed_orders: "Jobs completed",
   gross_earnings: "Total order value earned (₹)",
   net_earnings: "Take-home earnings (₹)",
 
-  // Campaign — when progress resets
   lifetime: "Never resets",
   daily: "Resets every day",
   weekly: "Resets every week",
@@ -64,7 +50,6 @@ const LABELS: Record<string, string> = {
   calendar: "Calendar dates",
   enrollment: "From each vendor's first job",
 
-  // Campaign — the reward
   flat_bonus_once: "One-off bonus (₹)",
   flat_bonus_per_order: "Bonus on every job (₹)",
   percent_of_order: "% of the order value",
@@ -73,22 +58,18 @@ const LABELS: Record<string, string> = {
   commission_discount_flat: "Cut commission by ₹",
   commission_waiver: "Charge no commission",
 
-  // Campaign — which jobs the reward lands on
   threshold_order_only: "Only the job that hits the target",
   subsequent_orders: "Every job after the target",
   retroactive_period: "Every job in the period, backdated",
 
-  // Campaign — how it is paid
   with_settlement: "Added to that job's payout",
   immediate_credit: "Credited to the wallet right away",
   end_of_period_batch: "Paid in one batch when the period ends",
 
-  // Budget
   stop: "Stop awarding",
   continue: "Keep awarding anyway",
   notify: "Keep awarding but alert us",
 
-  // Condition operators
   eq: "is",
   ne: "is not",
   in: "is one of",
@@ -103,7 +84,6 @@ const LABELS: Record<string, string> = {
   is_null: "is empty",
   is_not_null: "is not empty",
 
-  // Statuses
   draft: "Draft",
   active: "Live",
   paused: "Paused",
@@ -128,7 +108,6 @@ export function isCommissionReward(rewardType: string): boolean {
   return rewardType.startsWith("commission_");
 }
 
-/** One sentence describing what a fee rule will actually do. */
 export function describeFeeRule(rule: {
   calc_method: string;
   base_expr: string;
@@ -158,8 +137,6 @@ export function describeFeeRule(rule: {
     ? ` paid by ${rule.payment_modes.map(humanise).join(" or ").toLowerCase()}`
     : "";
 
-  // Both buckets come off the same gross, so the only thing the flag changes
-  // is which column the line lands in — say so rather than implying more.
   const reported =
     rule.is_tax_deduction || rule.kind === "tax"
       ? " Reported as tax withheld."
@@ -168,7 +145,6 @@ export function describeFeeRule(rule: {
   return `Take ${amount} from ${who} on ${what}${how}.${reported}`;
 }
 
-/** One sentence describing what a reward tier will actually do. */
 export function describeTier(
   tier: {
     threshold_from: string;

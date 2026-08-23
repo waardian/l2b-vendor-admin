@@ -124,8 +124,6 @@ export const customerApi = {
   listMaterialOrders: () =>
     request<{ data: import("./customer-types").MaterialOrder[] }>("/material-orders").then((r) => r.data),
 
-  // Priced by the server, never in the browser: the checkout used to work its
-  // own tax out and showed a total that was never charged.
   quoteMaterialOrder: (payload: {
     delivery_mode?: string;
     items: import("./customer-types").MaterialOrderItemInput[];
@@ -163,5 +161,3 @@ export const customerApi = {
       (r) => r.data.modes
     ),
 };
-
-

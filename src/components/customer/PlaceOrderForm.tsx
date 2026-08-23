@@ -566,7 +566,6 @@ export default function PlaceOrderForm({
           <ul className="space-y-2">
             {siteImages.map((url) => (
               <li key={url} className="flex items-center gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={url} alt="Site" className="h-10 w-10 rounded border border-gray-200 object-cover" />
                 <span className="flex-1 truncate text-xs text-gray-600">{url}</span>
                 <button

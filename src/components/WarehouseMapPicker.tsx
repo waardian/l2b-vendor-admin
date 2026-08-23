@@ -4,8 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 export const MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
 
-/** Roughly the geographic centre of India — where the map opens when a vendor
- *  has no pin yet and nothing better is known. */
 const FALLBACK_CENTER = { lat: 20.5937, lng: 78.9629 };
 const PINNED_ZOOM = 16;
 const UNPINNED_ZOOM = 5;
@@ -15,7 +13,6 @@ export interface LatLng {
   lng: number;
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 type GMaps = any;
 
 interface MapsLibraries {
@@ -33,18 +30,6 @@ let mapsLibrariesPromise: Promise<MapsLibraries> | null = null;
 
 const MAPS_READY_CALLBACK = "__l2bGoogleMapsReady";
 
-/** The Maps namespace, loaded once for the whole console.
- *
- *  Resolved from the `callback` parameter rather than the script tag's `onload`.
- *  What that tag fetches is only a bootstrap — it fetches `main.js`, which is
- *  what actually defines `Map`, `Geocoder` and `importLibrary`. `onload` fires
- *  before that second fetch lands, so touching `google.maps.Map` there is what
- *  produced "maps.Map is not a constructor". The callback is the API's own
- *  signal that the namespace and every requested library are ready.
- *
- *  Cached as one promise because the API throws if its script is included twice,
- *  and cleared on failure so a later mount can retry rather than inheriting a
- *  rejection forever. */
 function loadMapsLibraries(): Promise<MapsLibraries> {
   if (typeof window === "undefined") {
     return Promise.reject(new Error("Google Maps is browser-only"));
@@ -71,7 +56,6 @@ function loadMapsLibraries(): Promise<MapsLibraries> {
       }
     };
 
-    // A hot reload can leave the API already resident; re-injecting would throw.
     if (window.google?.maps?.Map) {
       settle();
       return;
@@ -112,9 +96,6 @@ export default function WarehouseMapPicker({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<GMaps>(null);
   const geocoderRef = useRef<GMaps>(null);
-  // The map recentres itself as the user pans, which would fight the `value`
-  // prop echoing straight back in. This marks centre changes we caused so the
-  // sync effect can ignore them.
   const selfMoveRef = useRef(false);
 
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
@@ -151,11 +132,6 @@ export default function WarehouseMapPicker({
         mapRef.current = map;
         geocoderRef.current = new Geocoder();
 
-        // The pin is a fixed overlay at the centre of the viewport rather than a
-        // marker object: dragging the map *is* moving the pin, which is the
-        // gesture people already know from every ride-hailing app, and it keeps
-        // the selected point and what is under the crosshair impossible to
-        // disagree about.
         map.addListener("idle", () => {
           const center = map.getCenter();
           if (!center) return;
@@ -179,9 +155,6 @@ export default function WarehouseMapPicker({
     return () => {
       cancelled = true;
     };
-    // Mount-only: `value` is read for the initial camera and thereafter synced by
-    // the effect below, and re-running this would rebuild the map on every pan.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -289,7 +262,6 @@ export default function WarehouseMapPicker({
       <div className="relative overflow-hidden rounded-2xl border border-slate-200 shadow-xs">
         <div ref={containerRef} className="h-[420px] w-full bg-slate-100" />
 
-        {/* The crosshair sits dead centre and never moves — the map slides beneath it. */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div className="-translate-y-4">
             <svg className="h-10 w-10 drop-shadow-lg" viewBox="0 0 24 24" fill="none">

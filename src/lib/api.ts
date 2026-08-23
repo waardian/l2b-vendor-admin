@@ -55,10 +55,6 @@ function request<T>(
   return apiFetch<T>(path, { method, body, token: auth ? getToken() : null });
 }
 
-// ---------------------------------------------------------------------------
-// Auth
-// ---------------------------------------------------------------------------
-
 export const authApi = {
   sendOtp: (phone: string) =>
     request<{ success: boolean; message: string }>("/auth/send-otp", {
@@ -73,10 +69,6 @@ export const authApi = {
       auth: false,
     }),
 };
-
-// ---------------------------------------------------------------------------
-// Vendors (/rentals/admin/vendors)
-// ---------------------------------------------------------------------------
 
 export const vendorApi = {
   list: (params: { category?: string; status?: string } = {}) => {
@@ -141,8 +133,6 @@ export const vendorApi = {
       body: { rejection_reason: reason },
     }),
 
-  // The anchor a material vendor's order feed is measured from. PUT, not POST:
-  // a vendor has one warehouse, so sending the same pin twice must leave one row.
   getWarehouse: (userId: string) =>
     request<{ success: boolean; data: VendorWarehouse | null }>(
       `/rentals/admin/vendors/${userId}/warehouse`
@@ -153,10 +143,6 @@ export const vendorApi = {
       { method: "PUT", body: warehouse }
     ).then((res) => res.data),
 };
-
-// ---------------------------------------------------------------------------
-// Operators (/rentals/admin/operators)
-// ---------------------------------------------------------------------------
 
 export const operatorApi = {
   list: (params: { status?: string } = {}) => {
@@ -203,10 +189,6 @@ export const operatorApi = {
     }),
 };
 
-// ---------------------------------------------------------------------------
-// Legacy /admin/* (kept alongside /rentals/admin/*, same underlying service)
-// ---------------------------------------------------------------------------
-
 export interface LegacyPendingVendor {
   user_id: string;
   name: string | null;
@@ -239,20 +221,12 @@ export const legacyAdminApi = {
     }),
 };
 
-// ---------------------------------------------------------------------------
-// Machinery catalog (public — used to resolve machine/skill IDs to labels)
-// ---------------------------------------------------------------------------
-
 export const machineryApi = {
   getCatalog: async (): Promise<MachinerySubcategory[]> => {
     const res = await request<MachineryCatalogResponse>("/machinery/catalog");
     return res.data.subcategories;
   },
 };
-
-// ---------------------------------------------------------------------------
-// Finance admin: deduction rules and incentive campaigns
-// ---------------------------------------------------------------------------
 
 const FINANCE = "/admin/finance";
 
@@ -282,13 +256,10 @@ export const feeRuleApi = {
 };
 
 export const deliveryApi = {
-  // The catalogue both vendor apps draw the picker from, in `display_order`.
   vehicleTypes: (includeInactive = false) =>
     request<DeliveryVehicleType[]>(
       `${FINANCE}/delivery/vehicle-types?include_inactive=${includeInactive}`
     ),
-  // The illustrations the apps ship. A vehicle can only use one of these — the
-  // art is bundled so the picker still renders on a site with no signal.
   vehicleIcons: () => request<string[]>(`${FINANCE}/delivery/vehicle-icons`),
   createVehicle: (vehicle: DeliveryVehicleTypeWrite & { code: string }) =>
     request<DeliveryVehicleType>(`${FINANCE}/delivery/vehicle-types`, {
@@ -300,8 +271,6 @@ export const deliveryApi = {
       method: "PUT",
       body: vehicle,
     }),
-  // Sent wholesale: the server renumbers 1..N, so no two vehicles can end up
-  // claiming the same position halfway through a reorder.
   resequenceVehicles: (codes: string[]) =>
     request<DeliveryVehicleType[]>(`${FINANCE}/delivery/vehicle-types/sequence`, {
       method: "PUT",
@@ -319,8 +288,6 @@ export const deliveryApi = {
   },
   get: (rateCardId: string) =>
     request<DeliveryRateCard>(`${FINANCE}/delivery/rate-cards/${rateCardId}`),
-  // Always creates a draft, at the next version of its code. Posting the same
-  // code again is how a price change is made.
   createDraft: (card: DeliveryRateCardWrite) =>
     request<DeliveryRateCard>(`${FINANCE}/delivery/rate-cards`, { method: "POST", body: card }),
   updateDraft: (rateCardId: string, card: DeliveryRateCardWrite) =>
@@ -335,7 +302,6 @@ export const deliveryApi = {
       method: "POST",
       body: { status },
     }),
-  // Runs the same engine the apps hit, against the live cards.
   preview: (body: DeliveryPreviewRequest) =>
     request<DeliveryQuotePreview>(`${FINANCE}/delivery/rate-cards/preview`, {
       method: "POST",
@@ -381,9 +347,6 @@ export const campaignApi = {
     }),
 };
 
-// Individual documents inside a KYC block. Rejecting one of these marks a single *field*
-// as wrong: the partner re-uploads only that document and only that document is
-// re-verified. Shared by vendors and operators — the document row knows its own owner.
 export const kycDocumentApi = {
   approve: (userId: string, documentId: string) =>
     request<ReviewResult>(

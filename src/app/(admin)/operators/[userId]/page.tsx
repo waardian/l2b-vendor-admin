@@ -59,7 +59,6 @@ export default function OperatorDetailPage() {
     } finally {
       if (currentUserIdRef.current === requestedUserId) setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   useEffect(() => {
@@ -120,7 +119,6 @@ export default function OperatorDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Top Breadcrumb & Actions */}
       <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
         <div className="flex items-center gap-3">
           <Link
@@ -140,7 +138,6 @@ export default function OperatorDetailPage() {
           </div>
         </div>
 
-        {/* Final Decision Bar */}
         {!isTerminal && (
           <div className="flex items-center gap-2">
             <button
@@ -166,12 +163,10 @@ export default function OperatorDetailPage() {
         </div>
       )}
 
-      {/* Main Profile Header Info Card */}
       <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             {basic_info.profile_photo_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={basic_info.profile_photo_url}
                 alt="Operator Profile"
@@ -210,7 +205,6 @@ export default function OperatorDetailPage() {
         </div>
       </div>
 
-      {/* Account Info Details Section */}
       <Section title="Basic Account Details">
         <dl className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm sm:grid-cols-3 lg:grid-cols-4">
           <DetailField label="Phone Number" value={basic_info.phone} />
@@ -222,14 +216,12 @@ export default function OperatorDetailPage() {
         </dl>
       </Section>
 
-      {/* Digio Verification Panel */}
       {(digio_verifications ?? []).length > 0 && (
         <Section title="Automated Digio Verification">
           <DigioVerificationPanel verifications={digio_verifications!} />
         </Section>
       )}
 
-      {/* Operator KYC Document Review */}
       {kyc && (
         <Section
           title="Operator KYC Verification Review"
@@ -270,7 +262,6 @@ export default function OperatorDetailPage() {
         </Section>
       )}
 
-      {/* Operator TPI Document Review */}
       {tpi && (
         <Section title="Operator Third Party Inspection (TPI)">
           <div className="space-y-3">
@@ -292,7 +283,6 @@ export default function OperatorDetailPage() {
         </Section>
       )}
 
-      {/* Operator Skills Section */}
       {skills.length > 0 && (
         <Section title={`Machine Skills & Licenses (${skills.length})`}>
           <div className="space-y-4">
@@ -346,7 +336,6 @@ export default function OperatorDetailPage() {
                     }
                   />
 
-                  {/* Skill Document Images */}
                   {skillDocs.length > 0 && (
                     <div className="flex flex-wrap gap-3 pt-1">
                       {skillDocs.map((doc) => (

@@ -29,7 +29,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  // Derive route title
   const getPageTitle = () => {
     if (pathname?.startsWith("/vendors")) return "Vendor Management";
     if (pathname?.startsWith("/operators")) return "Operator Management";
@@ -44,7 +43,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex h-screen bg-slate-50">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Top Header Bar */}
         <header className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200/80 bg-white/80 px-8 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <h2 className="text-base font-bold text-slate-900">{getPageTitle()}</h2>
@@ -65,7 +63,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </header>
 
-        {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto p-8">{children}</main>
       </div>
     </div>

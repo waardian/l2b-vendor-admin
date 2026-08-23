@@ -2,7 +2,6 @@ import Section from "./Section";
 import StatusBadge from "./StatusBadge";
 import type { DigioExtractedValue, DigioVerification } from "@/lib/types";
 
-/** Words that read wrong in Title Case — "Id No" / "Ifsc" — so they stay upper. */
 const ACRONYMS = new Set([
   "id",
   "dl",
@@ -20,7 +19,6 @@ const ACRONYMS = new Set([
   "vid",
 ]);
 
-/** "date_of_expiry" → "Date Of Expiry" (Title Case on every word, acronyms upper). */
 function prettifyKey(key: string): string {
   const words = key.split(/[_\s.]+/).filter(Boolean);
   if (words.length === 0) return key;
@@ -39,8 +37,6 @@ function isRecord(
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-/** True for anything that should render as a single "Label: value" row rather than
- * as its own nested block: scalars, empty objects, and arrays of scalars. */
 function isLeaf(value: DigioExtractedValue): boolean {
   if (Array.isArray(value)) return value.every((item) => !isRecord(item) && !Array.isArray(item));
   if (isRecord(value)) return Object.keys(value).length === 0;
@@ -55,13 +51,10 @@ function formatLeaf(value: DigioExtractedValue): string {
     const parts = value.map(formatLeaf).filter((part) => part !== "—");
     return parts.length > 0 ? parts.join(", ") : "—";
   }
-  if (isRecord(value)) return "—"; // only reached for `{}`
+  if (isRecord(value)) return "—";
   return value.trim() === "" ? "—" : value;
 }
 
-/** Digio timestamps are ISO-8601 with an offset. Formatted with an explicit locale
- * and time zone so the server-rendered and client-rendered strings always match
- * (a bare toLocaleString() would hydrate differently on an admin outside IST). */
 function formatTimestamp(value: string | null | undefined): string | null {
   if (!value) return null;
   const parsed = new Date(value);
@@ -77,8 +70,6 @@ function formatTimestamp(value: string | null | undefined): string | null {
   }).format(parsed)} IST`;
 }
 
-/** The "this value came from Digio, not from the user" marker. Deliberately unlike
- * StatusBadge (solid fill, square corners, uppercase) so the two never blur together. */
 export function DigioBadge() {
   return (
     <span className="inline-flex items-center rounded bg-indigo-600 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase">
@@ -87,8 +78,6 @@ export function DigioBadge() {
   );
 }
 
-/** Renders an arbitrary Digio payload: scalars in the same dl/grid idiom the detail
- * pages use, nested objects as indented sub-blocks below them (recursively). */
 function ExtractedEntries({ data }: { data: Record<string, DigioExtractedValue> }) {
   const entries = Object.entries(data);
   const leaves = entries.filter(([, value]) => isLeaf(value));
@@ -118,8 +107,6 @@ function ExtractedEntries({ data }: { data: Record<string, DigioExtractedValue> 
   );
 }
 
-/** Normalises a non-leaf value into a record so it can recurse: objects pass
- * through, arrays become "#1", "#2", … keyed entries. */
 function toRecord(value: DigioExtractedValue): Record<string, DigioExtractedValue> {
   if (isRecord(value)) return value;
   if (Array.isArray(value)) {
@@ -151,7 +138,6 @@ function VerificationCard({ verification }: { verification: DigioVerification })
       {hasData ? (
         <ExtractedEntries data={data} />
       ) : (
-        // Pre-migration rows kept no payload — fall back to the columns that do exist.
         <>
           <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-3">
             <div>
@@ -178,9 +164,6 @@ function VerificationCard({ verification }: { verification: DigioVerification })
   );
 }
 
-/** Everything the Digio OCR/KYC provider independently extracted for this user —
- * shown separately from the KYC sections so an admin can tell at a glance which
- * values were machine-read from a document and which the user typed in. */
 export default function DigioVerificationPanel({
   verifications,
 }: {

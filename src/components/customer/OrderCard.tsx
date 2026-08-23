@@ -157,7 +157,6 @@ export default function OrderCard({
               <div className="flex flex-wrap gap-2">
                 {order.site_images.map((url) => (
                   <a key={url} href={url} target="_blank" rel="noreferrer">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={url}
                       alt="Site"

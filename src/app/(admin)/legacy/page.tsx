@@ -13,7 +13,6 @@ export default function LegacyAdminPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [reasons, setReasons] = useState<Record<string, string>>({});
 
-  // Generic machine-document review form
   const [formUserId, setFormUserId] = useState("");
   const [formMachineId, setFormMachineId] = useState("");
   const [formDocType, setFormDocType] = useState<"rc" | "insurance" | "tpi">("rc");
@@ -85,7 +84,6 @@ export default function LegacyAdminPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header Title */}
       <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Legacy Admin Console</h1>
@@ -105,7 +103,6 @@ export default function LegacyAdminPage() {
         </div>
       )}
 
-      {/* Pending Vendors Section */}
       <Section title="GET /admin/vendors/pending">
         <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs">
           <table className="admin-table">
@@ -178,7 +175,6 @@ export default function LegacyAdminPage() {
         </div>
       </Section>
 
-      {/* Raw Machine Review Post Tester */}
       <Section title="POST /admin/vendors/{user_id}/machines/{machine_id}/review">
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">

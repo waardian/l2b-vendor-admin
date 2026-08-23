@@ -90,7 +90,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
   const subOrders = order.sub_orders || [];
   const isMultiVendor = subOrders.length > 1;
 
-  // Compute fulfillment stats
   const totalOrderedQty = order.items.reduce((sum, it) => sum + (it.qty || 0), 0);
   const totalClaimedQty = subOrders.reduce(
     (sum, so) => sum + so.items.reduce((s, it) => s + (it.qty || 0), 0),
@@ -123,7 +122,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs transition-shadow hover:shadow-sm">
-      {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500 text-slate-950 font-bold text-sm shadow-xs">
@@ -170,8 +168,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
           <p className="text-base font-bold text-slate-900">
             ₹{order.grand_total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
           </p>
-          {/* Whether cash is still owed at the door decides what the customer
-              should have ready, so it belongs beside the amount. */}
           <span
             className={`mt-1 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
               order.payment_mode === "cod"
@@ -184,7 +180,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
         </div>
       </div>
 
-      {/* Multi-Vendor Fulfillment Status Summary Bar */}
       {subOrders.length > 0 && (
         <div className="mt-4 rounded-lg bg-slate-50 p-3 border border-slate-200/80">
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
@@ -195,7 +190,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
               </span>
             </div>
 
-            {/* Quick status counters */}
             <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
               {deliveredCount > 0 && (
                 <span className="rounded-md bg-emerald-100/80 px-2 py-0.5 font-bold text-emerald-800">
@@ -220,7 +214,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
             </div>
           </div>
 
-          {/* Partial acceptance note if not all quantities are claimed yet */}
           {totalClaimedQty > 0 && totalClaimedQty < totalOrderedQty && (
             <p className="mt-2 text-[11px] text-amber-700 bg-amber-50/80 px-2.5 py-1 rounded border border-amber-200/60 font-medium">
               ℹ️ {totalClaimedQty} of {totalOrderedQty} items claimed by suppliers. Remaining {totalOrderedQty - totalClaimedQty} items are in queue for nearby vendors.
@@ -229,7 +222,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
         </div>
       )}
 
-      {/* Multi-Vendor Packages Section */}
       {subOrders.length > 0 ? (
         <div className="mt-5 space-y-4">
           <div className="flex items-center justify-between">
@@ -256,7 +248,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
                   key={so.id}
                   className="rounded-xl border border-slate-200 bg-slate-50/40 p-4 shadow-2xs transition-all hover:border-slate-300"
                 >
-                  {/* Sub-order header */}
                   <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/70 pb-3">
                     <div>
                       <div className="flex items-center gap-2">
@@ -292,7 +283,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
                     </div>
                   </div>
 
-                  {/* Delivery Milestone Stepper */}
                   <div className="mt-3.5 px-2">
                     <div className="grid grid-cols-4 gap-2 text-center text-[10px]">
                       {[
@@ -332,7 +322,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
                     </div>
                   </div>
 
-                  {/* Complete Order Delivery OTP Box */}
                   <div className="mt-4">
                     {isDelivered ? (
                       <div className="flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50/80 px-3.5 py-2.5 text-xs text-emerald-900">
@@ -396,7 +385,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
                     ) : null}
                   </div>
 
-                  {/* Driver & Logistics Info */}
                   {(so.driver_name || so.vehicle_name || so.vehicle_registration) && (
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white px-3 py-2 border border-slate-200/80 text-xs">
                       <div className="flex items-center gap-2">
@@ -432,7 +420,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
                     </div>
                   )}
 
-                  {/* Items in this Package */}
                   <div className="mt-3 space-y-1">
                     <p className="text-[11px] font-semibold text-slate-600">
                       Package Items ({so.items.length})
@@ -476,7 +463,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
           </div>
         </div>
       ) : (
-        /* Fallback when no sub-orders created yet */
         <div className="mt-4 space-y-3">
           {order.delivery_otp && (
             <div className="rounded-lg border-2 border-amber-400 bg-amber-50 p-4 shadow-xs">
@@ -551,7 +537,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
         </div>
       )}
 
-      {/* Address and Financial Breakdown */}
       <div className="mt-4 grid grid-cols-1 gap-3 border-t border-slate-100 pt-4 sm:grid-cols-2">
         {order.delivery_address && (
           <div className="rounded-lg border border-slate-100 bg-slate-50/60 p-3 text-xs">
@@ -591,7 +576,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
         </div>
       </div>
 
-      {/* Footer Actions */}
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">
         <button
           type="button"
@@ -621,7 +605,6 @@ export default function MaterialOrderCard({ order, onUpdated }: Props) {
         )}
       </div>
 
-      {/* History Timeline Dropdown */}
       {showHistory && (
         <div className="mt-3 rounded-lg bg-slate-900 p-4 text-slate-100">
           <p className="text-xs font-bold text-slate-200">Tracking Timeline</p>

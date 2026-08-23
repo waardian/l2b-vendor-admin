@@ -2,9 +2,6 @@
 
 import type { ConditionLeaf, ConditionNode, RuleField } from "@/lib/types";
 
-// Rows are the flat editing shape. The API takes a nested all/any tree, so the
-// two conversions below are the whole contract: everything the admin sees is a
-// list of "field / operator / value" rows joined by AND.
 export interface ConditionRow {
   field: string;
   op: string;

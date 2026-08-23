@@ -5,9 +5,6 @@ import { kycDocumentApi } from "@/lib/api";
 import ApproveRejectRow from "./ApproveRejectRow";
 import DocumentImage from "./DocumentImage";
 
-/** Plain-English names for the document types a KYC block can hold. Anything not listed
- * falls back to a title-cased version of the raw type, so a new document type added on
- * the backend still reads sensibly without a web release. */
 const DOCUMENT_LABELS: Record<string, string> = {
   aadhaar_front: "Aadhaar Card",
   pan_card: "PAN card",
@@ -38,14 +35,6 @@ interface Props {
   afterReview: (result: { onboarding_status?: string }) => Promise<void>;
 }
 
-/** Per-document approve/reject for one KYC block.
- *
- * Reviewing at this level rather than on the block as a whole is what lets the partner
- * app put a red border and a reason on the exact field that failed, and require only
- * that document to be re-uploaded. Everything else in the block keeps its own status —
- * verified stays verified — so nothing already accepted is re-checked or re-charged to
- * Digio. The block itself is pulled back to Rejected automatically while any document
- * here is rejected. */
 export default function KycDocumentReview({
   userId,
   documents,

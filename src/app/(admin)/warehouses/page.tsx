@@ -51,8 +51,6 @@ export default function WarehousesPage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [savedAt, setSavedAt] = useState<string | null>(null);
 
-  // Nothing is set synchronously here: `loading` already starts true, and the
-  // retry button owns the reset before bumping the token that re-runs this.
   useEffect(() => {
     let cancelled = false;
     vendorApi
@@ -99,8 +97,6 @@ export default function WarehousesPage() {
   const pinnedCount = vendors.filter((v) => v.warehouse).length;
   const missingCount = vendors.length - pinnedCount;
 
-  /** Loads whatever is already on file so the map opens on the vendor's yard
-   *  rather than making an admin re-find a pin that already exists. */
   const selectVendor = (vendor: VendorListItem) => {
     setSelectedUserId(vendor.user_id);
     setSaveError(null);
@@ -133,8 +129,6 @@ export default function WarehousesPage() {
     setLngText(formatCoordinate(next.lng));
   };
 
-  /** Typed coordinates only move the map once both halves parse — otherwise the
-   *  map would lurch across the world on every keystroke of a minus sign. */
   const commitTypedCoordinates = (nextLat: string, nextLng: string) => {
     const lat = parseCoordinate(nextLat);
     const lng = parseCoordinate(nextLng);
@@ -170,7 +164,6 @@ export default function WarehousesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Warehouse Locations</h1>
@@ -196,7 +189,6 @@ export default function WarehousesPage() {
         </div>
       )}
 
-      {/* KPIs */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
           { label: "Material Vendors", value: vendors.length, tone: "text-slate-900", chip: "bg-slate-100 text-slate-600" },
@@ -224,7 +216,6 @@ export default function WarehousesPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
-        {/* Vendor picker */}
         <div className="flex max-h-[720px] flex-col rounded-2xl border border-slate-200/80 bg-white shadow-xs">
           <div className="space-y-3 border-b border-slate-100 p-4">
             <div className="relative">
@@ -306,7 +297,6 @@ export default function WarehousesPage() {
           </div>
         </div>
 
-        {/* Map + form */}
         <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
           {!selected ? (
             <div className="flex h-[420px] flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-center">

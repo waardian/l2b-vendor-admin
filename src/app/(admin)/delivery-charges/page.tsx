@@ -27,7 +27,6 @@ import {
 const CALC_METHODS = ["flat", "per_km", "slab_km", "per_kg", "percent_of_order"];
 const ROUND_MODES = ["half_up", "half_even", "floor", "ceiling"];
 
-/** Methods whose rate is multiplied by something measured off the delivery. */
 const METERED = new Set(["per_km", "per_kg", "slab_km"]);
 
 function blankCard(): DeliveryRateCardWrite {
@@ -77,14 +76,11 @@ function blankCharge(order: number): DeliveryCharge {
   };
 }
 
-/** "ic_material_vehicle_14ft_truck" → "14ft truck". The key is the app's, the
- *  label is the admin's. */
 function iconLabel(key: string): string {
   const trimmed = key.replace(/^ic_material_vehicle_/, "").replace(/_/g, " ");
   return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
 }
 
-/** "₹50 flat", "₹18/km after the first 3" — the sentence an admin is composing. */
 function describeCharge(charge: DeliveryCharge): string {
   const rate = charge.rate_value ?? 0;
   const free = charge.free_units ?? 0;
@@ -236,8 +232,6 @@ export default function DeliveryChargesPage() {
   const updateCharge = (index: number, patch: Partial<DeliveryCharge>) =>
     setCharges(charges.map((c, i) => (i === index ? { ...c, ...patch } : c)));
 
-  // --- the fleet the apps draw the picker from ------------------------------
-
   const resetVehicleForm = () => {
     setVehicleDraft(blankVehicle());
     setEditingVehicle(null);
@@ -281,7 +275,6 @@ export default function DeliveryChargesPage() {
     }, `${body.name} added to the picker`);
   };
 
-  /** Swaps a vehicle with its neighbour and sends the whole order back. */
   const moveVehicle = (index: number, delta: number) => {
     const next = [...vehicles];
     const target = index + delta;
@@ -296,7 +289,6 @@ export default function DeliveryChargesPage() {
   const vehicleLabel = (code: string | null) =>
     code ? vehicles.find((v) => v.code === code)?.name ?? code : "Any vehicle (fallback)";
 
-  /** The sentence the card adds up to, so the admin reads it back before saving. */
   const formula = useMemo(() => {
     const parts = charges.filter((c) => c.is_active).map(describeCharge);
     const floor = draft.min_total ? `, minimum ₹${draft.min_total}` : "";
@@ -319,8 +311,6 @@ export default function DeliveryChargesPage() {
       {error && <Banner tone="error">{error}</Banner>}
       {notice && <Banner tone="success">{notice}</Banner>}
 
-      {/* The fleet itself. The vendor apps render this list in this order and
-          re-sort nothing, so the sequence set here is the sequence they show. */}
       <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs">
         <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
           <div>
@@ -392,14 +382,11 @@ export default function DeliveryChargesPage() {
                   </td>
                   <td>
                     <div className="flex items-center gap-2.5">
-                      {/* Exactly what the apps will draw: the bundled art when
-                          they ship it, otherwise the machine's photograph. */}
                       {vehicle.icon_key ? (
                         <span className="flex h-8 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-[9px] font-bold uppercase text-slate-500">
                           Art
                         </span>
                       ) : vehicle.image_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={vehicle.image_url}
                           alt=""

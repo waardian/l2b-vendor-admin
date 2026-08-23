@@ -58,12 +58,10 @@ export default function ApiDocsPage() {
     setIsLoggedIn(Boolean(getToken()));
   }, []);
 
-  // Total endpoint count
   const totalCount = useMemo(() => {
     return apiGroups.reduce((acc, g) => acc + g.endpoints.length, 0);
   }, []);
 
-  // Filtered groups
   const filteredGroups = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
     return apiGroups
@@ -151,11 +149,9 @@ export default function ApiDocsPage() {
 
   return (
     <div className="flex h-screen bg-slate-50 text-slate-900 font-sans">
-      {/* Sidebar only rendered when logged in */}
       {isLoggedIn && <Sidebar />}
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Top Header Bar */}
         <header className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200/80 bg-white/90 px-8 backdrop-blur-md sticky top-0 z-20">
           <div className="flex items-center gap-3">
             {!isLoggedIn && (
@@ -179,7 +175,6 @@ export default function ApiDocsPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Method Filter Pills */}
             <div className="flex gap-1 bg-slate-100/90 p-1 rounded-xl border border-slate-200/70 text-xs font-semibold">
               {["ALL", "GET", "POST", "PUT", "PATCH", "DELETE"].map((m) => (
                 <button
@@ -196,7 +191,6 @@ export default function ApiDocsPage() {
               ))}
             </div>
 
-            {/* Search Box */}
             <div className="relative">
               <input
                 type="text"
@@ -220,7 +214,6 @@ export default function ApiDocsPage() {
               </svg>
             </div>
 
-            {/* Expand / Collapse All */}
             <button
               onClick={toggleAll}
               className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-xs hover:bg-slate-50 transition"
@@ -228,7 +221,6 @@ export default function ApiDocsPage() {
               {Object.values(expandedCards).some(Boolean) ? "Collapse All" : "Expand All"}
             </button>
 
-            {/* Admin Login link if not logged in */}
             {!isLoggedIn && (
               <Link
                 href="/login"
@@ -240,7 +232,6 @@ export default function ApiDocsPage() {
           </div>
         </header>
 
-        {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto p-8">
           <div className={isLoggedIn ? "space-y-9" : "max-w-7xl mx-auto space-y-9"}>
             {filteredGroups.length === 0 ? (
@@ -251,7 +242,6 @@ export default function ApiDocsPage() {
             ) : (
               filteredGroups.map((group) => (
                 <section key={group.groupName} className="space-y-3">
-                  {/* Feature Module Header */}
                   <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                     <div className="flex items-center gap-2.5">
                       <h2 className="text-sm font-bold text-slate-900 tracking-tight">{group.groupName}</h2>
@@ -261,7 +251,6 @@ export default function ApiDocsPage() {
                     </div>
                   </div>
 
-                  {/* Endpoints List */}
                   <div className="space-y-2.5">
                     {group.endpoints.map((ep) => {
                       const isOpen = Boolean(expandedCards[ep.id]);
@@ -272,7 +261,6 @@ export default function ApiDocsPage() {
                             ep.method
                           )}`}
                         >
-                          {/* Endpoint Header Row (Click to toggle) */}
                           <div
                             onClick={() => toggleCard(ep.id)}
                             className="flex items-center justify-between gap-4 p-3 cursor-pointer select-none hover:bg-slate-50/80 transition"
@@ -316,10 +304,8 @@ export default function ApiDocsPage() {
                             </div>
                           </div>
 
-                          {/* Collapsible Details Body */}
                           {isOpen && (
                             <div className="border-t border-slate-100 bg-slate-50/40 p-4 space-y-4">
-                              {/* Simple & Clean 3-Box Information */}
                               <div className="rounded-xl border border-blue-100 bg-blue-50/40 p-3.5 space-y-2.5 text-xs">
                                 <div>
                                   <span className="font-bold text-blue-950 block mb-0.5">
@@ -327,7 +313,7 @@ export default function ApiDocsPage() {
                                   </span>
                                   <p className="text-slate-800 leading-relaxed font-medium">{ep.purpose}</p>
                                 </div>
-                                
+
                                 <div className="pt-2 border-t border-blue-100/70">
                                   <span className="font-bold text-slate-800 block mb-0.5">
                                     Use Case:
@@ -345,7 +331,6 @@ export default function ApiDocsPage() {
                                 </div>
                               </div>
 
-                              {/* Parameters Table */}
                               {ep.parameters.length > 0 && (
                                 <div className="space-y-1.5">
                                   <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
@@ -394,7 +379,6 @@ export default function ApiDocsPage() {
                                 </div>
                               )}
 
-                              {/* Request Body with Copy Button */}
                               {ep.requestBody && (
                                 <div className="space-y-1.5">
                                   <div className="flex items-center justify-between">
@@ -421,7 +405,6 @@ export default function ApiDocsPage() {
                                 </div>
                               )}
 
-                              {/* Responses */}
                               {ep.responses.length > 0 && (
                                 <div className="space-y-2">
                                   <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-600">

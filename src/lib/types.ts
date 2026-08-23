@@ -1,6 +1,3 @@
-// Mirrors the shapes returned by l2b-backend's /rentals/admin, /admin, and /auth
-// endpoints. Kept intentionally loose (lots of optional/nullable fields) since this
-// is a test/ops tool, not the source of truth for the schema.
 
 export interface LoginResponse {
   success: boolean;
@@ -22,7 +19,6 @@ export interface VendorWarehouse {
   longitude: number;
   label: string | null;
   address: string | null;
-  /** device | map_pin | admin — who placed the pin, and how. */
   source: string;
   updated_by_user_id: string | null;
   updated_at: string | null;
@@ -49,7 +45,6 @@ export interface VendorListItem {
   has_skills: boolean;
   onboarding_step: string;
   vendor_code: string | null;
-  /** Null until the vendor or an admin has placed one. */
   warehouse?: VendorWarehouse | null;
 }
 
@@ -164,15 +159,6 @@ export interface KycDetail {
   dl_number?: string;
 }
 
-// ---------------------------------------------------------------------------
-// Digio (third-party OCR/KYC provider) — values the provider machine-extracted
-// from an uploaded document, as opposed to values the user typed in themselves.
-// ---------------------------------------------------------------------------
-
-/** One value inside a Digio `extracted_data` blob. Digio returns mostly flat
- * scalars, but some document types nest (a DL carries `address_information`), so
- * the shape is recursive and the concrete keys vary per document type. Consumers
- * narrow at render time rather than assuming a fixed schema. */
 export type DigioExtractedValue =
   | string
   | number
@@ -183,19 +169,13 @@ export type DigioExtractedValue =
 
 export interface DigioVerification {
   id: string;
-  /** e.g. "dl_ocr", "pan_ocr", "aadhaar_ocr", "cheque_ocr", "gst_verify". */
   verification_type: string;
-  /** Human-readable name of the document, e.g. "Driving License". */
   label: string;
-  /** One of "verified" | "failed" | "pending" | "skipped" — kept as a string
-   * since the backend owns this vocabulary and may extend it. */
   result: string;
-  /** Digio's own request id — the handle support uses to trace a record back. */
   digio_request_id: string | null;
   created_at: string | null;
   id_number: string | null;
   holder_name: string | null;
-  /** Null on rows created before the backend started persisting the raw payload. */
   extracted_data: Record<string, DigioExtractedValue> | null;
 }
 
@@ -209,7 +189,6 @@ export interface VendorDetail {
   company_kyc: KycDetail | null;
   warehouse?: VendorWarehouse | null;
   documents: DocumentSummary[];
-  /** Absent on older records and on users who never went through Digio KYC. */
   digio_verifications?: DigioVerification[];
 }
 
@@ -229,7 +208,6 @@ export interface OperatorDetail {
   kyc: KycDetail | null;
   tpi: DocumentSummary | null;
   documents: DocumentSummary[];
-  /** Absent on older records and on users who never went through Digio KYC. */
   digio_verifications?: DigioVerification[];
 }
 
@@ -237,11 +215,6 @@ export interface ReviewResult {
   onboarding_status?: string;
   [key: string]: unknown;
 }
-
-// ---------------------------------------------------------------------------
-// Machinery catalog (GET /machinery/catalog) — used to resolve subcategory_id /
-// capacity_id / variant_id on machines & skills into human-readable labels.
-// ---------------------------------------------------------------------------
 
 export interface MachineryVariant {
   id: number;
@@ -266,14 +239,6 @@ export interface MachineryCatalogResponse {
   message?: string | null;
   data: { subcategories: MachinerySubcategory[] };
 }
-
-// ---------------------------------------------------------------------------
-// Finance: deduction rules and incentive campaigns
-//
-// The condition tree and the field catalogue are deliberately loose: the admin
-// builder renders from whatever /admin/finance/rule-fields returns, so adding a
-// targetable field on the backend must not require a change here.
-// ---------------------------------------------------------------------------
 
 export interface RuleField {
   field_key: string;
@@ -519,28 +484,20 @@ export interface CampaignVersion {
   tiers: CampaignTier[];
 }
 
-// ---------------------------------------------------------------------------
-// Delivery charges
-// ---------------------------------------------------------------------------
-
 export interface DeliveryVehicleType {
   code: string;
   name: string;
   capacity_label: string | null;
   max_payload_kg: number | null;
   icon_key: string | null;
-  /** The machine photograph the apps fall back to when there is no bundled art. */
   image_url: string | null;
   length_label: string | null;
   height_label: string | null;
-  /** Where the vehicle sits in the apps' picker. The list arrives in this order. */
   display_order: number;
   is_active: boolean;
-  /** False when nothing prices it yet: the picker lists it, but disabled. */
   has_rate_card: boolean;
 }
 
-/** What the console can change about a vehicle. `code` is set once, on create. */
 export interface DeliveryVehicleTypeWrite {
   name: string;
   capacity_label?: string | null;
@@ -638,4 +595,3 @@ export interface DeliveryPreviewRequest {
   weight_kg: number;
   state_code?: string | null;
 }
-

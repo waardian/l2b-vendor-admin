@@ -85,7 +85,6 @@ export default function Sidebar() {
 
   return (
     <aside className="flex h-screen w-64 shrink-0 flex-col border-r border-slate-800 bg-slate-950 text-slate-100 shadow-xl">
-      {/* Brand Header */}
       <div className="flex items-center gap-3 border-b border-slate-800/80 px-5 py-5">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 font-extrabold text-slate-950 shadow-md shadow-amber-500/20">
           L2B
@@ -98,7 +97,6 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* Navigation items */}
       <nav className="flex-1 space-y-1.5 p-3.5">
         <p className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">Navigation</p>
         {NAV_ITEMS.map((item) => {
@@ -124,7 +122,6 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Footer / Log out */}
       <div className="border-t border-slate-800/80 p-3.5 bg-slate-950/60">
         <button
           onClick={() => {

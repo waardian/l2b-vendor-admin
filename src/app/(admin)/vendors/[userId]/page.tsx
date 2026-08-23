@@ -60,7 +60,6 @@ export default function VendorDetailPage() {
     } finally {
       if (currentUserIdRef.current === requestedUserId) setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   useEffect(() => {
@@ -131,7 +130,6 @@ export default function VendorDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Top Breadcrumb & Actions */}
       <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
         <div className="flex items-center gap-3">
           <Link
@@ -151,7 +149,6 @@ export default function VendorDetailPage() {
           </div>
         </div>
 
-        {/* Final Decision Bar */}
         {!isTerminal && (
           <div className="flex items-center gap-2">
             <button
@@ -177,12 +174,10 @@ export default function VendorDetailPage() {
         </div>
       )}
 
-      {/* Main Profile Header Info Card */}
       <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
             {basic_info.profile_photo_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={basic_info.profile_photo_url}
                 alt="Vendor Profile"
@@ -221,7 +216,6 @@ export default function VendorDetailPage() {
         </div>
       </div>
 
-      {/* Account Info Details Section */}
       <Section title="Basic Account Details">
         <dl className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm sm:grid-cols-3 lg:grid-cols-4">
           <DetailField label="Phone Number" value={basic_info.phone} />
@@ -233,7 +227,6 @@ export default function VendorDetailPage() {
         </dl>
       </Section>
 
-      {/* Profile Details Section */}
       {profile && (
         <Section title="Vendor Classification & Onboarding">
           <dl className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm sm:grid-cols-3 lg:grid-cols-4">
@@ -248,14 +241,12 @@ export default function VendorDetailPage() {
         </Section>
       )}
 
-      {/* Digio Verification Panel */}
       {(digio_verifications ?? []).length > 0 && (
         <Section title="Automated Digio KYC Verification">
           <DigioVerificationPanel verifications={digio_verifications!} />
         </Section>
       )}
 
-      {/* Vendor KYC Document Review */}
       {kyc && (
         <Section
           title="Vendor KYC Verification Review"
@@ -295,7 +286,6 @@ export default function VendorDetailPage() {
         </Section>
       )}
 
-      {/* Company KYC Document Review */}
       {company_kyc && (
         <Section
           title="Company KYC Verification Review"
@@ -336,7 +326,6 @@ export default function VendorDetailPage() {
         </Section>
       )}
 
-      {/* Registered Fleet Machines Section */}
       {machines.length > 0 && (
         <Section title={`Registered Fleet Machines (${machines.length})`}>
           <div className="space-y-6">
@@ -354,7 +343,6 @@ export default function VendorDetailPage() {
               const capacityLabel = m.capacity_label ?? m.capacity ?? resolved.capacityLabel ?? (m.capacity_id ? String(m.capacity_id) : null);
               const variantLabel = resolved.variantLabel ?? (m.variant_id ? String(m.variant_id) : null);
 
-              // Gather all documents belonging to this machine
               const machineDocs = m.documents && m.documents.length > 0
                 ? m.documents
                 : docsFor("machine", m.id);
@@ -390,7 +378,6 @@ export default function VendorDetailPage() {
                     <StatusBadge status={m.status} />
                   </div>
 
-                  {/* RC Document Review & Images */}
                   <div className="space-y-2">
                     <ApproveRejectRow
                       label="RC Document"
@@ -414,7 +401,6 @@ export default function VendorDetailPage() {
                     )}
                   </div>
 
-                  {/* Insurance Certificate Review & Images */}
                   <div className="space-y-2">
                     <ApproveRejectRow
                       label="Insurance Certificate"
@@ -438,7 +424,6 @@ export default function VendorDetailPage() {
                     )}
                   </div>
 
-                  {/* Third Party Inspection (TPI) Review & Images */}
                   <div className="space-y-2">
                     <ApproveRejectRow
                       label="Third Party Inspection (TPI)"
@@ -462,7 +447,6 @@ export default function VendorDetailPage() {
                     )}
                   </div>
 
-                  {/* Other Uploaded Machine Documents Gallery */}
                   {otherMachineDocs.length > 0 && (
                     <div className="border-t border-slate-200/60 pt-3">
                       <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
@@ -476,7 +460,6 @@ export default function VendorDetailPage() {
                     </div>
                   )}
 
-                  {/* Fallback if machineDocs array is empty but general documents exist for this machine ID */}
                   {machineDocs.length === 0 && (
                     <div className="rounded-xl border border-slate-200 bg-white p-3 text-xs font-medium text-slate-500">
                       No document image files uploaded for this machine yet.

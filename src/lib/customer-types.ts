@@ -284,13 +284,11 @@ export interface MaterialOrderQuoteLine {
   qty: number;
   unit_price: number;
   line_total: number;
-  /** The commodity code the rate came from — cement, brick and steel differ. */
   hsn_code?: string | null;
   tax_rate_pct: number;
   tax_amount: number;
 }
 
-/** What the basket costs, from the same code that will bill it. */
 export interface MaterialOrderQuote {
   subtotal: number;
   tax_total: number;
@@ -304,8 +302,6 @@ export interface PlaceMaterialOrderPayload {
   delivery_address_id: string;
   delivery_mode?: string;
   scheduled_delivery_date?: string;
-  /** How the customer pays. Omitted reads as `online`, which is what every
-   *  order placed before this field existed was settled as. */
   payment_mode?: "online" | "cod";
   items: MaterialOrderItemInput[];
 }
@@ -354,5 +350,3 @@ export interface DeliveryMode {
   surcharge_amount: string;
   eta_date: string | null;
 }
-
-

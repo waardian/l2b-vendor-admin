@@ -81,7 +81,6 @@ export function TextInput({
   );
 }
 
-/** A select that shows plain-English labels but stores the raw API value. */
 export function Choice({
   value,
   options,
@@ -93,8 +92,6 @@ export function Choice({
   options: string[];
   onChange: (value: string) => void;
   placeholder?: string;
-  /** Display text per option, positionally. Falls back to `humanise(option)`,
-   *  which is right for vocabularies but not for names that are already prose. */
   labels?: string[];
 }) {
   return (
@@ -166,7 +163,6 @@ export function ChipGroup({
   );
 }
 
-/** A yes/no setting with room to say what turning it on means. */
 export function Toggle({
   label,
   hint,

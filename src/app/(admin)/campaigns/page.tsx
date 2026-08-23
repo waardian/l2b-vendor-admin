@@ -69,8 +69,6 @@ export default function CampaignsPage() {
   const [draft, setDraft] = useState<CampaignWrite>(blankCampaign());
   const [audience, setAudience] = useState<ConditionRow[]>([]);
   const [metricFilter, setMetricFilter] = useState<ConditionRow[]>([]);
-  // `live` decides what Save does: a draft version is rewritten in place, but a
-  // live one is never touched — saving forks a new version to activate instead.
   const [editing, setEditing] = useState<{
     campaignId: string;
     versionId: string;
@@ -206,7 +204,6 @@ export default function CampaignsPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      {/* Header Banner */}
       <header className="flex items-center justify-between border-b border-slate-200/80 pb-4">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Incentive Campaigns</h1>
@@ -219,7 +216,6 @@ export default function CampaignsPage() {
       {error && <Banner tone="error">{error}</Banner>}
       {notice && <Banner tone="success">{notice}</Banner>}
 
-      {/* Campaigns Table Card */}
       <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs">
         <div className="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
           <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
@@ -299,8 +295,6 @@ export default function CampaignsPage() {
                       </button>
                     )}
 
-                    {/* A version newer than the live one is waiting: offer to
-                        promote it, which retires the version it replaces. */}
                     {campaign.latest_version_id &&
                       (campaign.latest_version_id !== campaign.active_version_id ||
                         (campaign.status !== "active" &&
@@ -342,7 +336,6 @@ export default function CampaignsPage() {
         </table>
       </section>
 
-      {/* Campaign Form Section */}
       <section className="space-y-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <div className="flex items-start justify-between border-b border-slate-100 pb-4">
           <div>
@@ -600,9 +593,7 @@ export default function CampaignsPage() {
                           editing.versionId,
                           payload()
                         )
-                      : // Editing the live version forks a new one — posting the
-                        // same code drafts the next version rather than
-                        // rewriting what partners are already enrolled in.
+                      :
                         campaignApi.createDraft(payload()),
                   editing?.live
                     ? "New version drafted — make it live to replace the current one"

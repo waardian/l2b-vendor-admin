@@ -72,8 +72,6 @@ export default function PlaceMaterialOrderForm({
   ]);
   const [selectedMode, setSelectedMode] = useState<string>("fast_delivery");
   const [quote, setQuote] = useState<MaterialOrderQuote | null>(null);
-  // Same default as the rental checkout, and the same one the settlement engine
-  // assumed for every materials order before this field existed.
   const [paymentMode, setPaymentMode] = useState<"online" | "cod">("online");
   const [scheduledDate, setScheduledDate] = useState<string>(
     new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10)
@@ -190,11 +188,6 @@ export default function PlaceMaterialOrderForm({
   const currentModeObj = deliveryModes.find((m) => m.mode === selectedMode);
   const surcharge = currentModeObj ? parseFloat(currentModeObj.surcharge_amount || "0") : 0;
 
-  // The bill comes from the server, which runs the same code that will charge
-  // it. This used to be worked out here — a flat 18% on every line and a
-  // free-delivery threshold of its own — so the customer agreed to one total
-  // and was billed another. Tax follows the commodity: cement 18%, clay brick
-  // 12%, aggregate 5%.
   const subtotal = cart.reduce((acc, i) => acc + i.line_total, 0);
   const taxTotal = quote?.tax_total ?? 0;
   const shippingTotal = quote?.shipping_total ?? 0;
@@ -221,8 +214,6 @@ export default function PlaceMaterialOrderForm({
         if (!cancelled) setQuote(result);
       })
       .catch(() => {
-        // A quote that will not load must not block checkout; the order is
-        // priced server-side either way when it is placed.
         if (!cancelled) setQuote(null);
       });
     return () => {
@@ -461,10 +452,6 @@ export default function PlaceMaterialOrderForm({
         />
       </div>
 
-      {/* The same two choices the rental checkout offers, in the same words.
-          It is not cosmetic: a cash order settles differently — the driver
-          collects, the vendor carries a shortfall until it is recovered, and
-          deduction rules scoped to `cod` only fire on this value. */}
       <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs space-y-3.5">
         <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
           Payment Mode
@@ -544,8 +531,6 @@ export default function PlaceMaterialOrderForm({
                 </div>
 
                 <div className="mt-2.5 space-y-1 text-xs">
-                  {/* The mode's own delivery fee — the same figure the bill
-                      below adds, so the picker and the total agree. */}
                   <div className="flex items-center justify-between text-slate-600">
                     <span>Delivery</span>
                     <span className={`font-semibold ${sc > 0 ? "text-amber-800" : "text-slate-700"}`}>
@@ -606,8 +591,6 @@ export default function PlaceMaterialOrderForm({
             </span>
             <span>{quoting && !quote ? "…" : `₹${taxTotal.toFixed(2)}`}</span>
           </div>
-          {/* Which rate hit which line. Cement, brick and steel are not taxed
-              alike, so one blended percentage would be a fiction. */}
           {quote && new Set(quote.lines.map((l) => l.tax_rate_pct)).size > 1 && (
             <div className="rounded-lg bg-slate-50 px-2.5 py-2 text-[11px] text-slate-500">
               {[...new Set(quote.lines.map((l) => l.tax_rate_pct))]

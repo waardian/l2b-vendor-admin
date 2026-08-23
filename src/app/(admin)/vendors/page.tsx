@@ -47,7 +47,6 @@ export default function VendorsListPage() {
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, status]);
 
   const filteredVendors = vendors.filter((v) => {
@@ -68,7 +67,6 @@ export default function VendorsListPage() {
 
   return (
     <div className="space-y-6">
-      {/* Top Header Title & API Reference */}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">Vendors Directory</h1>
@@ -82,7 +80,6 @@ export default function VendorsListPage() {
         </div>
       </div>
 
-      {/* KPI Stats Overview Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all hover:shadow-md">
           <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
@@ -133,7 +130,6 @@ export default function VendorsListPage() {
         </div>
       </div>
 
-      {/* Filter Bar & Search */}
       <div className="flex flex-col gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
           <div className="relative flex-1">
@@ -191,7 +187,6 @@ export default function VendorsListPage() {
         </div>
       )}
 
-      {/* Main Table Card */}
       <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs">
         <table className="admin-table">
           <thead>

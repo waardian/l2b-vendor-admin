@@ -46,11 +46,9 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-slate-950 px-4 py-12">
-      {/* Background glow circle */}
       <div className="absolute h-96 w-96 rounded-full bg-amber-500/10 blur-3xl" />
 
       <div className="relative w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/90 p-8 shadow-2xl backdrop-blur-xl">
-        {/* Brand Logo & Header */}
         <div className="flex flex-col items-center text-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 font-black text-slate-950 shadow-lg shadow-amber-500/20">
             L2B
