@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { UserAddress, UserAddressInput } from "@/lib/customer-types";
 import { customerApi } from "@/lib/customer-api";
+import { INDIA_STATES, stateName } from "@/lib/india-states";
+import { getCurrentPosition } from "@/lib/geolocation";
 
 interface Props {
   addresses: UserAddress[];
@@ -23,6 +26,7 @@ export default function DeliveryAddressManager({
   const [error, setError] = useState<string | null>(null);
 
   const [locating, setLocating] = useState(false);
+  const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
 
   const [form, setForm] = useState<UserAddressInput>({
     label: "Site Office",
@@ -52,6 +56,7 @@ export default function DeliveryAddressManager({
       is_default: addresses.length === 0,
     });
     setError(null);
+    setGpsAccuracy(null);
     setShowModal(true);
   };
 
@@ -70,37 +75,36 @@ export default function DeliveryAddressManager({
       is_default: addr.is_default,
     });
     setError(null);
+    setGpsAccuracy(null);
     setShowModal(true);
   };
 
-  const handleGetCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      setError("Geolocation is not supported by your browser.");
-      return;
-    }
+  const handleGetCurrentLocation = async () => {
     setLocating(true);
     setError(null);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setForm((prev) => ({
-          ...prev,
-          lat: Number(pos.coords.latitude.toFixed(6)),
-          lng: Number(pos.coords.longitude.toFixed(6)),
-        }));
-        setLocating(false);
-      },
-      (err) => {
-        setError(`Unable to retrieve your location: ${err.message}`);
-        setLocating(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
+    try {
+      const fix = await getCurrentPosition();
+      setForm((prev) => ({
+        ...prev,
+        lat: Number(fix.lat.toFixed(6)),
+        lng: Number(fix.lng.toFixed(6)),
+      }));
+      setGpsAccuracy(fix.accuracyMeters);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to retrieve your location.");
+    } finally {
+      setLocating(false);
+    }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.full_address.trim()) {
-      setError("Full address is required.");
+  const handleSubmit = async () => {
+    if (submitting) return;
+    if (form.full_address.trim().length < 5) {
+      setError("Full address is required (at least 5 characters).");
+      return;
+    }
+    if (form.pincode && !/^\d{6}$/.test(form.pincode)) {
+      setError("PIN code must be 6 digits.");
       return;
     }
     setSubmitting(true);
@@ -230,10 +234,15 @@ export default function DeliveryAddressManager({
                   {addr.full_address}
                 </p>
 
-                {(addr.landmark || addr.pincode) && (
+                {(addr.landmark || addr.pincode || addr.state_code) && (
                   <p className="mt-1.5 text-[11px] text-slate-400">
-                    {addr.landmark ? `Landmark: ${addr.landmark} · ` : ""}
-                    {addr.pincode ? `PIN: ${addr.pincode}` : ""}
+                    {[
+                      addr.landmark ? `Landmark: ${addr.landmark}` : null,
+                      addr.pincode ? `PIN: ${addr.pincode}` : null,
+                      stateName(addr.state_code) ?? addr.state_code ?? null,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
                   </p>
                 )}
 
@@ -286,7 +295,7 @@ export default function DeliveryAddressManager({
         </div>
       )}
 
-      {showModal && (
+      {showModal && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-xs">
           <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl border border-slate-100">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -310,7 +319,14 @@ export default function DeliveryAddressManager({
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+            <div
+              className="mt-4 space-y-3"
+              onKeyDown={(e) => {
+                if (e.key !== "Enter" || e.target instanceof HTMLTextAreaElement) return;
+                e.preventDefault();
+                void handleSubmit();
+              }}
+            >
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[11px] font-semibold text-slate-700">Label</label>
@@ -372,20 +388,9 @@ export default function DeliveryAddressManager({
               </div>
 
               <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-3 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-slate-800">GPS Coordinates (for 6km Warehouse Proximity)</span>
-                  <button
-                    type="button"
-                    onClick={handleGetCurrentLocation}
-                    disabled={locating}
-                    className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 hover:text-amber-900 bg-amber-100 hover:bg-amber-200/80 px-2 py-0.5 rounded-md transition-colors"
-                  >
-                    <svg className={`h-3 w-3 ${locating ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    </svg>
-                    {locating ? "Locating…" : "📍 Use Current GPS"}
-                  </button>
-                </div>
+                <span className="block text-[11px] font-bold text-slate-800">
+                  GPS Coordinates (for 6km Warehouse Proximity)
+                </span>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-[11px] font-semibold text-slate-700">Latitude</label>
@@ -410,6 +415,24 @@ export default function DeliveryAddressManager({
                     />
                   </div>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => void handleGetCurrentLocation()}
+                  disabled={locating}
+                  className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-amber-100 px-3 py-2 text-[11px] font-bold text-amber-800 transition-colors hover:bg-amber-200/80 hover:text-amber-900 disabled:opacity-50"
+                >
+                  <svg className={`h-3.5 w-3.5 ${locating ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  </svg>
+                  {locating ? "Locating…" : "Use my current location"}
+                </button>
+
+                {gpsAccuracy !== null && (
+                  <p className="text-[11px] font-semibold text-emerald-700">
+                    Pinned from your device · accurate to about {gpsAccuracy} m
+                  </p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -417,23 +440,28 @@ export default function DeliveryAddressManager({
                   <label className="text-[11px] font-semibold text-slate-700">PIN Code</label>
                   <input
                     type="text"
+                    inputMode="numeric"
                     maxLength={6}
                     value={form.pincode || ""}
-                    onChange={(e) => setForm({ ...form, pincode: e.target.value })}
+                    onChange={(e) => setForm({ ...form, pincode: e.target.value.replace(/\D/g, "").slice(0, 6) })}
                     placeholder="e.g. 411057"
                     className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-amber-500 focus:outline-hidden"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-700">State Code</label>
-                  <input
-                    type="text"
-                    maxLength={2}
-                    value={form.state_code || "MH"}
-                    onChange={(e) => setForm({ ...form, state_code: e.target.value.toUpperCase() })}
-                    placeholder="e.g. MH, KA, DL"
+                  <label className="text-[11px] font-semibold text-slate-700">State</label>
+                  <select
+                    value={form.state_code ?? ""}
+                    onChange={(e) => setForm({ ...form, state_code: e.target.value || undefined })}
                     className="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-amber-500 focus:outline-hidden"
-                  />
+                  >
+                    <option value="">Select a state…</option>
+                    {INDIA_STATES.map((state) => (
+                      <option key={state.code} value={state.code}>
+                        {state.name} ({state.code})
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -459,16 +487,18 @@ export default function DeliveryAddressManager({
                   Cancel
                 </button>
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={() => void handleSubmit()}
                   disabled={submitting}
                   className="rounded-lg bg-amber-500 px-4 py-1.5 text-xs font-semibold text-slate-950 hover:bg-amber-400 disabled:opacity-50 shadow-xs"
                 >
                   {submitting ? "Saving…" : editingAddress ? "Update" : "Save"}
                 </button>
               </div>
-            </form>
+            </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

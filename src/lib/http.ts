@@ -51,17 +51,45 @@ async function send<T>(path: string, init: RequestInit): Promise<T> {
 
   if (!res.ok) {
     const detail = data && (data.detail ?? data.message);
-    if (detail && typeof detail === "object" && "message" in detail) {
+    if (detail && typeof detail === "object" && !Array.isArray(detail) && "message" in detail) {
       throw new ApiError(res.status, String(detail.message), detail.code);
     }
     const message =
       typeof detail === "string"
         ? detail
-        : detail
-          ? JSON.stringify(detail)
-          : `Request failed with status ${res.status}`;
+        : Array.isArray(detail)
+          ? formatValidationErrors(detail)
+          : detail
+            ? JSON.stringify(detail)
+            : `Request failed with status ${res.status}`;
     throw new ApiError(res.status, message);
   }
 
   return data as T;
+}
+
+interface ValidationIssue {
+  loc?: unknown[];
+  msg?: string;
+}
+
+/**
+ * FastAPI answers a 422 with an array of issues. Rendering that array as JSON puts
+ * `[{"type":"string_too_short","loc":[...]}]` in front of the user, so name the field
+ * and quote the message instead.
+ */
+function formatValidationErrors(issues: unknown[]): string {
+  const lines = issues
+    .map((raw) => {
+      const issue = raw as ValidationIssue;
+      if (!issue?.msg) return null;
+      const path = Array.isArray(issue.loc)
+        ? issue.loc.filter((part) => part !== "body" && typeof part !== "number")
+        : [];
+      const field = path.map((part) => String(part).replace(/_/g, " ")).join(" → ");
+      return field ? `${field}: ${issue.msg}` : issue.msg;
+    })
+    .filter((line): line is string => Boolean(line));
+
+  return lines.length > 0 ? lines.join("; ") : "The server rejected those details.";
 }

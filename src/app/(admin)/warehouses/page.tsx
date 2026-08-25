@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { vendorApi, ApiError } from "@/lib/api";
+import { getCurrentPosition } from "@/lib/geolocation";
 import type { VendorListItem, VendorWarehouse } from "@/lib/types";
 import WarehouseMapPicker, {
   MAPS_API_KEY,
@@ -45,6 +46,10 @@ export default function WarehousesPage() {
   const [latText, setLatText] = useState("");
   const [lngText, setLngText] = useState("");
   const [address, setAddress] = useState("");
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const [accuracyMeters, setAccuracyMeters] = useState<number | null>(null);
+  const reverseGeocodeRef = useRef<((point: LatLng) => void) | null>(null);
   const [label, setLabel] = useState("");
 
   const [saving, setSaving] = useState(false);
@@ -107,6 +112,10 @@ export default function WarehousesPage() {
   };
 
   const applyWarehouse = (warehouse: VendorWarehouse | null) => {
+    // The readouts describe the last fix taken here, so they must not follow a new vendor.
+    setAccuracyMeters(null);
+    setLocationError(null);
+
     if (warehouse) {
       const next = { lat: warehouse.latitude, lng: warehouse.longitude };
       setPoint(next);
@@ -127,6 +136,28 @@ export default function WarehousesPage() {
     setPoint(next);
     setLatText(formatCoordinate(next.lat));
     setLngText(formatCoordinate(next.lng));
+  };
+
+  const captureGeocoder = useCallback((reverseGeocode: (point: LatLng) => void) => {
+    reverseGeocodeRef.current = reverseGeocode;
+  }, []);
+
+  /** Drops the pin on the operator's own position; the map follows the new value. */
+  const pinCurrentLocation = async () => {
+    setLocating(true);
+    setLocationError(null);
+    try {
+      const fix = await getCurrentPosition();
+      onMapMoved({ lat: fix.lat, lng: fix.lng });
+      setAccuracyMeters(fix.accuracyMeters);
+      reverseGeocodeRef.current?.({ lat: fix.lat, lng: fix.lng });
+    } catch (error) {
+      setLocationError(
+        error instanceof Error ? error.message : "Your browser would not share a location."
+      );
+    } finally {
+      setLocating(false);
+    }
   };
 
   const commitTypedCoordinates = (nextLat: string, nextLng: string) => {
@@ -335,6 +366,7 @@ export default function WarehousesPage() {
                 value={point}
                 onChange={onMapMoved}
                 onAddressResolved={setAddress}
+                onGeocoderReady={captureGeocoder}
                 disabled={saving}
               />
 
@@ -371,6 +403,34 @@ export default function WarehousesPage() {
                     className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 font-mono text-sm text-slate-900 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                   />
                 </div>
+
+                <div className="sm:col-span-2">
+                  <button
+                    type="button"
+                    onClick={() => void pinCurrentLocation()}
+                    disabled={saving || locating}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 transition-colors hover:border-amber-400 hover:text-amber-600 disabled:opacity-50"
+                  >
+                    <svg
+                      className={`h-4 w-4 ${locating ? "animate-spin" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v2m0 16v2m10-10h-2M4 12H2" />
+                    </svg>
+                    {locating ? "Locating…" : "Use my current location"}
+                  </button>
+                  {accuracyMeters !== null && !locationError && (
+                    <p className="mt-1.5 text-[11px] font-semibold text-emerald-700">
+                      Pinned from this device · accurate to about {accuracyMeters} m
+                    </p>
+                  )}
+                  {locationError && (
+                    <p className="mt-1.5 text-[11px] font-semibold text-rose-600">{locationError}</p>
+                  )}
+                </div>
+
                 <div className="sm:col-span-2">
                   <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-slate-500">
                     Address <span className="font-semibold normal-case text-slate-400">(optional)</span>

@@ -86,11 +86,14 @@ export default function WarehouseMapPicker({
   value,
   onChange,
   onAddressResolved,
+  onGeocoderReady,
   disabled = false,
 }: {
   value: LatLng | null;
   onChange: (point: LatLng) => void;
   onAddressResolved?: (address: string) => void;
+  /** Hands the map's geocoder to the parent so a pin set outside the map can still resolve an address. */
+  onGeocoderReady?: (reverseGeocode: (point: LatLng) => void) => void;
   disabled?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -158,6 +161,11 @@ export default function WarehouseMapPicker({
   }, []);
 
   useEffect(() => {
+    if (status !== "ready") return;
+    onGeocoderReady?.(reverseGeocode);
+  }, [status, onGeocoderReady, reverseGeocode]);
+
+  useEffect(() => {
     if (status !== "ready" || !mapRef.current || !value) return;
     if (selfMoveRef.current) {
       selfMoveRef.current = false;
@@ -187,19 +195,6 @@ export default function WarehouseMapPicker({
     });
   };
 
-  const useMyLocation = () => {
-    if (!navigator.geolocation || !mapRef.current) return;
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const point = { lat: position.coords.latitude, lng: position.coords.longitude };
-        mapRef.current.setCenter(point);
-        mapRef.current.setZoom(PINNED_ZOOM);
-        reverseGeocode(point);
-      },
-      () => setErrorMessage("Your browser would not share a location.")
-    );
-  };
-
   if (status === "error") {
     return (
       <div className="flex h-[420px] flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
@@ -210,9 +205,14 @@ export default function WarehouseMapPicker({
         </span>
         <p className="text-sm font-bold text-slate-900">Map unavailable</p>
         <p className="max-w-sm text-xs font-medium text-slate-500">
-          {errorMessage ?? "Google Maps could not be loaded."} You can still set the pin by typing
-          coordinates below.
+          {errorMessage ?? "Google Maps could not be loaded."} You can still set the pin from your
+          current location, or by typing coordinates, below.
         </p>
+        {value && (
+          <p className="font-mono text-[11px] font-semibold text-slate-600">
+            {formatCoordinate(value.lat)}, {formatCoordinate(value.lng)}
+          </p>
+        )}
       </div>
     );
   }
@@ -246,17 +246,6 @@ export default function WarehouseMapPicker({
           </button>
         </form>
 
-        <button
-          type="button"
-          onClick={useMyLocation}
-          disabled={disabled}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 transition-colors hover:border-amber-400 hover:text-amber-600 disabled:opacity-50"
-        >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v2m0 16v2m10-10h-2M4 12H2" />
-          </svg>
-          My location
-        </button>
       </div>
 
       <div className="relative overflow-hidden rounded-2xl border border-slate-200 shadow-xs">
