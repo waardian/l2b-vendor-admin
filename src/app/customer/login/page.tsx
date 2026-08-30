@@ -125,7 +125,14 @@ export default function CustomerLoginPage() {
               <p className="text-xs font-semibold text-slate-300">
                 OTP sent to <span className="text-amber-400 font-bold">{phone}</span>
               </p>
-              <LabelledInput label="OTP Code" value={otp} onChange={setOtp} placeholder="1234" />
+              <LabelledInput
+                label="OTP Code"
+                value={otp}
+                onChange={setOtp}
+                placeholder="1234"
+                autoComplete="one-time-code"
+                inputMode="numeric"
+              />
               {devOtp && (
                 <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs font-bold text-amber-400">
                   Local Mode OTP: <span className="text-white font-mono">{devOtp}</span>
@@ -186,12 +193,16 @@ function LabelledInput({
   onChange,
   type = "text",
   placeholder,
+  autoComplete,
+  inputMode,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   type?: string;
   placeholder?: string;
+  autoComplete?: string;
+  inputMode?: "numeric" | "text" | "tel" | "email";
 }) {
   return (
     <label className="block">
@@ -200,6 +211,8 @@ function LabelledInput({
         type={type}
         value={value}
         placeholder={placeholder}
+        autoComplete={autoComplete}
+        inputMode={inputMode}
         onChange={(e) => onChange(e.target.value)}
         className="w-full rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2.5 text-sm font-semibold text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
       />

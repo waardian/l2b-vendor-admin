@@ -68,6 +68,16 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: "/document-uploads",
+    label: "Document Uploads",
+    description: "Upload flow & test guide",
+    icon: (
+      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.9A5 5 0 1115.9 6H16a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+      </svg>
+    ),
+  },
+  {
     href: "/api-docs",
     label: "API Reference",
     description: "Interactive API catalogue",

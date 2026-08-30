@@ -68,11 +68,11 @@ export const customerApi = {
   uploadSiteImage: (file: File) => {
     const form = new FormData();
     form.append("file", file);
-    return apiUpload<{ url: string }>(
+    return apiUpload<{ data: string }>(
       "/customer/site-images",
       form,
       getCustomerToken()
-    ).then((r) => r.url);
+    ).then((r) => r.data);
   },
 
   listOrders: () =>

@@ -420,7 +420,7 @@
         ],
         "purpose": "Saves operator personal name, driving experience (years), and city.",
         "useCase": "Used in Driver Onboarding Step 1.",
-        "flow": "Driver fills in personal details -> Server saves profile -> App advances to next step.",
+        "flow": "Driver fills in personal details -> Server saves profile -> App advances to next step. Each photo is uploaded first via POST /api/v1/documents/staged, and this request carries the returned document ids, not the images.",
         "authRequired": true,
         "parameters": [],
         "requestBody": {
@@ -431,7 +431,7 @@
             "associated_company_code": "ABCDE1234F",
             "name": "Ramesh Kumar",
             "email": "partner@link2build.com",
-            "tpi_certificate_base64": "2026-08-14T10:00:00Z"
+            "tpi_certificate_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44"
           }
         },
         "responses": [
@@ -482,7 +482,7 @@
         ],
         "purpose": "Uploads Commercial Driving License and Aadhaar card and runs Digio Driving License verification.",
         "useCase": "Used during driver KYC verification.",
-        "flow": "Driver uploads license photo -> Server sends image to Digio DL OCR -> Digio checks license number, expiry, and heavy vehicle authorization -> If Digio approves, License is marked 'Verified' -> App marks KYC step complete.",
+        "flow": "Driver uploads license photo -> Server sends image to Digio DL OCR -> Digio checks license number, expiry, and heavy vehicle authorization -> If Digio approves, License is marked 'Verified' -> App marks KYC step complete. Each photo is uploaded first via POST /api/v1/documents/staged, and this request carries the returned document ids, not the images.",
         "authRequired": true,
         "parameters": [],
         "requestBody": {
@@ -496,12 +496,12 @@
             "ifsc_code": "HDFC0000001",
             "bank_linked_mobile": "+919876543210",
             "upi_id": "link2build@hdfcbank",
-            "cancelled_cheque_base64": "string",
-            "aadhaar_front_base64": "987654321098",
-            "aadhaar_back_base64": "987654321098",
-            "pan_card_base64": "ABCDE1234F",
-            "dl_front_base64": "string",
-            "dl_back_base64": "string"
+            "cancelled_cheque_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+            "aadhaar_front_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+            "aadhaar_back_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+            "pan_card_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+            "dl_front_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+            "dl_back_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44"
           }
         },
         "responses": [
@@ -551,7 +551,7 @@
         ],
         "purpose": "Saves machine types the operator is certified to drive.",
         "useCase": "Used in Driver Onboarding Step 3.",
-        "flow": "Driver selects certified machines -> Server saves driving skills -> App moves to license upload.",
+        "flow": "Driver selects certified machines -> Server saves driving skills -> App moves to license upload. Each photo is uploaded first via POST /api/v1/documents/staged, and this request carries the returned document ids, not the images.",
         "authRequired": true,
         "parameters": [],
         "requestBody": {
@@ -565,8 +565,9 @@
                 "capacity_label": "1.0 cu.m Bucket",
                 "machinery_capacity_id": "1.0 cu.m Bucket",
                 "experience": "5+ Years in Heavy Machinery Operations",
-                "dl_front_image_base64": "string",
-                "dl_back_image_base64": "string"
+                "dl_front_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+                "dl_back_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+                "client_ref": "skill-1"
               }
             ]
           }
@@ -803,7 +804,7 @@
         ],
         "purpose": "Uploads company registration papers (Incorporation certificate, PAN, GST, Board Resolution) and runs Digio corporate validation.",
         "useCase": "Used during corporate vendor onboarding for legal verification.",
-        "flow": "Vendor uploads company documents -> Server calls Digio to verify GSTIN registry and Company PAN -> If Digio confirms corporate match, documents are marked 'Verified' -> App completes KYC step.",
+        "flow": "Vendor uploads company documents -> Server calls Digio to verify GSTIN registry and Company PAN -> If Digio confirms corporate match, documents are marked 'Verified' -> App completes KYC step. Each photo is uploaded first via POST /api/v1/documents/staged, and this request carries the returned document ids, not the images.",
         "authRequired": true,
         "parameters": [],
         "requestBody": {
@@ -817,11 +818,11 @@
             "ifsc_code": "HDFC0000001",
             "bank_linked_mobile": "+919876543210",
             "upi_id": "link2build@hdfcbank",
-            "cancelled_cheque_base64": "string",
-            "gst_cert_base64": "36AAACP1234A1Z5",
-            "company_pan_base64": "ABCDE1234F",
-            "aadhaar_front_base64": "987654321098",
-            "aadhaar_back_base64": "987654321098"
+            "cancelled_cheque_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+            "gst_cert_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+            "company_pan_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+            "aadhaar_front_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+            "aadhaar_back_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44"
           }
         },
         "responses": [
@@ -933,7 +934,7 @@
         ],
         "purpose": "Submits the individual vendor's KYC bundle (Aadhaar, PAN and bank details) for admin review.",
         "useCase": "Used on the final KYC step of vendor onboarding for vendors registered as individuals rather than companies.",
-        "flow": "Vendor uploads Aadhaar / PAN and enters bank details -> App posts the document ids -> Server marks KYC as submitted -> Status moves to Under Review until an admin approves.",
+        "flow": "Vendor uploads Aadhaar / PAN and enters bank details -> App posts the document ids -> Server marks KYC as submitted -> Status moves to Under Review until an admin approves. Each photo is uploaded first via POST /api/v1/documents/staged, and this request carries the returned document ids, not the images.",
         "authRequired": true,
         "parameters": [],
         "requestBody": {
@@ -946,13 +947,13 @@
             "ifsc_code": "HDFC0001234",
             "bank_linked_mobile": "+919876543210",
             "upi_id": "3f8b0a2c-91d4-4f6e-9b7a-1c2d3e4f5a6b",
-            "cancelled_cheque_base64": "string",
-            "aadhaar_front_base64": "string",
-            "aadhaar_back_base64": "string",
-            "pan_card_base64": "ABCDE1234F",
+            "cancelled_cheque_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+            "aadhaar_front_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+            "aadhaar_back_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+            "pan_card_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
             "trade_license_number": "string",
             "gst_registered": true,
-            "trade_license_base64": "string",
+            "trade_license_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
             "company_gst_number": "27AAACL2599L1ZM"
           }
         },
@@ -1006,7 +1007,7 @@
         ],
         "purpose": "Registers the vendor's machines and runs automated Digio RC verification.",
         "useCase": "Used during onboarding to add the initial fleet of machines.",
-        "flow": "Vendor enters vehicle number and uploads RC photo -> Server calls Digio RC OCR -> Digio extracts vehicle number, chassis, and owner name -> If Digio approves, RC is marked 'Verified' -> App moves to KYC step.",
+        "flow": "Vendor enters vehicle number and uploads RC photo -> Server calls Digio RC OCR -> Digio extracts vehicle number, chassis, and owner name -> If Digio approves, RC is marked 'Verified' -> App moves to KYC step. Each photo is uploaded first via POST /api/v1/documents/staged, and this request carries the returned document ids, not the images.",
         "authRequired": true,
         "parameters": [],
         "requestBody": {
@@ -1017,9 +1018,10 @@
                 "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                 "rental_sku_id": 1,
                 "registration_serial_no": "2026-08-14T10:00:00Z",
-                "rc_image_base64": "string",
-                "insurance_image_base64": "string",
-                "tpi_image_base64": "string"
+                "rc_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+                "insurance_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+                "tpi_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+                "client_ref": "machine-1"
               }
             ]
           }
@@ -1108,7 +1110,7 @@
         ],
         "purpose": "Saves machine skill categories and runs Digio OCR on driving license / certification.",
         "useCase": "Used during onboarding when vendor selects equipment skills and uploads certifications.",
-        "flow": "Vendor selects machine types and uploads certificate -> Server sends document to Digio OCR -> If Digio verifies name and license class, skill is marked 'Verified' -> App moves to fleet registration.",
+        "flow": "Vendor selects machine types and uploads certificate -> Server sends document to Digio OCR -> If Digio verifies name and license class, skill is marked 'Verified' -> App moves to fleet registration. Each photo is uploaded first via POST /api/v1/documents/staged, and this request carries the returned document ids, not the images.",
         "authRequired": true,
         "parameters": [],
         "requestBody": {
@@ -1119,7 +1121,8 @@
                 "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
                 "rental_sub_category_id": 1,
                 "capacity_label": "1.0 cu.m Bucket",
-                "dl_image_base64": "string"
+                "dl_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+                "client_ref": "skill-1"
               }
             ]
           }
@@ -1332,6 +1335,254 @@
   {
     "groupName": "3. Document Management & Automated Verification",
     "endpoints": [
+      {
+        "id": "post--api-v1-documents-staged",
+        "method": "POST",
+        "path": "/api/v1/documents/staged",
+        "summary": "Upload Document (Staged)",
+        "audiences": [
+          "rental-vendor",
+          "materials-vendor",
+          "operator"
+        ],
+        "purpose": "Uploads one photo or PDF on its own and holds it, unattached to any record, for 24 hours. Returns the document id that a later form submit sends in place of the file.",
+        "useCase": "Used the moment a partner picks a photo for RC, Insurance, TPI, Licence, PAN, Aadhaar, Cheque, GST or Trade Licence — before they finish the form.",
+        "flow": "Partner picks a photo -> App uploads that one file with its document_type -> Server stores it and returns a document id -> Server runs OCR in the background -> App shows the thumbnail and keeps the id -> On Continue, the id goes into the submit instead of the file.",
+        "authRequired": true,
+        "parameters": [],
+        "requestBody": {
+          "contentType": "multipart/form-data",
+          "example": {
+            "file": "file",
+            "document_type": "pan_card",
+            "client_ref": "machine-1"
+          }
+        },
+        "responses": [
+          {
+            "statusCode": "200",
+            "description": "Uploaded and staged",
+            "contentType": "application/json",
+            "example": {
+              "success": true,
+              "message": "Document uploaded successfully",
+              "data": {
+                "id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+                "document_type": "pan_card",
+                "client_ref": "machine-1",
+                "preview_url": "https://cdn.link2build.in/link2build/staging/u_2f74f798/5d766ef8.jpg",
+                "original_filename": "pan_card.jpg",
+                "content_type": "image/jpeg",
+                "size_bytes": 184213,
+                "ocr_status": "pending",
+                "expires_at": "2026-08-27T14:31:00Z"
+              }
+            }
+          },
+          {
+            "statusCode": "400",
+            "description": "Unsupported document_type, file over 6MB, or unsupported file type",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "unsupported_document_type",
+                "message": "'passport' is not a document type that can be staged."
+              }
+            }
+          },
+          {
+            "statusCode": "422",
+            "description": "Validation Error",
+            "contentType": "application/json",
+            "example": {
+              "detail": [
+                {
+                  "loc": [
+                    "body",
+                    "document_type"
+                  ],
+                  "msg": "message",
+                  "type": "error_type",
+                  "input": {
+                    "document_type": "pan_card"
+                  },
+                  "ctx": {
+                    "limit_value": 10
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "get--api-v1-documents-staged",
+        "method": "GET",
+        "path": "/api/v1/documents/staged",
+        "summary": "List Staged Documents",
+        "audiences": [
+          "rental-vendor",
+          "materials-vendor",
+          "operator"
+        ],
+        "purpose": "Lists every document this partner has uploaded but not yet submitted, grouped by the client_ref of the machine or skill card it belongs to.",
+        "useCase": "Used to rebuild a half-filled form after the app is killed — a vendor who added eight machines with photos gets their thumbnails back instead of starting over.",
+        "flow": "App reopens on an unfinished form -> App asks for the partner's staged documents -> Server returns each id with its preview URL and client_ref -> App puts each photo back on the card it came from.",
+        "authRequired": true,
+        "parameters": [],
+        "requestBody": null,
+        "responses": [
+          {
+            "statusCode": "200",
+            "description": "Staged documents for this partner",
+            "contentType": "application/json",
+            "example": {
+              "success": true,
+              "message": "Staged documents fetched successfully",
+              "data": {
+                "documents": [
+                  {
+                    "id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+                    "document_type": "rc_book",
+                    "client_ref": "machine-1",
+                    "preview_url": "https://cdn.link2build.in/link2build/staging/u_2f74f798/5d766ef8.jpg",
+                    "content_type": "image/jpeg",
+                    "size_bytes": 184213,
+                    "ocr_status": "readable",
+                    "expires_at": "2026-08-27T14:31:00Z"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "get--api-v1-documents-staged-document-id",
+        "method": "GET",
+        "path": "/api/v1/documents/staged/{document_id}",
+        "summary": "Get Staged Document",
+        "audiences": [
+          "rental-vendor",
+          "materials-vendor",
+          "operator"
+        ],
+        "purpose": "Returns one staged document with its current OCR verdict. This is what the app polls after uploading.",
+        "useCase": "Used to tell the partner their photo is unreadable while they are still on that screen, instead of failing the whole form at the end.",
+        "flow": "App uploads a file and gets ocr_status 'pending' -> App polls this endpoint -> Status becomes 'readable', 'unreadable' or 'skipped' -> A blurry document turns the field red and asks for a retake.",
+        "authRequired": true,
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "The id returned by POST /api/v1/documents/staged."
+          }
+        ],
+        "requestBody": null,
+        "responses": [
+          {
+            "statusCode": "200",
+            "description": "Current state of the staged document",
+            "contentType": "application/json",
+            "example": {
+              "success": true,
+              "message": "Staged document fetched successfully",
+              "data": {
+                "id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+                "document_type": "pan_card",
+                "client_ref": null,
+                "preview_url": "https://cdn.link2build.in/link2build/staging/u_2f74f798/5d766ef8.jpg",
+                "content_type": "image/jpeg",
+                "size_bytes": 184213,
+                "ocr_status": "readable",
+                "expires_at": "2026-08-27T14:31:00Z"
+              }
+            }
+          },
+          {
+            "statusCode": "404",
+            "description": "No such document, or it belongs to another account",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "document_not_found",
+                "message": "That document does not exist."
+              }
+            }
+          },
+          {
+            "statusCode": "409",
+            "description": "Already submitted, so it can no longer be changed",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "document_already_attached",
+                "message": "That document has already been submitted and can no longer be changed."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "delete--api-v1-documents-staged-document-id",
+        "method": "DELETE",
+        "path": "/api/v1/documents/staged/{document_id}",
+        "summary": "Remove Staged Document",
+        "audiences": [
+          "rental-vendor",
+          "materials-vendor",
+          "operator"
+        ],
+        "purpose": "Deletes a staged document and its stored file. Only works while the document is still staged — a document already attached to a KYC or machine record cannot be removed this way.",
+        "useCase": "Used by the remove (x) button on an upload field, when a partner wants to retake a photo before submitting.",
+        "flow": "Partner taps remove on an uploaded field -> App deletes the staged document -> Server removes the file and the row -> Field resets to empty and Continue disables again if that document was required.",
+        "authRequired": true,
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "The id returned by POST /api/v1/documents/staged."
+          }
+        ],
+        "requestBody": null,
+        "responses": [
+          {
+            "statusCode": "200",
+            "description": "Removed",
+            "contentType": "application/json",
+            "example": {
+              "success": true,
+              "message": "Document removed successfully"
+            }
+          },
+          {
+            "statusCode": "404",
+            "description": "No such document, or it belongs to another account",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "document_not_found",
+                "message": "That document does not exist."
+              }
+            }
+          },
+          {
+            "statusCode": "409",
+            "description": "Already submitted, so it can no longer be removed",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "document_already_attached",
+                "message": "That document has already been submitted and can no longer be changed."
+              }
+            }
+          }
+        ]
+      },
       {
         "id": "post--api-v1-documents-upload",
         "method": "POST",
@@ -2064,7 +2315,7 @@
         ],
         "purpose": "Adds one or more new skill categories, with proof documents, to an already-onboarded rental vendor.",
         "useCase": "Used when an existing vendor buys a new class of machine and wants to receive that category's bookings.",
-        "flow": "Vendor picks a category and uploads proof -> App posts the skill -> Server queues it for admin review -> Row appears as Pending until approved.",
+        "flow": "Vendor picks a category and uploads proof -> App posts the skill -> Server queues it for admin review -> Row appears as Pending until approved. Each photo is uploaded first via POST /api/v1/documents/staged, and this request carries the returned document ids, not the images.",
         "authRequired": true,
         "parameters": [],
         "requestBody": {
@@ -2075,7 +2326,8 @@
                 "id": "3f8b0a2c-91d4-4f6e-9b7a-1c2d3e4f5a6b",
                 "rental_sub_category_id": 1,
                 "capacity_label": "Sample Name",
-                "dl_image_base64": "https://cdn.link2build.in/media/sample.jpg"
+                "dl_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+                "client_ref": "skill-1"
               }
             ]
           }
@@ -2475,7 +2727,7 @@
         ],
         "purpose": "Adds a new machine to the vendor's active fleet after onboarding and triggers Digio RC check.",
         "useCase": "Used when vendor taps 'Add Machine' in the Fleet tab to expand their fleet.",
-        "flow": "Vendor enters machine details and uploads RC -> Server runs Digio RC check -> If Digio approves, RC is verified -> Machine appears in fleet list.",
+        "flow": "Vendor enters machine details and uploads RC -> Server runs Digio RC check -> If Digio approves, RC is verified -> Machine appears in fleet list. Each photo is uploaded first via POST /api/v1/documents/staged, and this request carries the returned document ids, not the images.",
         "authRequired": true,
         "parameters": [],
         "requestBody": {
@@ -2485,9 +2737,10 @@
               {
                 "rental_sku_id": 1,
                 "registration_serial_no": "2026-08-14T10:00:00Z",
-                "rc_image_base64": "string",
-                "insurance_image_base64": "string",
-                "tpi_image_base64": "string"
+                "rc_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+                "insurance_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+                "tpi_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44",
+                "client_ref": "machine-1"
               }
             ]
           }

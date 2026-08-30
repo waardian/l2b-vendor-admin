@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authApi, setToken, ApiError } from "@/lib/api";
 
+const MOBILE_PATTERN = /^[6-9]\d{9}$/;
+
 export default function LoginPage() {
   const router = useRouter();
   const [phone, setPhone] = useState("9999999999");
@@ -13,7 +15,13 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const isPhoneValid = MOBILE_PATTERN.test(phone.trim());
+
   const sendOtp = async () => {
+    if (!isPhoneValid) {
+      setError("Enter a valid 10-digit mobile number");
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
@@ -87,6 +95,8 @@ export default function LoginPage() {
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
                 placeholder="Enter 4-digit code (e.g. 1234)"
+                autoComplete="one-time-code"
+                inputMode="numeric"
                 autoFocus
                 className="w-full rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-3 text-sm font-semibold text-white placeholder-slate-500 transition-all focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
               />
@@ -102,7 +112,7 @@ export default function LoginPage() {
           {step === "phone" ? (
             <button
               onClick={sendOtp}
-              disabled={busy || !phone}
+              disabled={busy || !isPhoneValid}
               className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition-all hover:from-amber-400 hover:to-amber-500 disabled:opacity-50"
             >
               {busy ? "Sending OTP…" : "Send OTP"}
