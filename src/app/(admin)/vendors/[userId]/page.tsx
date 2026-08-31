@@ -203,7 +203,7 @@ export default function VendorDetailPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 border-t border-slate-100 pt-4 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0">
+          <div className="grid grid-cols-2 gap-4 border-t border-slate-100 pt-4 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0 sm:grid-cols-3">
             <div>
               <span className="block text-[11px] font-bold uppercase text-slate-400">Registered Code</span>
               <span className="font-mono text-sm font-bold text-slate-900">{profile?.vendor_code || "—"}</span>
@@ -211,6 +211,12 @@ export default function VendorDetailPage() {
             <div>
               <span className="block text-[11px] font-bold uppercase text-slate-400">Total Machines</span>
               <span className="text-sm font-bold text-slate-900">{profile?.machine_count ?? machines.length}</span>
+            </div>
+            <div>
+              <span className="block text-[11px] font-bold uppercase text-slate-400">Skills Registered</span>
+              <span className="text-sm font-bold text-slate-900">
+                {skills.length} {profile?.has_skills ? "(Enabled)" : ""}
+              </span>
             </div>
           </div>
         </div>
@@ -468,6 +474,99 @@ export default function VendorDetailPage() {
                 </div>
               );
             })}
+          </div>
+        </Section>
+      )}
+
+      {skills.length > 0 && (
+        <Section title={`Registered Skills & Driving Licenses (${skills.length})`}>
+          <div className="space-y-4">
+            {skills.map((s) => {
+              const subcategoryId = s.subcategory_id ?? s.rental_sub_category_id ?? 0;
+              const resolved = resolveMachinery(
+                catalog,
+                subcategoryId,
+                s.capacity_id,
+                undefined
+              );
+
+              const subcategoryName =
+                s.subcategory_name ??
+                resolved.subcategoryName ??
+                (subcategoryId ? `Subcategory #${subcategoryId}` : "Skill");
+              const categoryName = s.category_name ?? resolved.categoryName;
+              const capacityLabel =
+                s.capacity_label ??
+                resolved.capacityLabel ??
+                (s.capacity_id ? String(s.capacity_id) : null);
+
+              const skillDocs = (s.documents && s.documents.length > 0)
+                ? s.documents
+                : docsFor("vendor_skill", s.id).concat(docsFor("skill", s.id));
+
+              return (
+                <div
+                  key={s.id}
+                  className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 space-y-3 shadow-2xs"
+                >
+                  <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
+                    <div>
+                      <p className="text-sm font-bold text-slate-900">
+                        {subcategoryName}
+                        {categoryName && (
+                          <span className="ml-2 font-semibold text-slate-500">
+                            ({categoryName})
+                          </span>
+                        )}
+                      </p>
+                      {capacityLabel && (
+                        <p className="text-xs font-medium text-slate-500">
+                          Capacity: <span className="font-bold text-slate-700">{capacityLabel}</span>
+                        </p>
+                      )}
+                    </div>
+                    <StatusBadge status={s.status} />
+                  </div>
+
+                  <ApproveRejectRow
+                    label="Skill Driving License / Certificate"
+                    status={s.status}
+                    rejectionReason={s.rejection_reason}
+                    disabled={actionInFlight}
+                    onBusyChange={setActionInFlight}
+                    allowRejectWhenApproved={true}
+                    onApprove={() =>
+                      vendorApi.approveSkill(userId, s.id).then(afterReview)
+                    }
+                    onReject={(reason) =>
+                      vendorApi.rejectSkill(userId, s.id, reason).then(afterReview)
+                    }
+                  />
+
+                  {skillDocs.length > 0 && (
+                    <div className="flex flex-wrap gap-3 pt-1">
+                      {skillDocs.map((doc) => (
+                        <DocumentImage key={doc.id} doc={doc} />
+                      ))}
+                    </div>
+                  )}
+
+                  {skillDocs.length === 0 && (
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 text-xs font-medium text-slate-500">
+                      No document image files uploaded for this skill yet.
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </Section>
+      )}
+
+      {profile?.has_skills && skills.length === 0 && (
+        <Section title="Registered Skills & Driving Licenses">
+          <div className="rounded-xl border border-dashed border-slate-200 p-6 text-center text-xs font-medium text-slate-400">
+            Vendor declared operating skills during registration, but no specific skills have been added yet.
           </div>
         </Section>
       )}

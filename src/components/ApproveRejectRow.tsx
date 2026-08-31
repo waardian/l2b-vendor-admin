@@ -13,6 +13,7 @@ interface Props {
   onReject: (reason: string) => Promise<void>;
   disabled?: boolean;
   onBusyChange?: (busy: boolean) => void;
+  allowRejectWhenApproved?: boolean;
 }
 
 function Spinner() {
@@ -41,6 +42,7 @@ export default function ApproveRejectRow({
   onReject,
   disabled,
   onBusyChange,
+  allowRejectWhenApproved = false,
 }: Props) {
   const [busy, setBusy] = useState<"approve" | "reject" | null>(null);
   const [showReject, setShowReject] = useState(false);
@@ -96,12 +98,23 @@ export default function ApproveRejectRow({
         </div>
 
         {isTerminalSuccess ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 text-xs font-bold text-emerald-700 shadow-2xs">
-            <svg className="h-3.5 w-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-            </svg>
-            Verified & Approved
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 text-xs font-bold text-emerald-700 shadow-2xs">
+              <svg className="h-3.5 w-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+              </svg>
+              Verified & Approved
+            </span>
+            {allowRejectWhenApproved && (
+              <button
+                onClick={() => setShowReject((v) => !v)}
+                disabled={locked}
+                className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-1.5 text-xs font-bold text-rose-700 transition-all hover:bg-rose-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {showReject ? "Close" : "Reject"}
+              </button>
+            )}
+          </div>
         ) : (
           <div className="flex items-center gap-2">
             <button
@@ -129,7 +142,7 @@ export default function ApproveRejectRow({
         </div>
       )}
 
-      {showReject && !isTerminalSuccess && (
+      {showReject && (
         <div className="mt-3 rounded-2xl border border-rose-200 bg-rose-50/40 p-3.5 space-y-2">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <input

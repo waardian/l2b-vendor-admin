@@ -283,7 +283,7 @@ export default function OperatorDetailPage() {
         </Section>
       )}
 
-      {skills.length > 0 && (
+      {skills.length > 0 ? (
         <Section title={`Machine Skills & Licenses (${skills.length})`}>
           <div className="space-y-4">
             {skills.map((s) => {
@@ -299,10 +299,12 @@ export default function OperatorDetailPage() {
               const categoryName = s.category_name ?? resolved.categoryName;
               const capacityLabel = s.capacity_label ?? resolved.capacityLabel ?? (s.capacity_id ? String(s.capacity_id) : null);
 
-              const skillDocs = docsFor("operator_skill", s.id).concat(docsFor("skill", s.id));
+              const skillDocs = (s.documents && s.documents.length > 0)
+                ? s.documents
+                : docsFor("operator_skill", s.id).concat(docsFor("skill", s.id));
 
               return (
-                <div key={s.id} className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 space-y-3">
+                <div key={s.id} className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 space-y-3 shadow-2xs">
                   <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5">
                     <div>
                       <p className="text-sm font-bold text-slate-900">
@@ -328,6 +330,7 @@ export default function OperatorDetailPage() {
                     rejectionReason={s.rejection_reason}
                     disabled={actionInFlight}
                     onBusyChange={setActionInFlight}
+                    allowRejectWhenApproved={true}
                     onApprove={() =>
                       operatorApi.approveSkill(userId, s.id).then(afterReview)
                     }
@@ -343,9 +346,21 @@ export default function OperatorDetailPage() {
                       ))}
                     </div>
                   )}
+
+                  {skillDocs.length === 0 && (
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 text-xs font-medium text-slate-500">
+                      No document image files uploaded for this skill yet.
+                    </div>
+                  )}
                 </div>
               );
             })}
+          </div>
+        </Section>
+      ) : (
+        <Section title="Machine Skills & Licenses">
+          <div className="rounded-xl border border-dashed border-slate-200 p-6 text-center text-xs font-medium text-slate-400">
+            No machine skills or licenses have been registered for this operator yet.
           </div>
         </Section>
       )}

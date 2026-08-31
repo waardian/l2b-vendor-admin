@@ -139,6 +139,7 @@ export interface SkillDetail {
   subcategory_name?: string | null;
   category_name?: string | null;
   capacity_label?: string | null;
+  documents?: DocumentSummary[];
 }
 
 export interface KycDetail {

@@ -196,6 +196,7 @@ export default function VendorsListPage() {
               <th className="text-left">Category</th>
               <th className="text-left">Company Type</th>
               <th className="text-center">Machines</th>
+              <th className="text-center">Skills</th>
               <th className="text-center">Onboarding Status</th>
               <th className="text-right">Vendor Code</th>
             </tr>
@@ -203,7 +204,7 @@ export default function VendorsListPage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={7} className="py-12 text-center">
+                <td colSpan={8} className="py-12 text-center">
                   <div className="flex flex-col items-center gap-2">
                     <div className="h-6 w-6 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
                     <span className="text-xs font-semibold text-slate-400">Loading vendor records…</span>
@@ -212,7 +213,7 @@ export default function VendorsListPage() {
               </tr>
             ) : filteredVendors.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-12 text-center text-slate-400">
+                <td colSpan={8} className="py-12 text-center text-slate-400">
                   <div className="flex flex-col items-center gap-2">
                     <svg className="h-8 w-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
@@ -248,6 +249,15 @@ export default function VendorsListPage() {
                     </span>
                   </td>
                   <td className="text-center font-semibold text-slate-900">{v.machine_count}</td>
+                  <td className="text-center">
+                    {v.has_skills ? (
+                      <span className="inline-flex rounded-md bg-amber-50 border border-amber-200/60 px-2 py-0.5 text-xs font-bold text-amber-700">
+                        Yes
+                      </span>
+                    ) : (
+                      <span className="text-xs font-medium text-slate-400">No</span>
+                    )}
+                  </td>
                   <td className="text-center">
                     <StatusBadge status={v.onboarding_status} />
                   </td>
