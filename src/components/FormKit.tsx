@@ -81,6 +81,28 @@ export function TextInput({
   );
 }
 
+export function TextArea({
+  value,
+  onChange,
+  placeholder,
+  rows = 4,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  rows?: number;
+}) {
+  return (
+    <textarea
+      value={value}
+      rows={rows}
+      placeholder={placeholder}
+      onChange={(e) => onChange(e.target.value)}
+      className={`${CONTROL} resize-y leading-relaxed`}
+    />
+  );
+}
+
 export function Choice({
   value,
   options,

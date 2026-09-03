@@ -26,6 +26,13 @@ import type {
   DeliveryVehicleType,
   DeliveryVehicleTypeWrite,
   RentalSkuOption,
+  FaqAdmin,
+  FaqWrite,
+  HelpLegalVocabulary,
+  LegalDocumentAdmin,
+  LegalDocumentWrite,
+  ReferralProgramAdmin,
+  ReferralProgramWrite,
 } from "./types";
 
 import { ApiError, apiFetch } from "./http";
@@ -358,4 +365,54 @@ export const kycDocumentApi = {
       `/rentals/admin/documents/${documentId}/reject?user_id=${encodeURIComponent(userId)}`,
       { method: "POST", body: { rejection_reason: reason } }
     ),
+};
+
+const HELP_LEGAL = "/admin/help-legal";
+
+export const helpLegalApi = {
+  vocabulary: () => request<HelpLegalVocabulary>(`${HELP_LEGAL}/vocabulary`),
+
+  listFaqs: () => request<FaqAdmin[]>(`${HELP_LEGAL}/faqs`),
+  createFaq: (faq: FaqWrite) =>
+    request<FaqAdmin>(`${HELP_LEGAL}/faqs`, { method: "POST", body: faq }),
+  updateFaq: (faqId: string, faq: FaqWrite) =>
+    request<FaqAdmin>(`${HELP_LEGAL}/faqs/${faqId}`, { method: "PUT", body: faq }),
+  deleteFaq: (faqId: string) =>
+    request<void>(`${HELP_LEGAL}/faqs/${faqId}`, { method: "DELETE" }),
+  reorderFaqs: (orderedIds: string[]) =>
+    request<FaqAdmin[]>(`${HELP_LEGAL}/faqs/order/sequence`, {
+      method: "PUT",
+      body: { ordered_ids: orderedIds },
+    }),
+
+  listDocuments: (docType?: string) =>
+    request<LegalDocumentAdmin[]>(
+      `${HELP_LEGAL}/documents${docType ? `?doc_type=${docType}` : ""}`
+    ),
+  createDocument: (document: LegalDocumentWrite) =>
+    request<LegalDocumentAdmin>(`${HELP_LEGAL}/documents`, {
+      method: "POST",
+      body: document,
+    }),
+  updateDocument: (documentId: string, document: LegalDocumentWrite) =>
+    request<LegalDocumentAdmin>(`${HELP_LEGAL}/documents/${documentId}`, {
+      method: "PUT",
+      body: document,
+    }),
+  deleteDocument: (documentId: string) =>
+    request<void>(`${HELP_LEGAL}/documents/${documentId}`, { method: "DELETE" }),
+
+  listPrograms: () => request<ReferralProgramAdmin[]>(`${HELP_LEGAL}/referral-programs`),
+  createProgram: (program: ReferralProgramWrite) =>
+    request<ReferralProgramAdmin>(`${HELP_LEGAL}/referral-programs`, {
+      method: "POST",
+      body: program,
+    }),
+  updateProgram: (programId: string, program: ReferralProgramWrite) =>
+    request<ReferralProgramAdmin>(`${HELP_LEGAL}/referral-programs/${programId}`, {
+      method: "PUT",
+      body: program,
+    }),
+  deleteProgram: (programId: string) =>
+    request<void>(`${HELP_LEGAL}/referral-programs/${programId}`, { method: "DELETE" }),
 };

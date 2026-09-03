@@ -35,6 +35,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (pathname?.startsWith("/warehouses")) return "Warehouse Locations";
     if (pathname?.startsWith("/fee-rules")) return "Deduction Rules Engine";
     if (pathname?.startsWith("/campaigns")) return "Incentive Campaigns";
+    if (pathname?.startsWith("/help-legal")) return "Help & Legal Content";
     if (pathname?.startsWith("/legacy")) return "Legacy Endpoint Console";
     return "Operations Dashboard";
   };

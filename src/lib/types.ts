@@ -594,3 +594,132 @@ export interface DeliveryPreviewRequest {
   weight_kg: number;
   state_code?: string | null;
 }
+
+export interface HelpLegalLocale {
+  code: string;
+  label: string;
+}
+
+export interface HelpLegalVocabulary {
+  locales: HelpLegalLocale[];
+  default_locale: string;
+  document_types: string[];
+  roles: string[];
+}
+
+export interface FaqTranslation {
+  question: string;
+  answer: string;
+}
+
+export interface FaqAdmin {
+  id: string;
+  key: string;
+  display_order: number;
+  roles: string[];
+  is_active: boolean;
+  translations: Record<string, FaqTranslation>;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
+export interface FaqWrite {
+  key: string;
+  display_order: number;
+  roles: string[];
+  is_active: boolean;
+  translations: Record<string, FaqTranslation>;
+}
+
+export interface LegalDocumentTranslation {
+  title: string;
+}
+
+export interface LegalSectionTranslation {
+  title: string;
+  paragraphs: string[];
+}
+
+export interface LegalSubsectionTranslation {
+  title: string;
+  bullets: string[];
+}
+
+export interface LegalSubsectionAdmin {
+  id?: string | null;
+  key: string;
+  display_order: number;
+  translations: Record<string, LegalSubsectionTranslation>;
+}
+
+export interface LegalSectionAdmin {
+  id?: string | null;
+  key: string;
+  display_order: number;
+  translations: Record<string, LegalSectionTranslation>;
+  subsections: LegalSubsectionAdmin[];
+}
+
+export interface LegalDocumentAdmin {
+  id: string;
+  doc_type: string;
+  version: string;
+  is_active: boolean;
+  effective_from?: string | null;
+  translations: Record<string, LegalDocumentTranslation>;
+  sections: LegalSectionAdmin[];
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
+export interface LegalDocumentWrite {
+  doc_type: string;
+  version: string;
+  is_active: boolean;
+  effective_from?: string | null;
+  translations: Record<string, LegalDocumentTranslation>;
+  sections: LegalSectionAdmin[];
+}
+
+export interface ReferralStepTranslation {
+  title: string;
+  description: string;
+}
+
+export interface ReferralProgramTranslation {
+  headline: string;
+  share_message: string;
+}
+
+export interface ReferralStepAdmin {
+  id?: string | null;
+  step_number: number;
+  translations: Record<string, ReferralStepTranslation>;
+}
+
+export interface ReferralProgramAdmin {
+  id: string;
+  key: string;
+  reward_amount: number;
+  currency: string;
+  terms_url?: string | null;
+  is_active: boolean;
+  valid_from?: string | null;
+  valid_to?: string | null;
+  translations: Record<string, ReferralProgramTranslation>;
+  steps: ReferralStepAdmin[];
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
+export interface ReferralProgramWrite {
+  key: string;
+  reward_amount: number;
+  currency: string;
+  terms_url?: string | null;
+  is_active: boolean;
+  valid_from?: string | null;
+  valid_to?: string | null;
+  translations: Record<string, ReferralProgramTranslation>;
+  steps: ReferralStepAdmin[];
+}
