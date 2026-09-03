@@ -61,7 +61,7 @@ const FIELD_MAP = [
   ["/onboarding/vendor/machines", "machines[].rc_image_base64", "machines[].rc_document_id"],
   ["/onboarding/vendor/skills", "skills[].dl_image_base64", "skills[].dl_document_id"],
   ["/onboarding/vendor/kyc", "pan_card_base64", "pan_card_document_id"],
-  ["/onboarding/vendor/company-kyc", "gst_cert_base64", "gst_cert_document_id"],
+  ["/onboarding/vendor/company-kyc", "company_pan_base64", "company_pan_document_id"],
   ["/onboarding/operator/basic-info", "tpi_certificate_base64", "tpi_certificate_document_id"],
   ["/onboarding/operator/skills", "skills[].dl_front_image_base64", "skills[].dl_front_document_id"],
   ["/onboarding/operator/kyc", "cancelled_cheque_base64", "cancelled_cheque_document_id"],

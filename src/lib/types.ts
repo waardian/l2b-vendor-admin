@@ -153,8 +153,6 @@ export interface KycDetail {
   ifsc_code: string;
   bank_linked_mobile: string;
   upi_id: string | null;
-  trade_license_number?: string | null;
-  gst_registered?: boolean | null;
   company_gst_number?: string | null;
   company_pan_number?: string | null;
   dl_number?: string;
