@@ -15932,10 +15932,10 @@
           "customer",
           "admin"
         ],
-        "purpose": "Get Listing Catalog",
-        "useCase": "Used in mobile or web app during operational lifecycle.",
-        "flow": "App sends request -> Server processes data -> Response returned to app.",
-        "authRequired": false,
+        "purpose": "Returns the active rental subcategories and their active SKUs (id, name, slug, capacity), ordered by display order. Takes no query parameters.",
+        "useCase": "The only catalog endpoint the clients call. Rental-vendor onboarding (iOS and Android) uses it to populate the machinery subcategory and SKU pickers, and admin uses it to build the place-order form.",
+        "flow": "App sends request -> Server returns active subcategories with their active SKUs.",
+        "authRequired": true,
         "parameters": [],
         "requestBody": null,
         "responses": [
@@ -15960,81 +15960,6 @@
                         "capacity": "1.0 cu.m Bucket"
                       }
                     ]
-                  }
-                ]
-              }
-            }
-          }
-        ]
-      },
-      {
-        "id": "get--api-v1-machinery-catalog-details",
-        "method": "GET",
-        "path": "/api/v1/machinery/catalog/details",
-        "summary": "Get Full Catalog",
-        "audiences": [
-          "rental-vendor",
-          "customer",
-          "admin"
-        ],
-        "purpose": "Get Full Catalog",
-        "useCase": "Used in mobile or web app during operational lifecycle.",
-        "flow": "App sends request -> Server processes data -> Response returned to app.",
-        "authRequired": false,
-        "parameters": [],
-        "requestBody": null,
-        "responses": [
-          {
-            "statusCode": "200",
-            "description": "Successful Response",
-            "contentType": "application/json",
-            "example": {
-              "success": true,
-              "message": "Operation completed successfully",
-              "data": {
-                "subcategories": [
-                  {
-                    "id": 1,
-                    "name": "Ramesh Kumar",
-                    "category_name": "Earthmoving Equipment",
-                    "skus": [
-                      {
-                        "id": 1,
-                        "name": "Ramesh Kumar",
-                        "slug": "slug",
-                        "capacity": "1.0 cu.m Bucket"
-                      }
-                    ],
-                    "read_before_booking": [
-                      {
-                        "id": 1,
-                        "point_text": "point_text"
-                      }
-                    ],
-                    "applicable_soil_types": [
-                      {
-                        "id": 1,
-                        "name": "Ramesh Kumar"
-                      }
-                    ],
-                    "applicable_job_categories": [
-                      {
-                        "id": 1,
-                        "name": "Ramesh Kumar"
-                      }
-                    ]
-                  }
-                ],
-                "all_soil_types": [
-                  {
-                    "id": 1,
-                    "name": "Ramesh Kumar"
-                  }
-                ],
-                "all_job_categories": [
-                  {
-                    "id": 1,
-                    "name": "Ramesh Kumar"
                   }
                 ]
               }
