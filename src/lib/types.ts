@@ -723,3 +723,17 @@ export interface ReferralProgramWrite {
   translations: Record<string, ReferralProgramTranslation>;
   steps: ReferralStepAdmin[];
 }
+
+export interface CustomerOrderWebhook {
+  key: string;
+  secret?: string | null;
+  masked_secret?: string | null;
+  source: "database" | "environment" | "unset";
+  is_configured: boolean;
+  rotated_at?: string | null;
+  updated_by?: string | null;
+  webhook_path: string;
+  secret_header: string;
+  accepted_events: string[];
+  accepted_order_types: string[];
+}

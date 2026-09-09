@@ -280,13 +280,15 @@ export function Banner({
   tone,
   children,
 }: {
-  tone: "error" | "success";
+  tone: "error" | "success" | "warning";
   children: React.ReactNode;
 }) {
   const styles =
     tone === "error"
       ? "border-rose-200 bg-rose-50 text-rose-900"
-      : "border-emerald-200 bg-emerald-50 text-emerald-900";
+      : tone === "warning"
+        ? "border-amber-200 bg-amber-50 text-amber-900"
+        : "border-emerald-200 bg-emerald-50 text-emerald-900";
   return (
     <div className={`rounded-xl border p-4 text-sm font-semibold shadow-2xs ${styles}`}>
       {children}

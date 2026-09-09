@@ -88,6 +88,17 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: "/integrations",
+    label: "Integrations",
+    description: "Customer order webhook",
+    icon: (
+      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.1-1.1" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.172 13.828a4 4 0 005.656 0l3-3a4 4 0 10-5.656-5.656l-1.1 1.1" />
+      </svg>
+    ),
+  },
+  {
     href: "/api-docs",
     label: "API Reference",
     description: "Interactive API catalogue",

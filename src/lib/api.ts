@@ -27,6 +27,7 @@ import type {
   DeliveryVehicleTypeWrite,
   RentalSkuOption,
   FaqAdmin,
+  CustomerOrderWebhook,
   FaqWrite,
   HelpLegalVocabulary,
   LegalDocumentAdmin,
@@ -368,6 +369,21 @@ export const kycDocumentApi = {
 };
 
 const HELP_LEGAL = "/admin/help-legal";
+
+export const integrationApi = {
+  getCustomerOrderWebhook: () =>
+    request<CustomerOrderWebhook>("/admin/integrations/webhooks/customer-order"),
+  setSecret: (secret: string) =>
+    request<CustomerOrderWebhook>("/admin/integrations/webhooks/customer-order/secret", {
+      method: "PUT",
+      body: { secret },
+    }),
+  rotateSecret: () =>
+    request<CustomerOrderWebhook>(
+      "/admin/integrations/webhooks/customer-order/secret/rotate",
+      { method: "POST" }
+    ),
+};
 
 export const helpLegalApi = {
   vocabulary: () => request<HelpLegalVocabulary>(`${HELP_LEGAL}/vocabulary`),

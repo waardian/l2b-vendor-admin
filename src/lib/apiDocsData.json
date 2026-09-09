@@ -408,7 +408,7 @@
           "example": {
             "operator_category": "operator",
             "is_associated_with_company": true,
-            "associated_company_code": "VEN-8F3A21",
+            "associated_company_code": "L2B-8F3A21",
             "name": "Ramesh Kumar",
             "email": "partner@link2build.com",
             "tpi_certificate_document_id": "7f3a1c2e-4b8d-4a91-b0c3-2e5f8a1d9c44"
@@ -646,15 +646,15 @@
         "id": "get--api-v1-onboarding-status",
         "method": "GET",
         "path": "/api/v1/onboarding/status",
-        "summary": "Get Onboarding Status",
+        "summary": "Get Onboarding Status (full)",
         "audiences": [
           "rental-vendor",
           "materials-vendor",
           "operator"
         ],
-        "purpose": "Gets the full onboarding checklist showing which steps are completed, pending, Digio-verified, or rejected.",
-        "useCase": "Used when opening the Onboarding screen to see remaining steps.",
-        "flow": "App opens Onboarding -> Server checks Digio verification results and KYC status -> App highlights completed and pending steps.",
+        "purpose": "Returns everything GET /api/v1/onboarding/status-summary returns, plus the submitted items: machines[], skills[], kyc, company_kyc and company (company vendors only). Costs several extra database reads.",
+        "useCase": "Use on screens that render those lists or their per-item verification status - machine listing, skills listing, KYC and profile verification. Do not use it for routing decisions; call /api/v1/onboarding/status-summary instead.",
+        "flow": "App opens a listing or KYC screen -> Server loads the profile plus machines, skills and KYC with their verification status -> App renders each item and its rejection reason.",
         "authRequired": true,
         "parameters": [],
         "requestBody": null,
@@ -664,15 +664,77 @@
             "description": "Successful Response",
             "contentType": "application/json",
             "example": {
-              "onboarding_status": "draft",
-              "completed_steps": [
-                "role_category",
-                "basic_info",
-                "skills"
+              "user_id": "usr_7b89c01d-2e34-4f56-8a90-112233445566",
+              "role": "rental_vendor",
+              "name": "Ramesh Kumar",
+              "email": "partner@link2build.com",
+              "onboarding_status": "pending_review",
+              "rejection_reason": null,
+              "approved_at": null,
+              "profile_photo_url": "https://cdn.link2build.com/media/profile_photos/9c2f.jpg",
+              "preferred_language": "en",
+              "current_step": "kyc",
+              "profile_data": {
+                "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
+                "vendor_category": "rental_vendor",
+                "is_company": true,
+                "company_type": "pvt_ltd",
+                "machine_count": 10,
+                "has_skills": true,
+                "company_code": "L2B-8F3A21"
+              },
+              "company": {
+                "id": "c4d1e8a2-1111-4a22-9b33-556677889900",
+                "company_code": "L2B-8F3A21",
+                "company_name": "Patel Earthmovers & Infra Pvt Ltd",
+                "company_type": "pvt_ltd",
+                "is_active": true
+              },
+              "machines": [
+                {
+                  "id": "m1a2b3c4-0000-4d55-8e66-778899aabbcc",
+                  "rental_sku_id": "sku_excavator_20t",
+                  "registration_serial_no": "GJ01AB1234",
+                  "status": "approved",
+                  "rc_status": "approved",
+                  "insurance_status": "pending_review",
+                  "tpi_status": "rejected",
+                  "rc_rejection_reason": null,
+                  "insurance_rejection_reason": null,
+                  "tpi_rejection_reason": "Certificate has expired"
+                }
               ],
-              "kyc_status": "pending_review",
-              "machines_count": 2,
-              "skills_count": 3
+              "skills": [
+                {
+                  "id": "s1a2b3c4-0000-4d55-8e66-778899aabbcc",
+                  "rental_sub_category_id": "sub_excavator",
+                  "capacity_label": "20-25 T",
+                  "status": "approved",
+                  "rejection_reason": null
+                }
+              ],
+              "kyc": null,
+              "company_kyc": {
+                "id": "k1a2b3c4-0000-4d55-8e66-778899aabbcc",
+                "overall_status": "pending_review",
+                "rejection_reason": null,
+                "company_pan_number": "AAACP1234F",
+                "company_gst_number": "24AAACP1234F1Z5",
+                "aadhaar_number": "XXXXXXXX1234",
+                "bank_name": "HDFC Bank",
+                "bank_branch_name": "Ahmedabad Main",
+                "ifsc_code": "HDFC0000123",
+                "bank_linked_mobile": "+919876543210",
+                "upi_id": "patel@hdfcbank",
+                "documents": [
+                  {
+                    "id": "d1a2b3c4-0000-4d55-8e66-778899aabbcc",
+                    "document_type": "company_pan",
+                    "verification_status": "pending_review",
+                    "rejection_reason": null
+                  }
+                ]
+              }
             }
           }
         ]
@@ -681,15 +743,15 @@
         "id": "get--api-v1-onboarding-status-summary",
         "method": "GET",
         "path": "/api/v1/onboarding/status-summary",
-        "summary": "Get Onboarding Status Summary",
+        "summary": "Get Onboarding Status Summary (light)",
         "audiences": [
           "rental-vendor",
           "materials-vendor",
           "operator"
         ],
-        "purpose": "Quick check to see if the user is approved or still completing onboarding.",
-        "useCase": "Used every time the app opens on startup to decide which screen to display.",
-        "flow": "App starts up -> Server checks account status -> If approved, opens Dashboard; if not, opens Onboarding.",
+        "purpose": "Returns the onboarding header only: user_id, role, name, email, onboarding_status, rejection_reason, approved_at, profile_photo_url, preferred_language, current_step and profile_data. One profile read, no item lists.",
+        "useCase": "Use whenever you only need to know where the user is - splash, login, navigation guards, dashboard routing. If you need machines, skills, kyc or company_kyc, call GET /api/v1/onboarding/status instead, which returns this same payload plus those lists.",
+        "flow": "App starts up -> Server reads the user and profile row -> App routes to Dashboard, Onboarding or the rejection screen from onboarding_status and current_step.",
         "authRequired": true,
         "parameters": [],
         "requestBody": null,
@@ -699,9 +761,25 @@
             "description": "Successful Response",
             "contentType": "application/json",
             "example": {
-              "status": "approved",
+              "user_id": "usr_7b89c01d-2e34-4f56-8a90-112233445566",
               "role": "rental_vendor",
-              "is_complete": true
+              "name": "Ramesh Kumar",
+              "email": "partner@link2build.com",
+              "onboarding_status": "pending_review",
+              "rejection_reason": null,
+              "approved_at": null,
+              "profile_photo_url": "https://cdn.link2build.com/media/profile_photos/9c2f.jpg",
+              "preferred_language": "en",
+              "current_step": "kyc",
+              "profile_data": {
+                "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
+                "vendor_category": "rental_vendor",
+                "is_company": true,
+                "company_type": "pvt_ltd",
+                "machine_count": 10,
+                "has_skills": true,
+                "company_code": "L2B-8F3A21"
+              }
             }
           }
         ]
@@ -713,12 +791,11 @@
         "summary": "Submit Vendor Basic Info",
         "audiences": [
           "rental-vendor",
-          "materials-vendor",
-          "operator"
+          "materials-vendor"
         ],
-        "purpose": "Saves the vendor's account type, business type, owner name and email. For a company registration it also saves the registered company name.",
+        "purpose": "Saves the vendor's account type, business type, owner name, email and machine count. For a company registration it also saves the registered company name. has_skills in the body is deprecated and ignored.",
         "useCase": "Used in Vendor Onboarding Step 1 to set up business profile.",
-        "flow": "Vendor fills in company details -> Server saves profile -> App moves to next step.",
+        "flow": "Vendor fills in company details -> Server saves profile -> App moves to next step. has_skills is not written here; POST /api/v1/onboarding/vendor/has-skills sets it.",
         "authRequired": true,
         "parameters": [],
         "requestBody": {
@@ -729,7 +806,6 @@
             "company_type": "pvt_ltd",
             "company_name": "Patel Earthmovers & Infra Pvt Ltd",
             "machine_count": 10,
-            "has_skills": true,
             "name": "Ramesh Kumar",
             "email": "partner@link2build.com"
           }
@@ -748,9 +824,9 @@
                 "is_company": true,
                 "company_type": "pvt_ltd",
                 "machine_count": 10,
-                "has_skills": true,
+                "has_skills": false,
                 "onboarding_step": "machines",
-                "vendor_code": "VEN-8F3A21",
+                "vendor_code": "L2B-8F3A21",
                 "created_at": "2026-09-02T09:30:00Z",
                 "updated_at": "2026-09-02T09:30:00Z"
               }
@@ -798,8 +874,7 @@
         "summary": "Submit Vendor Company Kyc",
         "audiences": [
           "rental-vendor",
-          "materials-vendor",
-          "operator"
+          "materials-vendor"
         ],
         "purpose": "Submits the company vendor's KYC bundle (company PAN, GSTIN, bank details and - for sole proprietorships - the owner's Aadhaar front) and runs Digio corporate validation. The GSTIN is verified against the GST registry from the number alone, so no GST certificate image is uploaded.",
         "useCase": "Used during corporate vendor onboarding for legal verification.",
@@ -874,15 +949,13 @@
         "id": "post--api-v1-onboarding-vendor-has-skills",
         "method": "POST",
         "path": "/api/v1/onboarding/vendor/has-skills",
-        "summary": "Update Vendor Has Skills",
+        "summary": "Update Vendor Has Skills (source of truth)",
         "audiences": [
-          "rental-vendor",
-          "materials-vendor",
-          "operator"
+          "rental-vendor"
         ],
-        "purpose": "Saves whether the vendor provides drivers along with their machines.",
-        "useCase": "Used in Vendor Onboarding Step 2.",
-        "flow": "Vendor selects Yes or No -> Server saves choice -> App shows skills selection if Yes, or moves to machine list if No.",
+        "purpose": "The only endpoint that writes has_skills - whether the vendor supplies operators along with their machines.",
+        "useCase": "Used on the rental machine listing screen, several steps after basic info, which is why it is a separate call from POST /api/v1/onboarding/vendor/basic-info.",
+        "flow": "Vendor selects Yes or No -> Server saves the flag and advances onboarding_step to skills (Yes) or kyc (No) -> App shows skills selection or moves on to KYC. The step only ever moves forward, so calling this again on a later step does not rewind onboarding.",
         "authRequired": true,
         "parameters": [
           {
@@ -890,7 +963,7 @@
             "in": "query",
             "type": "boolean",
             "required": true,
-            "description": "Query filter."
+            "description": "true if the vendor supplies operators with their machines."
           }
         ],
         "requestBody": null,
@@ -901,7 +974,27 @@
             "contentType": "application/json",
             "example": {
               "success": true,
-              "has_skills": true
+              "data": {
+                "id": "a71f201e-e438-4c18-9e00-bf3860b240dc",
+                "user_id": "usr_7b89c01d-2e34-4f56-8a90-112233445566",
+                "vendor_category": "rental_vendor",
+                "is_company": true,
+                "company_type": "pvt_ltd",
+                "machine_count": 10,
+                "has_skills": true,
+                "onboarding_step": "skills",
+                "vendor_code": "L2B-8F3A21",
+                "created_at": "2026-08-14T10:00:00Z",
+                "updated_at": "2026-09-02T09:30:00Z"
+              }
+            }
+          },
+          {
+            "statusCode": "400",
+            "description": "Vendor profile not found for the caller",
+            "contentType": "application/json",
+            "example": {
+              "detail": "Vendor profile not found"
             }
           },
           {
@@ -912,17 +1005,11 @@
               "detail": [
                 {
                   "loc": [
-                    "Loc",
-                    "phone"
+                    "query",
+                    "has_skills"
                   ],
-                  "msg": "Msg",
-                  "type": "rental",
-                  "input": {
-                    "phone": "+919876543210"
-                  },
-                  "ctx": {
-                    "limit_value": 10
-                  }
+                  "msg": "Field required",
+                  "type": "missing"
                 }
               ]
             }
@@ -936,8 +1023,7 @@
         "summary": "Submit Vendor Kyc",
         "audiences": [
           "rental-vendor",
-          "materials-vendor",
-          "operator"
+          "materials-vendor"
         ],
         "purpose": "Submits the individual vendor's KYC bundle (Aadhaar front, PAN and bank details) for admin review. Individual vendors never send company details here - no GST, no trade licence, no company documents.",
         "useCase": "Used on the final KYC step of vendor onboarding for vendors registered as individuals rather than companies.",
@@ -2106,19 +2192,21 @@
         "id": "post--api-v1-account-language",
         "method": "POST",
         "path": "/api/v1/account/language",
-        "summary": "Update Rentals Vendor Language",
+        "summary": "Update Account Language",
         "audiences": [
-          "rental-vendor"
+          "rental-vendor",
+          "materials-vendor",
+          "operator"
         ],
-        "purpose": "Stores the rental vendor's preferred app language so notifications and SMS are sent in that language. This endpoint serves every signed-in role, so it lives under a role-neutral path. The old path /api/v1/rentals/vendor/language still works for builds released before the move and will be removed.",
+        "purpose": "Stores the signed-in user's preferred app language (en, hi, te, kn) so in-app copy, push notifications and SMS are sent in that language. Serves every signed-in role, which is why it lives under a role-neutral path. The legacy aliases /api/v1/vendor/language and /api/v1/rentals/vendor/language still work for builds released before the /account move; they are hidden from this reference and will be removed.",
         "useCase": "Used from Profile > Language, and on the language chooser shown right after onboarding.",
-        "flow": "Vendor selects a language -> App posts the language code -> Server saves the preference -> Push and SMS copy switch to that language.",
+        "flow": "User selects a language -> App posts the language code -> Server validates it against the supported set and saves the preference -> App, push and SMS copy switch to that language.",
         "authRequired": true,
         "parameters": [],
         "requestBody": {
           "contentType": "application/json",
           "example": {
-            "language": "en"
+            "language": "hi"
           }
         },
         "responses": [
@@ -2128,7 +2216,21 @@
             "contentType": "application/json",
             "example": {
               "success": true,
-              "message": "Operation completed successfully"
+              "message": "Language preference updated successfully",
+              "data": {
+                "preferred_language": "hi"
+              }
+            }
+          },
+          {
+            "statusCode": "400",
+            "description": "Unsupported language code. Supported: en, hi, kn, te.",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "unsupported_language",
+                "message": "Unsupported language 'fr'. Supported languages: en, hi, kn, te."
+              }
             }
           },
           {
@@ -2150,11 +2252,11 @@
               "detail": [
                 {
                   "loc": [
-                    "Loc",
-                    "field"
+                    "body",
+                    "language"
                   ],
-                  "msg": "Msg",
-                  "type": "rental"
+                  "msg": "Field required",
+                  "type": "missing"
                 }
               ]
             }
@@ -2188,7 +2290,7 @@
                 "vendor_type": "individual",
                 "is_company": false,
                 "company_type": null,
-                "vendor_code": "VEN-8F3A21",
+                "vendor_code": "L2B-8F3A21",
                 "name": "Ramesh Kumar",
                 "company_name": null,
                 "email": "vendor@link2build.in",
@@ -2255,7 +2357,7 @@
                 "vendor_type": "company",
                 "is_company": true,
                 "company_type": "pvt_ltd",
-                "vendor_code": "VEN-8F3A21",
+                "vendor_code": "L2B-8F3A21",
                 "name": "Ramesh Kumar",
                 "company_name": "Patel Earthmovers & Infra Pvt Ltd",
                 "email": "vendor@link2build.in",
@@ -2606,62 +2708,6 @@
         ]
       },
       {
-        "id": "post--api-v1-account-language",
-        "method": "POST",
-        "path": "/api/v1/account/language",
-        "summary": "Update Vendor Language",
-        "audiences": [
-          "rental-vendor",
-          "materials-vendor"
-        ],
-        "purpose": "Changes the app language preference (English, Hindi, Telugu, Kannada, etc.). This endpoint serves every signed-in role, so it lives under a role-neutral path. The old path /api/v1/vendor/language still works for builds released before the move and will be removed.",
-        "useCase": "Used in Language Settings when user selects their preferred language.",
-        "flow": "User chooses language -> Server saves preference -> App updates all text to chosen language.",
-        "authRequired": true,
-        "parameters": [],
-        "requestBody": {
-          "contentType": "application/json",
-          "example": {
-            "language": "language"
-          }
-        },
-        "responses": [
-          {
-            "statusCode": "200",
-            "description": "Successful Response",
-            "contentType": "application/json",
-            "example": {
-              "success": true,
-              "message": "Language updated successfully",
-              "language": "en"
-            }
-          },
-          {
-            "statusCode": "422",
-            "description": "Validation Error",
-            "contentType": "application/json",
-            "example": {
-              "detail": [
-                {
-                  "loc": [
-                    "Loc",
-                    "phone"
-                  ],
-                  "msg": "Msg",
-                  "type": "rental",
-                  "input": {
-                    "phone": "+919876543210"
-                  },
-                  "ctx": {
-                    "limit_value": 10
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      },
-      {
         "id": "post--api-v1-account-profile-photo",
         "method": "POST",
         "path": "/api/v1/account/profile-photo",
@@ -2828,7 +2874,7 @@
                 "header": {
                   "name": "Ramesh Kumar",
                   "profile_photo_url": "https://cdn.link2build.in/media/sample.jpg",
-                  "company_code": "VEN-8F3A21",
+                  "company_code": "L2B-8F3A21",
                   "is_company": true,
                   "is_attached_to_company": true
                 },
@@ -6530,7 +6576,7 @@
                 "header": {
                   "name": "Ramesh Kumar",
                   "profile_photo_url": "https://cdn.link2build.in/media/sample.jpg",
-                  "company_code": "VEN-8F3A21",
+                  "company_code": "L2B-8F3A21",
                   "is_company": true,
                   "is_attached_to_company": true
                 },
@@ -7971,7 +8017,7 @@
                 "header": {
                   "name": "Ramesh Kumar",
                   "profile_photo_url": "https://cdn.link2build.in/media/sample.jpg",
-                  "company_code": "VEN-8F3A21",
+                  "company_code": "L2B-8F3A21",
                   "is_company": true,
                   "is_attached_to_company": true
                 },
@@ -10623,7 +10669,7 @@
                 "header": {
                   "name": "Ramesh Kumar",
                   "profile_photo_url": "https://cdn.link2build.in/media/sample.jpg",
-                  "company_code": "VEN-8F3A21",
+                  "company_code": "L2B-8F3A21",
                   "is_company": true,
                   "is_attached_to_company": true
                 },
@@ -22211,7 +22257,1793 @@
     ]
   },
   {
-    "groupName": "32. System Health & Platform Diagnostics",
+    "groupName": "32. Admin — Help Center, Legal & Referral Content",
+    "endpoints": [
+      {
+        "id": "get--api-v1-admin-help-legal-vocabulary",
+        "method": "GET",
+        "path": "/api/v1/admin/help-legal/vocabulary",
+        "summary": "Get Help & Legal Vocabulary",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Returns the fixed option lists the Help & Legal admin console builds its forms from: supported locales with display labels, the default locale, the legal document types, and the roles an FAQ can be targeted at.",
+        "useCase": "Called once when the admin opens Help & Legal, to populate the locale tabs, the document-type picker and the role checkboxes.",
+        "flow": "Admin opens Help & Legal -> Console fetches the vocabulary -> Forms render locale tabs (en, hi, kn, te), doc types (policies, terms) and role targets.",
+        "authRequired": true,
+        "parameters": [],
+        "requestBody": null,
+        "responses": [
+          {
+            "statusCode": "200",
+            "description": "Successful Response",
+            "contentType": "application/json",
+            "example": {
+              "locales": [
+                {
+                  "code": "en",
+                  "label": "English"
+                },
+                {
+                  "code": "hi",
+                  "label": "हिन्दी"
+                },
+                {
+                  "code": "kn",
+                  "label": "ಕನ್ನಡ"
+                },
+                {
+                  "code": "te",
+                  "label": "తెలుగు"
+                }
+              ],
+              "default_locale": "en",
+              "document_types": [
+                "policies",
+                "terms"
+              ],
+              "roles": [
+                "rental_vendor",
+                "material_vendor",
+                "team_operator",
+                "individual_operator"
+              ]
+            }
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "get--api-v1-admin-help-legal-faqs",
+        "method": "GET",
+        "path": "/api/v1/admin/help-legal/faqs",
+        "summary": "List FAQs",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Lists every FAQ with all its locale translations, role targeting and display order. These tables are seeded by an Alembic data migration, not by schema.sql, so an environment built from schema.sql alone starts empty and the public Help & Legal endpoints return 404 until content is created here.",
+        "useCase": "Used on the Help & Legal > FAQs list screen.",
+        "flow": "Admin opens FAQs -> Server returns all FAQs ordered by display_order -> Console renders the list with a per-locale completeness indicator.",
+        "authRequired": true,
+        "parameters": [
+          {
+            "name": "include_inactive",
+            "in": "query",
+            "type": "boolean",
+            "required": false,
+            "description": "Defaults to true. Set false to return only FAQs with is_active true."
+          }
+        ],
+        "requestBody": null,
+        "responses": [
+          {
+            "statusCode": "200",
+            "description": "Successful Response",
+            "contentType": "application/json",
+            "example": [
+              {
+                "id": "faq_9c2f1a30-4b55-4d21-9e88-0011aa22bb33",
+                "key": "how_do_i_get_paid",
+                "display_order": 3,
+                "roles": [
+                  "rental_vendor",
+                  "material_vendor"
+                ],
+                "is_active": true,
+                "translations": {
+                  "en": {
+                    "question": "How do I get paid?",
+                    "answer": "Settlements are credited to your registered bank account every Friday."
+                  },
+                  "hi": {
+                    "question": "मुझे भुगतान कैसे मिलेगा?",
+                    "answer": "हर शुक्रवार को आपके पंजीकृत बैंक खाते में भुगतान किया जाता है।"
+                  }
+                },
+                "created_at": "2026-08-14T10:00:00Z",
+                "updated_at": "2026-09-02T09:30:00Z"
+              }
+            ]
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "get--api-v1-admin-help-legal-faqs-faq_id",
+        "method": "GET",
+        "path": "/api/v1/admin/help-legal/faqs/{faq_id}",
+        "summary": "Get FAQ",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Returns one FAQ with every locale translation.",
+        "useCase": "Used when opening a single FAQ for editing.",
+        "flow": "Admin clicks an FAQ -> Server returns the record -> Console loads the locale tabs for editing.",
+        "authRequired": true,
+        "parameters": [
+          {
+            "name": "faq_id",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "FAQ id."
+          }
+        ],
+        "requestBody": null,
+        "responses": [
+          {
+            "statusCode": "200",
+            "description": "Successful Response",
+            "contentType": "application/json",
+            "example": {
+              "id": "faq_9c2f1a30-4b55-4d21-9e88-0011aa22bb33",
+              "key": "how_do_i_get_paid",
+              "display_order": 3,
+              "roles": [
+                "rental_vendor",
+                "material_vendor"
+              ],
+              "is_active": true,
+              "translations": {
+                "en": {
+                  "question": "How do I get paid?",
+                  "answer": "Settlements are credited to your registered bank account every Friday."
+                },
+                "hi": {
+                  "question": "मुझे भुगतान कैसे मिलेगा?",
+                  "answer": "हर शुक्रवार को आपके पंजीकृत बैंक खाते में भुगतान किया जाता है।"
+                }
+              },
+              "created_at": "2026-08-14T10:00:00Z",
+              "updated_at": "2026-09-02T09:30:00Z"
+            }
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          },
+          {
+            "statusCode": "404",
+            "description": "No faq with that id",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "faq_not_found",
+                "message": "Faq not found."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "post--api-v1-admin-help-legal-faqs",
+        "method": "POST",
+        "path": "/api/v1/admin/help-legal/faqs",
+        "summary": "Create FAQ",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Creates an FAQ. `key` is the stable identifier the apps use and must be unique. `roles` limits which personas see it; an empty list shows it to everyone. `translations` is keyed by locale code - a locale you omit simply is not shown in that language.",
+        "useCase": "Used by the Add FAQ form in Help & Legal.",
+        "flow": "Admin fills question and answer per locale, picks target roles -> Server creates the FAQ -> It appears in the apps' Help Center for those roles.",
+        "authRequired": true,
+        "parameters": [],
+        "requestBody": {
+          "contentType": "application/json",
+          "example": {
+            "key": "how_do_i_get_paid",
+            "display_order": 3,
+            "roles": [
+              "rental_vendor",
+              "material_vendor"
+            ],
+            "is_active": true,
+            "translations": {
+              "en": {
+                "question": "How do I get paid?",
+                "answer": "Settlements are credited to your registered bank account every Friday."
+              },
+              "hi": {
+                "question": "मुझे भुगतान कैसे मिलेगा?",
+                "answer": "हर शुक्रवार को आपके पंजीकृत बैंक खाते में भुगतान किया जाता है।"
+              }
+            }
+          }
+        },
+        "responses": [
+          {
+            "statusCode": "201",
+            "description": "Created",
+            "contentType": "application/json",
+            "example": {
+              "id": "faq_9c2f1a30-4b55-4d21-9e88-0011aa22bb33",
+              "key": "how_do_i_get_paid",
+              "display_order": 3,
+              "roles": [
+                "rental_vendor",
+                "material_vendor"
+              ],
+              "is_active": true,
+              "translations": {
+                "en": {
+                  "question": "How do I get paid?",
+                  "answer": "Settlements are credited to your registered bank account every Friday."
+                },
+                "hi": {
+                  "question": "मुझे भुगतान कैसे मिलेगा?",
+                  "answer": "हर शुक्रवार को आपके पंजीकृत बैंक खाते में भुगतान किया जाता है।"
+                }
+              },
+              "created_at": "2026-08-14T10:00:00Z",
+              "updated_at": "2026-09-02T09:30:00Z"
+            }
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          },
+          {
+            "statusCode": "422",
+            "description": "Validation Error",
+            "contentType": "application/json",
+            "example": {
+              "detail": [
+                {
+                  "loc": [
+                    "body",
+                    "key"
+                  ],
+                  "msg": "Field required",
+                  "type": "missing"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "put--api-v1-admin-help-legal-faqs-faq_id",
+        "method": "PUT",
+        "path": "/api/v1/admin/help-legal/faqs/{faq_id}",
+        "summary": "Update FAQ",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Replaces an FAQ in full. The body is the complete record - any locale translation you omit is removed, so send every locale you want to keep.",
+        "useCase": "Used by the Edit FAQ form.",
+        "flow": "Admin edits an FAQ -> Server replaces the record -> Apps pick up the new copy on their next Help Center load.",
+        "authRequired": true,
+        "parameters": [
+          {
+            "name": "faq_id",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "FAQ id."
+          }
+        ],
+        "requestBody": {
+          "contentType": "application/json",
+          "example": {
+            "key": "how_do_i_get_paid",
+            "display_order": 3,
+            "roles": [
+              "rental_vendor",
+              "material_vendor"
+            ],
+            "is_active": true,
+            "translations": {
+              "en": {
+                "question": "How do I get paid?",
+                "answer": "Settlements are credited to your registered bank account every Friday."
+              },
+              "hi": {
+                "question": "मुझे भुगतान कैसे मिलेगा?",
+                "answer": "हर शुक्रवार को आपके पंजीकृत बैंक खाते में भुगतान किया जाता है।"
+              }
+            }
+          }
+        },
+        "responses": [
+          {
+            "statusCode": "200",
+            "description": "Successful Response",
+            "contentType": "application/json",
+            "example": {
+              "id": "faq_9c2f1a30-4b55-4d21-9e88-0011aa22bb33",
+              "key": "how_do_i_get_paid",
+              "display_order": 3,
+              "roles": [
+                "rental_vendor",
+                "material_vendor"
+              ],
+              "is_active": true,
+              "translations": {
+                "en": {
+                  "question": "How do I get paid?",
+                  "answer": "Settlements are credited to your registered bank account every Friday."
+                },
+                "hi": {
+                  "question": "मुझे भुगतान कैसे मिलेगा?",
+                  "answer": "हर शुक्रवार को आपके पंजीकृत बैंक खाते में भुगतान किया जाता है।"
+                }
+              },
+              "created_at": "2026-08-14T10:00:00Z",
+              "updated_at": "2026-09-02T09:30:00Z"
+            }
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          },
+          {
+            "statusCode": "404",
+            "description": "No faq with that id",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "faq_not_found",
+                "message": "Faq not found."
+              }
+            }
+          },
+          {
+            "statusCode": "422",
+            "description": "Validation Error",
+            "contentType": "application/json",
+            "example": {
+              "detail": [
+                {
+                  "loc": [
+                    "body",
+                    "key"
+                  ],
+                  "msg": "Field required",
+                  "type": "missing"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "put--api-v1-admin-help-legal-faqs-order-sequence",
+        "method": "PUT",
+        "path": "/api/v1/admin/help-legal/faqs/order/sequence",
+        "summary": "Reorder FAQs",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Rewrites `display_order` across FAQs from the order of the ids you send. Send the full ordered list, not just the ones that moved.",
+        "useCase": "Used by drag-and-drop reordering on the FAQ list.",
+        "flow": "Admin drags an FAQ to a new position -> Console posts the whole ordered id list -> Server renumbers display_order and returns the reordered set.",
+        "authRequired": true,
+        "parameters": [],
+        "requestBody": {
+          "contentType": "application/json",
+          "example": {
+            "ordered_ids": [
+              "faq_9c2f1a30-4b55-4d21-9e88-0011aa22bb33",
+              "faq_1b2c3d4e-5566-4778-99aa-bbccddeeff00"
+            ]
+          }
+        },
+        "responses": [
+          {
+            "statusCode": "200",
+            "description": "Successful Response",
+            "contentType": "application/json",
+            "example": [
+              {
+                "id": "faq_9c2f1a30-4b55-4d21-9e88-0011aa22bb33",
+                "key": "how_do_i_get_paid",
+                "display_order": 3,
+                "roles": [
+                  "rental_vendor",
+                  "material_vendor"
+                ],
+                "is_active": true,
+                "translations": {
+                  "en": {
+                    "question": "How do I get paid?",
+                    "answer": "Settlements are credited to your registered bank account every Friday."
+                  },
+                  "hi": {
+                    "question": "मुझे भुगतान कैसे मिलेगा?",
+                    "answer": "हर शुक्रवार को आपके पंजीकृत बैंक खाते में भुगतान किया जाता है।"
+                  }
+                },
+                "created_at": "2026-08-14T10:00:00Z",
+                "updated_at": "2026-09-02T09:30:00Z"
+              }
+            ]
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          },
+          {
+            "statusCode": "404",
+            "description": "No faq with that id",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "faq_not_found",
+                "message": "Faq not found."
+              }
+            }
+          },
+          {
+            "statusCode": "422",
+            "description": "Validation Error",
+            "contentType": "application/json",
+            "example": {
+              "detail": [
+                {
+                  "loc": [
+                    "body",
+                    "key"
+                  ],
+                  "msg": "Field required",
+                  "type": "missing"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "delete--api-v1-admin-help-legal-faqs-faq_id",
+        "method": "DELETE",
+        "path": "/api/v1/admin/help-legal/faqs/{faq_id}",
+        "summary": "Delete FAQ",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Permanently deletes an FAQ and all of its translations. To hide an FAQ without losing the copy, set `is_active` to false instead.",
+        "useCase": "Used by the delete action on the FAQ list.",
+        "flow": "Admin confirms deletion -> Server removes the FAQ -> It disappears from the apps' Help Center. Returns 204 with an empty body.",
+        "authRequired": true,
+        "parameters": [
+          {
+            "name": "faq_id",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "FAQ id."
+          }
+        ],
+        "requestBody": null,
+        "responses": [
+          {
+            "statusCode": "204",
+            "description": "Deleted. Empty body.",
+            "contentType": "application/json",
+            "example": null
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          },
+          {
+            "statusCode": "404",
+            "description": "No faq with that id",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "faq_not_found",
+                "message": "Faq not found."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "get--api-v1-admin-help-legal-documents",
+        "method": "GET",
+        "path": "/api/v1/admin/help-legal/documents",
+        "summary": "List Legal Documents",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Lists legal documents (Terms, Policies) with their sections, subsections and every locale translation. These tables are seeded by an Alembic data migration, not by schema.sql, so an environment built from schema.sql alone starts empty and the public Help & Legal endpoints return 404 until content is created here.",
+        "useCase": "Used on the Help & Legal > Legal Documents list screen.",
+        "flow": "Admin opens Legal Documents -> Server returns each document with its full section tree -> Console lists them by type and version.",
+        "authRequired": true,
+        "parameters": [
+          {
+            "name": "doc_type",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "description": "Filter by type. One of policies, terms. Omit to return all."
+          }
+        ],
+        "requestBody": null,
+        "responses": [
+          {
+            "statusCode": "200",
+            "description": "Successful Response",
+            "contentType": "application/json",
+            "example": [
+              {
+                "id": "doc_5a71e203-8c14-4f92-bb60-77ee88ff9900",
+                "doc_type": "terms",
+                "version": "2026.09",
+                "is_active": true,
+                "effective_from": "2026-09-01T00:00:00Z",
+                "translations": {
+                  "en": {
+                    "title": "Terms of Service"
+                  },
+                  "hi": {
+                    "title": "सेवा की शर्तें"
+                  }
+                },
+                "sections": [
+                  {
+                    "id": "sec_1f2e3d4c-0000-4a11-8b22-334455667788",
+                    "key": "acceptance",
+                    "display_order": 1,
+                    "translations": {
+                      "en": {
+                        "title": "Acceptance of Terms",
+                        "paragraphs": [
+                          "By creating an account you agree to these terms."
+                        ]
+                      }
+                    },
+                    "subsections": [
+                      {
+                        "id": "sub_2a3b4c5d-0000-4a11-8b22-334455667788",
+                        "key": "eligibility",
+                        "display_order": 1,
+                        "translations": {
+                          "en": {
+                            "title": "Eligibility",
+                            "bullets": [
+                              "You must be at least 18 years old.",
+                              "You must hold a valid GST registration to list as a company."
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "created_at": "2026-08-14T10:00:00Z",
+                "updated_at": "2026-09-02T09:30:00Z"
+              }
+            ]
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "get--api-v1-admin-help-legal-documents-document_id",
+        "method": "GET",
+        "path": "/api/v1/admin/help-legal/documents/{document_id}",
+        "summary": "Get Legal Document",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Returns one legal document with its full section and subsection tree in every locale.",
+        "useCase": "Used when opening a document for editing.",
+        "flow": "Admin clicks a document -> Server returns the record -> Console renders the section editor.",
+        "authRequired": true,
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "Legal document id."
+          }
+        ],
+        "requestBody": null,
+        "responses": [
+          {
+            "statusCode": "200",
+            "description": "Successful Response",
+            "contentType": "application/json",
+            "example": {
+              "id": "doc_5a71e203-8c14-4f92-bb60-77ee88ff9900",
+              "doc_type": "terms",
+              "version": "2026.09",
+              "is_active": true,
+              "effective_from": "2026-09-01T00:00:00Z",
+              "translations": {
+                "en": {
+                  "title": "Terms of Service"
+                },
+                "hi": {
+                  "title": "सेवा की शर्तें"
+                }
+              },
+              "sections": [
+                {
+                  "id": "sec_1f2e3d4c-0000-4a11-8b22-334455667788",
+                  "key": "acceptance",
+                  "display_order": 1,
+                  "translations": {
+                    "en": {
+                      "title": "Acceptance of Terms",
+                      "paragraphs": [
+                        "By creating an account you agree to these terms."
+                      ]
+                    }
+                  },
+                  "subsections": [
+                    {
+                      "id": "sub_2a3b4c5d-0000-4a11-8b22-334455667788",
+                      "key": "eligibility",
+                      "display_order": 1,
+                      "translations": {
+                        "en": {
+                          "title": "Eligibility",
+                          "bullets": [
+                            "You must be at least 18 years old.",
+                            "You must hold a valid GST registration to list as a company."
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              ],
+              "created_at": "2026-08-14T10:00:00Z",
+              "updated_at": "2026-09-02T09:30:00Z"
+            }
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          },
+          {
+            "statusCode": "404",
+            "description": "No legal document with that id",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "legal_document_not_found",
+                "message": "Legal document not found."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "post--api-v1-admin-help-legal-documents",
+        "method": "POST",
+        "path": "/api/v1/admin/help-legal/documents",
+        "summary": "Create Legal Document",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Creates a legal document version. `doc_type` is one of policies or terms; `version` is your own label (for example 2026.09). Sections carry paragraphs, subsections carry bullets, and both are ordered by `display_order`.",
+        "useCase": "Used when publishing a new version of the Terms or Privacy Policy.",
+        "flow": "Legal signs off new copy -> Admin creates the version with effective_from and is_active -> Apps serve it from the public Help & Legal endpoints.",
+        "authRequired": true,
+        "parameters": [],
+        "requestBody": {
+          "contentType": "application/json",
+          "example": {
+            "doc_type": "terms",
+            "version": "2026.09",
+            "is_active": true,
+            "effective_from": "2026-09-01T00:00:00Z",
+            "translations": {
+              "en": {
+                "title": "Terms of Service"
+              },
+              "hi": {
+                "title": "सेवा की शर्तें"
+              }
+            },
+            "sections": [
+              {
+                "key": "acceptance",
+                "display_order": 1,
+                "translations": {
+                  "en": {
+                    "title": "Acceptance of Terms",
+                    "paragraphs": [
+                      "By creating an account you agree to these terms."
+                    ]
+                  }
+                },
+                "subsections": [
+                  {
+                    "key": "eligibility",
+                    "display_order": 1,
+                    "translations": {
+                      "en": {
+                        "title": "Eligibility",
+                        "bullets": [
+                          "You must be at least 18 years old."
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "responses": [
+          {
+            "statusCode": "201",
+            "description": "Created",
+            "contentType": "application/json",
+            "example": {
+              "id": "doc_5a71e203-8c14-4f92-bb60-77ee88ff9900",
+              "doc_type": "terms",
+              "version": "2026.09",
+              "is_active": true,
+              "effective_from": "2026-09-01T00:00:00Z",
+              "translations": {
+                "en": {
+                  "title": "Terms of Service"
+                },
+                "hi": {
+                  "title": "सेवा की शर्तें"
+                }
+              },
+              "sections": [
+                {
+                  "id": "sec_1f2e3d4c-0000-4a11-8b22-334455667788",
+                  "key": "acceptance",
+                  "display_order": 1,
+                  "translations": {
+                    "en": {
+                      "title": "Acceptance of Terms",
+                      "paragraphs": [
+                        "By creating an account you agree to these terms."
+                      ]
+                    }
+                  },
+                  "subsections": [
+                    {
+                      "id": "sub_2a3b4c5d-0000-4a11-8b22-334455667788",
+                      "key": "eligibility",
+                      "display_order": 1,
+                      "translations": {
+                        "en": {
+                          "title": "Eligibility",
+                          "bullets": [
+                            "You must be at least 18 years old.",
+                            "You must hold a valid GST registration to list as a company."
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              ],
+              "created_at": "2026-08-14T10:00:00Z",
+              "updated_at": "2026-09-02T09:30:00Z"
+            }
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          },
+          {
+            "statusCode": "422",
+            "description": "Validation Error",
+            "contentType": "application/json",
+            "example": {
+              "detail": [
+                {
+                  "loc": [
+                    "body",
+                    "key"
+                  ],
+                  "msg": "Field required",
+                  "type": "missing"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "put--api-v1-admin-help-legal-documents-document_id",
+        "method": "PUT",
+        "path": "/api/v1/admin/help-legal/documents/{document_id}",
+        "summary": "Update Legal Document",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Replaces a legal document in full, including its whole section tree. Sections and subsections you omit are removed, so send the complete document.",
+        "useCase": "Used by the legal document editor.",
+        "flow": "Admin edits sections or bumps the version -> Server replaces the document -> Apps show the updated text.",
+        "authRequired": true,
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "Legal document id."
+          }
+        ],
+        "requestBody": {
+          "contentType": "application/json",
+          "example": {
+            "doc_type": "terms",
+            "version": "2026.09",
+            "is_active": true,
+            "effective_from": "2026-09-01T00:00:00Z",
+            "translations": {
+              "en": {
+                "title": "Terms of Service"
+              },
+              "hi": {
+                "title": "सेवा की शर्तें"
+              }
+            },
+            "sections": [
+              {
+                "key": "acceptance",
+                "display_order": 1,
+                "translations": {
+                  "en": {
+                    "title": "Acceptance of Terms",
+                    "paragraphs": [
+                      "By creating an account you agree to these terms."
+                    ]
+                  }
+                },
+                "subsections": [
+                  {
+                    "key": "eligibility",
+                    "display_order": 1,
+                    "translations": {
+                      "en": {
+                        "title": "Eligibility",
+                        "bullets": [
+                          "You must be at least 18 years old."
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "responses": [
+          {
+            "statusCode": "200",
+            "description": "Successful Response",
+            "contentType": "application/json",
+            "example": {
+              "id": "doc_5a71e203-8c14-4f92-bb60-77ee88ff9900",
+              "doc_type": "terms",
+              "version": "2026.09",
+              "is_active": true,
+              "effective_from": "2026-09-01T00:00:00Z",
+              "translations": {
+                "en": {
+                  "title": "Terms of Service"
+                },
+                "hi": {
+                  "title": "सेवा की शर्तें"
+                }
+              },
+              "sections": [
+                {
+                  "id": "sec_1f2e3d4c-0000-4a11-8b22-334455667788",
+                  "key": "acceptance",
+                  "display_order": 1,
+                  "translations": {
+                    "en": {
+                      "title": "Acceptance of Terms",
+                      "paragraphs": [
+                        "By creating an account you agree to these terms."
+                      ]
+                    }
+                  },
+                  "subsections": [
+                    {
+                      "id": "sub_2a3b4c5d-0000-4a11-8b22-334455667788",
+                      "key": "eligibility",
+                      "display_order": 1,
+                      "translations": {
+                        "en": {
+                          "title": "Eligibility",
+                          "bullets": [
+                            "You must be at least 18 years old.",
+                            "You must hold a valid GST registration to list as a company."
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              ],
+              "created_at": "2026-08-14T10:00:00Z",
+              "updated_at": "2026-09-02T09:30:00Z"
+            }
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          },
+          {
+            "statusCode": "404",
+            "description": "No legal document with that id",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "legal_document_not_found",
+                "message": "Legal document not found."
+              }
+            }
+          },
+          {
+            "statusCode": "422",
+            "description": "Validation Error",
+            "contentType": "application/json",
+            "example": {
+              "detail": [
+                {
+                  "loc": [
+                    "body",
+                    "key"
+                  ],
+                  "msg": "Field required",
+                  "type": "missing"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "delete--api-v1-admin-help-legal-documents-document_id",
+        "method": "DELETE",
+        "path": "/api/v1/admin/help-legal/documents/{document_id}",
+        "summary": "Delete Legal Document",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Permanently deletes a legal document and its whole section tree. To retire a version without deleting it, set `is_active` to false instead.",
+        "useCase": "Used by the delete action on the legal documents list.",
+        "flow": "Admin confirms deletion -> Server removes the document -> The public Help & Legal endpoint 404s for that type if no other active version exists. Returns 204 with an empty body.",
+        "authRequired": true,
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "Legal document id."
+          }
+        ],
+        "requestBody": null,
+        "responses": [
+          {
+            "statusCode": "204",
+            "description": "Deleted. Empty body.",
+            "contentType": "application/json",
+            "example": null
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          },
+          {
+            "statusCode": "404",
+            "description": "No legal document with that id",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "legal_document_not_found",
+                "message": "Legal document not found."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "get--api-v1-admin-help-legal-referral-programs",
+        "method": "GET",
+        "path": "/api/v1/admin/help-legal/referral-programs",
+        "summary": "List Referral Programs",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Lists referral programs with their reward amount, validity window, share copy and the numbered how-it-works steps, in every locale. These tables are seeded by an Alembic data migration, not by schema.sql, so an environment built from schema.sql alone starts empty and the public Help & Legal endpoints return 404 until content is created here.",
+        "useCase": "Used on the Help & Legal > Referrals list screen.",
+        "flow": "Admin opens Referrals -> Server returns every program -> Console lists them with their active window.",
+        "authRequired": true,
+        "parameters": [],
+        "requestBody": null,
+        "responses": [
+          {
+            "statusCode": "200",
+            "description": "Successful Response",
+            "contentType": "application/json",
+            "example": [
+              {
+                "id": "ref_7d8e9f00-1122-4334-8556-778899aabbcc",
+                "key": "vendor_refer_2026",
+                "reward_amount": "500.00",
+                "currency": "INR",
+                "terms_url": "https://link2build.com/legal/referral-terms",
+                "is_active": true,
+                "valid_from": "2026-09-01T00:00:00Z",
+                "valid_to": "2026-12-31T23:59:59Z",
+                "translations": {
+                  "en": {
+                    "headline": "Refer a vendor, earn Rs. 500",
+                    "share_message": "Join me on Link2Build and we both earn Rs. 500."
+                  }
+                },
+                "steps": [
+                  {
+                    "id": "step_a1b2c3d4-0000-4a11-8b22-334455667788",
+                    "step_number": 1,
+                    "translations": {
+                      "en": {
+                        "title": "Share your code",
+                        "description": "Send your referral code to a vendor you know."
+                      }
+                    }
+                  },
+                  {
+                    "id": "step_b2c3d4e5-0000-4a11-8b22-334455667788",
+                    "step_number": 2,
+                    "translations": {
+                      "en": {
+                        "title": "They get approved",
+                        "description": "Your reward is credited once their KYC is approved."
+                      }
+                    }
+                  }
+                ],
+                "created_at": "2026-08-14T10:00:00Z",
+                "updated_at": "2026-09-02T09:30:00Z"
+              }
+            ]
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "get--api-v1-admin-help-legal-referral-programs-program_id",
+        "method": "GET",
+        "path": "/api/v1/admin/help-legal/referral-programs/{program_id}",
+        "summary": "Get Referral Program",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Returns one referral program with its steps and every locale translation.",
+        "useCase": "Used when opening a referral program for editing.",
+        "flow": "Admin clicks a program -> Server returns the record -> Console renders the reward, window and step editor.",
+        "authRequired": true,
+        "parameters": [
+          {
+            "name": "program_id",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "Referral program id."
+          }
+        ],
+        "requestBody": null,
+        "responses": [
+          {
+            "statusCode": "200",
+            "description": "Successful Response",
+            "contentType": "application/json",
+            "example": {
+              "id": "ref_7d8e9f00-1122-4334-8556-778899aabbcc",
+              "key": "vendor_refer_2026",
+              "reward_amount": "500.00",
+              "currency": "INR",
+              "terms_url": "https://link2build.com/legal/referral-terms",
+              "is_active": true,
+              "valid_from": "2026-09-01T00:00:00Z",
+              "valid_to": "2026-12-31T23:59:59Z",
+              "translations": {
+                "en": {
+                  "headline": "Refer a vendor, earn Rs. 500",
+                  "share_message": "Join me on Link2Build and we both earn Rs. 500."
+                }
+              },
+              "steps": [
+                {
+                  "id": "step_a1b2c3d4-0000-4a11-8b22-334455667788",
+                  "step_number": 1,
+                  "translations": {
+                    "en": {
+                      "title": "Share your code",
+                      "description": "Send your referral code to a vendor you know."
+                    }
+                  }
+                },
+                {
+                  "id": "step_b2c3d4e5-0000-4a11-8b22-334455667788",
+                  "step_number": 2,
+                  "translations": {
+                    "en": {
+                      "title": "They get approved",
+                      "description": "Your reward is credited once their KYC is approved."
+                    }
+                  }
+                }
+              ],
+              "created_at": "2026-08-14T10:00:00Z",
+              "updated_at": "2026-09-02T09:30:00Z"
+            }
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          },
+          {
+            "statusCode": "404",
+            "description": "No referral program with that id",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "referral_program_not_found",
+                "message": "Referral program not found."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "post--api-v1-admin-help-legal-referral-programs",
+        "method": "POST",
+        "path": "/api/v1/admin/help-legal/referral-programs",
+        "summary": "Create Referral Program",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Creates a referral program. `reward_amount` is a decimal string, `currency` a 3-letter code stored uppercase (defaults to INR). `valid_from` and `valid_to` bound when the program is offered; `steps` are the numbered how-it-works cards shown in the app.",
+        "useCase": "Used when launching a new referral campaign.",
+        "flow": "Growth defines a campaign -> Admin creates the program with reward, window and steps -> The Refer & Earn screen picks it up.",
+        "authRequired": true,
+        "parameters": [],
+        "requestBody": {
+          "contentType": "application/json",
+          "example": {
+            "key": "vendor_refer_2026",
+            "reward_amount": "500.00",
+            "currency": "INR",
+            "terms_url": "https://link2build.com/legal/referral-terms",
+            "is_active": true,
+            "valid_from": "2026-09-01T00:00:00Z",
+            "valid_to": "2026-12-31T23:59:59Z",
+            "translations": {
+              "en": {
+                "headline": "Refer a vendor, earn Rs. 500",
+                "share_message": "Join me on Link2Build and we both earn Rs. 500."
+              }
+            },
+            "steps": [
+              {
+                "step_number": 1,
+                "translations": {
+                  "en": {
+                    "title": "Share your code",
+                    "description": "Send your referral code to a vendor you know."
+                  }
+                }
+              },
+              {
+                "step_number": 2,
+                "translations": {
+                  "en": {
+                    "title": "They get approved",
+                    "description": "Your reward is credited once their KYC is approved."
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "responses": [
+          {
+            "statusCode": "201",
+            "description": "Created",
+            "contentType": "application/json",
+            "example": {
+              "id": "ref_7d8e9f00-1122-4334-8556-778899aabbcc",
+              "key": "vendor_refer_2026",
+              "reward_amount": "500.00",
+              "currency": "INR",
+              "terms_url": "https://link2build.com/legal/referral-terms",
+              "is_active": true,
+              "valid_from": "2026-09-01T00:00:00Z",
+              "valid_to": "2026-12-31T23:59:59Z",
+              "translations": {
+                "en": {
+                  "headline": "Refer a vendor, earn Rs. 500",
+                  "share_message": "Join me on Link2Build and we both earn Rs. 500."
+                }
+              },
+              "steps": [
+                {
+                  "id": "step_a1b2c3d4-0000-4a11-8b22-334455667788",
+                  "step_number": 1,
+                  "translations": {
+                    "en": {
+                      "title": "Share your code",
+                      "description": "Send your referral code to a vendor you know."
+                    }
+                  }
+                },
+                {
+                  "id": "step_b2c3d4e5-0000-4a11-8b22-334455667788",
+                  "step_number": 2,
+                  "translations": {
+                    "en": {
+                      "title": "They get approved",
+                      "description": "Your reward is credited once their KYC is approved."
+                    }
+                  }
+                }
+              ],
+              "created_at": "2026-08-14T10:00:00Z",
+              "updated_at": "2026-09-02T09:30:00Z"
+            }
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          },
+          {
+            "statusCode": "422",
+            "description": "Validation Error",
+            "contentType": "application/json",
+            "example": {
+              "detail": [
+                {
+                  "loc": [
+                    "body",
+                    "key"
+                  ],
+                  "msg": "Field required",
+                  "type": "missing"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "put--api-v1-admin-help-legal-referral-programs-program_id",
+        "method": "PUT",
+        "path": "/api/v1/admin/help-legal/referral-programs/{program_id}",
+        "summary": "Update Referral Program",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Replaces a referral program in full, including its steps. Steps and translations you omit are removed, so send the complete program.",
+        "useCase": "Used by the referral program editor.",
+        "flow": "Admin changes the reward or extends the window -> Server replaces the program -> The Refer & Earn screen reflects it.",
+        "authRequired": true,
+        "parameters": [
+          {
+            "name": "program_id",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "Referral program id."
+          }
+        ],
+        "requestBody": {
+          "contentType": "application/json",
+          "example": {
+            "key": "vendor_refer_2026",
+            "reward_amount": "500.00",
+            "currency": "INR",
+            "terms_url": "https://link2build.com/legal/referral-terms",
+            "is_active": true,
+            "valid_from": "2026-09-01T00:00:00Z",
+            "valid_to": "2026-12-31T23:59:59Z",
+            "translations": {
+              "en": {
+                "headline": "Refer a vendor, earn Rs. 500",
+                "share_message": "Join me on Link2Build and we both earn Rs. 500."
+              }
+            },
+            "steps": [
+              {
+                "step_number": 1,
+                "translations": {
+                  "en": {
+                    "title": "Share your code",
+                    "description": "Send your referral code to a vendor you know."
+                  }
+                }
+              },
+              {
+                "step_number": 2,
+                "translations": {
+                  "en": {
+                    "title": "They get approved",
+                    "description": "Your reward is credited once their KYC is approved."
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "responses": [
+          {
+            "statusCode": "200",
+            "description": "Successful Response",
+            "contentType": "application/json",
+            "example": {
+              "id": "ref_7d8e9f00-1122-4334-8556-778899aabbcc",
+              "key": "vendor_refer_2026",
+              "reward_amount": "500.00",
+              "currency": "INR",
+              "terms_url": "https://link2build.com/legal/referral-terms",
+              "is_active": true,
+              "valid_from": "2026-09-01T00:00:00Z",
+              "valid_to": "2026-12-31T23:59:59Z",
+              "translations": {
+                "en": {
+                  "headline": "Refer a vendor, earn Rs. 500",
+                  "share_message": "Join me on Link2Build and we both earn Rs. 500."
+                }
+              },
+              "steps": [
+                {
+                  "id": "step_a1b2c3d4-0000-4a11-8b22-334455667788",
+                  "step_number": 1,
+                  "translations": {
+                    "en": {
+                      "title": "Share your code",
+                      "description": "Send your referral code to a vendor you know."
+                    }
+                  }
+                },
+                {
+                  "id": "step_b2c3d4e5-0000-4a11-8b22-334455667788",
+                  "step_number": 2,
+                  "translations": {
+                    "en": {
+                      "title": "They get approved",
+                      "description": "Your reward is credited once their KYC is approved."
+                    }
+                  }
+                }
+              ],
+              "created_at": "2026-08-14T10:00:00Z",
+              "updated_at": "2026-09-02T09:30:00Z"
+            }
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          },
+          {
+            "statusCode": "404",
+            "description": "No referral program with that id",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "referral_program_not_found",
+                "message": "Referral program not found."
+              }
+            }
+          },
+          {
+            "statusCode": "422",
+            "description": "Validation Error",
+            "contentType": "application/json",
+            "example": {
+              "detail": [
+                {
+                  "loc": [
+                    "body",
+                    "key"
+                  ],
+                  "msg": "Field required",
+                  "type": "missing"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "delete--api-v1-admin-help-legal-referral-programs-program_id",
+        "method": "DELETE",
+        "path": "/api/v1/admin/help-legal/referral-programs/{program_id}",
+        "summary": "Delete Referral Program",
+        "audiences": [
+          "admin"
+        ],
+        "purpose": "Permanently deletes a referral program and its steps. To stop offering a program without deleting it, set `is_active` to false or close the validity window instead.",
+        "useCase": "Used by the delete action on the referrals list.",
+        "flow": "Admin confirms deletion -> Server removes the program -> Refer & Earn falls back to whichever program is still active. Returns 204 with an empty body.",
+        "authRequired": true,
+        "parameters": [
+          {
+            "name": "program_id",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "Referral program id."
+          }
+        ],
+        "requestBody": null,
+        "responses": [
+          {
+            "statusCode": "204",
+            "description": "Deleted. Empty body.",
+            "contentType": "application/json",
+            "example": null
+          },
+          {
+            "statusCode": "401",
+            "description": "Missing or expired bearer token",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "UNAUTHORIZED",
+                "message": "Authentication credentials were missing or invalid."
+              }
+            }
+          },
+          {
+            "statusCode": "403",
+            "description": "Caller is not an admin",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "FORBIDDEN",
+                "message": "Admin access required."
+              }
+            }
+          },
+          {
+            "statusCode": "404",
+            "description": "No referral program with that id",
+            "contentType": "application/json",
+            "example": {
+              "detail": {
+                "code": "referral_program_not_found",
+                "message": "Referral program not found."
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "groupName": "33. System Health & Platform Diagnostics",
     "endpoints": [
       {
         "id": "get--api-v1-health",
